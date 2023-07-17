@@ -1,9 +1,7 @@
 import {
   Badge,
-  Button,
   Card,
   Container,
-  FileInput,
   Grid,
   Modal,
   Text,
@@ -18,7 +16,7 @@ import {
 import { IconEdit, IconFilter, IconEye } from "@tabler/icons-react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
-import { useForm } from "@mantine/form";
+import ButtonWithIcon from "@components/ButtonWithIcon";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -35,13 +33,6 @@ const App: React.FC = () => {
   const [openedButtonAcc, { open: openButtonAcc, close: closeButtonAcc }] =
     useDisclosure(false);
 
-  const form = useForm({
-    initialValues: {
-      tiketInsident: "",
-      workDesc: "",
-    },
-  });
-
   return (
     <>
       <Modal
@@ -51,9 +42,7 @@ const App: React.FC = () => {
       >
         <p>Pastikan dokumen kegiatan sudah lengkap dan sesuai!</p>
         <br />
-        <Button onClick={closeButtonAcc} color="dark" radius="xl">
-          Acc
-        </Button>
+        <ButtonWithIcon onClick={closeButtonAcc}>Acc</ButtonWithIcon>
       </Modal>
       <Modal
         opened={openedCatatanUT}
@@ -62,9 +51,7 @@ const App: React.FC = () => {
       >
         <Textarea placeholder="Tambahkan catatan" withAsterisk />
         <br />
-        <Button onClick={closeCatatanUT} color="dark" radius="xl">
-          Tambah
-        </Button>
+        <ButtonWithIcon onClick={closeCatatanUT}>Tambah</ButtonWithIcon>
       </Modal>
       <Modal opened={openedEvidence} onClose={closeEvidence} title="Evidence">
         <Text fz="sm" fw={500}>
@@ -132,9 +119,9 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={2}>
-            <Button variant="outline" color="dark" radius="xl">
+            <ButtonWithIcon variant="outline">
               <IconFilter></IconFilter>
-            </Button>{" "}
+            </ButtonWithIcon>{" "}
           </Grid.Col>
         </Grid>
       </Container>
@@ -161,34 +148,19 @@ const App: React.FC = () => {
                 <td>IN12345678</td>
                 <td>Jl. Kelud</td>
                 <td>
-                  <Button
-                    onClick={openAddVolume}
-                    radius="xl"
-                    variant="filled"
-                    color="primary"
-                  >
+                  <ButtonWithIcon onClick={openAddVolume}>
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
                 <td>
-                  <Button
-                    onClick={openEvidence}
-                    radius="xl"
-                    variant="filled"
-                    color="primary"
-                  >
+                  <ButtonWithIcon onClick={openEvidence}>
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
                 <td>
-                  <Button
-                    onClick={openCatatanUT}
-                    radius="xl"
-                    variant="filled"
-                    color="primary"
-                  >
+                  <ButtonWithIcon onClick={openCatatanUT}>
                     <IconEdit></IconEdit>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
                 <td>
                   <Badge color="red" variant="outline">
@@ -196,14 +168,7 @@ const App: React.FC = () => {
                   </Badge>
                 </td>
                 <td>
-                  <Button
-                    onClick={openButtonAcc}
-                    radius="xl"
-                    variant="filled"
-                    color="primary"
-                  >
-                    Acc
-                  </Button>
+                  <ButtonWithIcon onClick={openButtonAcc}>Acc</ButtonWithIcon>
                 </td>
               </tr>
             </tbody>

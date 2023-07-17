@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   Card,
   Container,
   FileInput,
@@ -15,7 +14,7 @@ import {
 import { IconEdit, IconFilter, IconEye } from "@tabler/icons-react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
-import { useForm } from "@mantine/form";
+import ButtonWithIcon from "@components/ButtonWithIcon";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -29,13 +28,6 @@ const App: React.FC = () => {
     useDisclosure(false);
   const [openedAddVolume, { open: openAddVolume, close: closeAddVolume }] =
     useDisclosure(false);
-
-  const form = useForm({
-    initialValues: {
-      tiketInsident: "",
-      workDesc: "",
-    },
-  });
 
   return (
     <>
@@ -70,9 +62,7 @@ const App: React.FC = () => {
           withAsterisk
         />
         <br />
-        <Button onClick={closeEvidence} color="dark" radius="xl">
-          Tambah
-        </Button>
+        <ButtonWithIcon onClick={closeEvidence}>Tambah</ButtonWithIcon>
       </Modal>
       <Modal opened={openedAddVolume} onClose={closeAddVolume} title="Volume">
         <TextInput disabled label="Tiket Insident" placeholder="IN12345678" />
@@ -99,9 +89,7 @@ const App: React.FC = () => {
           </Flex>
         </Container>
         <br />
-        <Button onClick={closeAddVolume} color="dark" radius="xl">
-          Tambah
-        </Button>
+        <ButtonWithIcon onClick={closeAddVolume}>Tambah</ButtonWithIcon>
       </Modal>
       <Container className="mt-8 font-['Poppins']">
         <p className="font-semibold text-xl text-black">Daftar BOQ</p>
@@ -112,9 +100,9 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={2}>
-            <Button variant="outline" color="dark" radius="xl">
+            <ButtonWithIcon variant="outline">
               <IconFilter></IconFilter>
-            </Button>{" "}
+            </ButtonWithIcon>{" "}
           </Grid.Col>
         </Grid>
       </Container>
@@ -147,14 +135,9 @@ const App: React.FC = () => {
                   </Badge>
                 </td>
                 <td>
-                  <Button
-                    onClick={openAddVolume}
-                    radius="xl"
-                    variant="filled"
-                    color="primary"
-                  >
+                  <ButtonWithIcon onClick={openAddVolume}>
                     <IconEdit></IconEdit>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
                 <td>
                   <Badge color="red" variant="outline">
@@ -162,24 +145,14 @@ const App: React.FC = () => {
                   </Badge>
                 </td>
                 <td>
-                  <Button
-                    onClick={openEvidence}
-                    radius="xl"
-                    variant="filled"
-                    color="primary"
-                  >
+                  <ButtonWithIcon onClick={openEvidence}>
                     <IconEdit></IconEdit>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
                 <td>
-                  <Button
-                    onClick={openCatatanUT}
-                    radius="xl"
-                    variant="filled"
-                    color="primary"
-                  >
+                  <ButtonWithIcon onClick={openCatatanUT}>
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
                 <td>
                   <Badge color="red" variant="outline">

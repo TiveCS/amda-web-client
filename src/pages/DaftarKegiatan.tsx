@@ -14,16 +14,15 @@ import {
 } from "@mantine/core";
 import {
   IconEdit,
-  IconFilter,
-  IconEye,
   IconTrash,
   IconCirclePlus,
   IconDownload,
+  IconFilter,
 } from "@tabler/icons-react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
-import { useForm } from "@mantine/form";
 import { DateInput, TimeInput } from "@mantine/dates";
+import ButtonWithIcon from "@components/ButtonWithIcon";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -38,21 +37,12 @@ const App: React.FC = () => {
   const [openedAddLOP, { open: openAddLOP, close: closeAddLOP }] =
     useDisclosure(false);
 
-  const form = useForm({
-    initialValues: {
-      tiketInsident: "",
-      workDesc: "",
-    },
-  });
-
   return (
     <>
       <Modal opened={openedAddLOP} onClose={closeAddLOP} title="Add LOP">
         <TextInput withAsterisk label="Nama LOP" placeholder="" />
         <br />
-        <Button onClick={closeAddLOP} color="dark" radius="xl">
-          Tambah
-        </Button>
+        <ButtonWithIcon onClick={closeAddLOP}>Tambah</ButtonWithIcon>
       </Modal>
       <Modal
         opened={openedAddKegiatan}
@@ -101,9 +91,7 @@ const App: React.FC = () => {
           </Group>
         </Radio.Group>
         <br />
-        <Button onClick={closeAddKegiatan} color="dark" radius="xl">
-          Tambah
-        </Button>
+        <ButtonWithIcon onClick={closeAddKegiatan}>Tambah</ButtonWithIcon>
       </Modal>
       <Container className="mt-8 font-['Poppins']">
         <p className="font-semibold text-xl text-black">Daftar BOQ</p>
@@ -114,23 +102,21 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={5}>
-            <Button variant="outline" color="dark" radius="xl">
+            <ButtonWithIcon variant="outline">
               <IconFilter></IconFilter>
-            </Button>{" "}
-            <Button variant="outline" color="dark" radius="xl">
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon variant="outline">
               <IconEdit></IconEdit>
-            </Button>{" "}
-            <Button variant="outline" color="dark" radius="xl">
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon variant="outline">
               <IconTrash></IconTrash>
-            </Button>{" "}
-            <Button
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon
               onClick={openAddKegiatan}
               leftIcon={<IconCirclePlus />}
-              color="dark"
-              radius="xl"
             >
               Add Keg
-            </Button>
+            </ButtonWithIcon>
           </Grid.Col>
         </Grid>
       </Container>
@@ -273,19 +259,14 @@ const App: React.FC = () => {
         </Card>
         <Flex>
           <Container className="mt-4 p-0" style={{ width: 435 }}>
-            <Button
-              onClick={openAddLOP}
-              leftIcon={<IconCirclePlus />}
-              color="dark"
-              radius="xl"
-            >
+            <ButtonWithIcon onClick={openAddLOP} leftIcon={<IconCirclePlus />}>
               Add LOP
-            </Button>
+            </ButtonWithIcon>
           </Container>
           <Container className="mt-4" style={{ width: 435 }}>
-            <Button leftIcon={<IconDownload />} color="dark" radius="xl">
+            <ButtonWithIcon leftIcon={<IconDownload />}>
               Download .xlsx
-            </Button>
+            </ButtonWithIcon>
           </Container>
         </Flex>
       </Container>

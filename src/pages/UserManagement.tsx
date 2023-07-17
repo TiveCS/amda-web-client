@@ -20,6 +20,7 @@ import {
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
+import ButtonWithIcon from "@components/ButtonWithIcon";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -73,9 +74,7 @@ const App: React.FC = () => {
         />
         <PasswordInput withAsterisk label="Password" placeholder="Password" />
         <br />
-        <Button onClick={closeAddUser} color="dark" radius="xl">
-          Tambah
-        </Button>
+        <ButtonWithIcon onClick={closeAddUser}>Tambah</ButtonWithIcon>
       </Modal>
       <Container className="mt-8 font-['Poppins']">
         <p className="font-semibold text-xl text-black">Daftar User</p>
@@ -86,23 +85,18 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={5}>
-            <Button variant="outline" color="dark" radius="xl">
+            <ButtonWithIcon variant="outline">
               <IconFilter></IconFilter>
-            </Button>{" "}
-            <Button variant="outline" color="dark" radius="xl">
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon variant="outline">
               <IconEdit></IconEdit>
-            </Button>{" "}
-            <Button variant="outline" color="dark" radius="xl">
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon variant="outline">
               <IconTrash></IconTrash>
-            </Button>{" "}
-            <Button
-              onClick={openAddUser}
-              leftIcon={<IconCirclePlus />}
-              color="dark"
-              radius="xl"
-            >
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon onClick={openAddUser} leftIcon={<IconCirclePlus />}>
               Add User
-            </Button>
+            </ButtonWithIcon>
           </Grid.Col>
         </Grid>
       </Container>
@@ -133,14 +127,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -152,14 +141,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -171,14 +155,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -190,14 +169,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -209,14 +183,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -228,14 +197,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -247,14 +211,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -266,14 +225,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -285,14 +239,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -304,14 +253,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
               <tr>
@@ -323,14 +267,9 @@ const App: React.FC = () => {
                 <td>Aufa Mutia</td>
                 <td>Telkom Witel Solo</td>
                 <td>
-                  <Button
-                    onClick={openPassword}
-                    radius="xl"
-                    variant="subtle"
-                    color="dark"
-                  >
+                  <ButtonWithIcon onClick={openPassword} variant="subtle">
                     <IconEye></IconEye>
-                  </Button>
+                  </ButtonWithIcon>
                 </td>
               </tr>
             </tbody>

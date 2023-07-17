@@ -17,6 +17,7 @@ import {
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
+import ButtonWithIcon from "@components/ButtonWithIcon";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -37,9 +38,8 @@ const App: React.FC = () => {
     <>
       <Modal opened={openedAddMitra} onClose={closeAddMitra} title="Add User">
         <TextInput withAsterisk label="Nama Mitra" placeholder="" />
-        <Button onClick={closeAddMitra} color="dark" radius="xl">
-          Tambah
-        </Button>
+        <br />
+        <ButtonWithIcon onClick={closeAddMitra}>Tambah</ButtonWithIcon>
       </Modal>
       <Container className="mt-8 font-['Poppins']">
         <p className="font-semibold text-xl text-black">Daftar Mitra</p>
@@ -50,23 +50,21 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={5}>
-            <Button variant="outline" color="dark" radius="xl">
+            <ButtonWithIcon variant="outline">
               <IconFilter></IconFilter>
-            </Button>{" "}
-            <Button variant="outline" color="dark" radius="xl">
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon variant="outline">
               <IconEdit></IconEdit>
-            </Button>{" "}
-            <Button variant="outline" color="dark" radius="xl">
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon variant="outline">
               <IconTrash></IconTrash>
-            </Button>{" "}
-            <Button
+            </ButtonWithIcon>{" "}
+            <ButtonWithIcon
               onClick={openAddMitra}
               leftIcon={<IconCirclePlus />}
-              color="dark"
-              radius="xl"
             >
               Add Mitra
-            </Button>
+            </ButtonWithIcon>
           </Grid.Col>
         </Grid>
       </Container>
