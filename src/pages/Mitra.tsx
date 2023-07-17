@@ -14,7 +14,7 @@ import {
   IconEdit,
   IconFilter,
 } from "@tabler/icons-react";
-import SearchBar from "./SearchBar";
+import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 

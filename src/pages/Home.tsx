@@ -16,6 +16,8 @@ function Home() {
       <br />
       <Link to={"/daftar-kegiatan"}>Daftar Kegiatan</Link>
       <br />
+      <Link to={"/status-boq"}>Status BOQ</Link>
+      <br />
       <Sidebar></Sidebar>
     </>
   );

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import DaftarBOQ from "@pages/DaftarBOQ";
 import DaftarKegiatan from "@pages/DaftarKegiatan";
+import StatusBOQ from "@pages/StatusBOQ";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +20,7 @@ export const router = createBrowserRouter(
       <Route path="/mitra" element={<DaftarMitra />} />
       <Route path="/daftar-boq" element={<DaftarBOQ />} />
       <Route path="/daftar-kegiatan" element={<DaftarKegiatan />} />
+      <Route path="/status-boq" element={<StatusBOQ />} />
     </>
   )
 );
