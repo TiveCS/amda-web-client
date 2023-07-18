@@ -8,13 +8,15 @@ function Home() {
       <p className="bg-red-400">Hello</p>
       <Button>Mantap</Button>
       <br />
-      <Link to={"/user"}>User Management</Link>
+      <Link to={"/daftar-user"}>Daftar User</Link>
       <br />
-      <Link to={"/mitra"}>Mitra</Link>
+      <Link to={"/daftar-role"}>Daftar Role</Link>
       <br />
-      <Link to={"/daftar-boq"}>Daftar BOQ</Link>
+      <Link to={"/daftar-mitra"}>Daftar Mitra</Link>
       <br />
       <Link to={"/daftar-kegiatan"}>Daftar Kegiatan</Link>
+      <br />
+      <Link to={"/daftar-boq"}>Daftar BOQ</Link>
       <br />
       <Link to={"/status-boq"}>Status BOQ</Link>
       <br />

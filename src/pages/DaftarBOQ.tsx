@@ -1,20 +1,8 @@
-import {
-  Badge,
-  Card,
-  Container,
-  FileInput,
-  Grid,
-  Modal,
-  Text,
-  Table,
-  TextInput,
-  Flex,
-  NumberInput,
-} from "@mantine/core";
-import { IconEdit, IconFilter, IconEye } from "@tabler/icons-react";
+import { Card, Container, Grid, Table } from "@mantine/core";
+import { IconFilter } from "@tabler/icons-react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { useDisclosure } from "@mantine/hooks";
-import ButtonWithIcon from "@components/ButtonWithIcon";
+import ButtonAMDA from "@components/ButtonAMDA";
+import TableDaftarBOQ from "@components/TableDaftarBOQ";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -22,75 +10,8 @@ const App: React.FC = () => {
     console.log("Searching for:", searchTerm);
   };
 
-  const [openedCatatanUT, { open: openCatatanUT, close: closeCatatanUT }] =
-    useDisclosure(false);
-  const [openedEvidence, { open: openEvidence, close: closeEvidence }] =
-    useDisclosure(false);
-  const [openedAddVolume, { open: openAddVolume, close: closeAddVolume }] =
-    useDisclosure(false);
-
   return (
     <>
-      <Modal
-        opened={openedCatatanUT}
-        onClose={closeCatatanUT}
-        title="Catatan Uji Terima"
-      >
-        <p>Tidak ada catatan</p>
-      </Modal>
-      <Modal
-        opened={openedEvidence}
-        onClose={closeEvidence}
-        title="Upload Evidence"
-      >
-        <FileInput
-          placeholder="Pilih file"
-          label="Sebelum"
-          description="File berupa gambar (.png/.jpeg/.jpg)"
-          withAsterisk
-        />
-        <FileInput
-          placeholder="Pilih file"
-          label="Proses"
-          description="File berupa gambar (.png/.jpeg/.jpg)"
-          withAsterisk
-        />
-        <FileInput
-          placeholder="Pilih file"
-          label="Sesudah"
-          description="File berupa gambar (.png/.jpeg/.jpg)"
-          withAsterisk
-        />
-        <br />
-        <ButtonWithIcon onClick={closeEvidence}>Tambah</ButtonWithIcon>
-      </Modal>
-      <Modal opened={openedAddVolume} onClose={closeAddVolume} title="Volume">
-        <TextInput disabled label="Tiket Insident" placeholder="IN12345678" />
-        <TextInput disabled label="Work Desc" placeholder="Jl. Kelud" />
-
-        <TextInput label="Tambah Designator" placeholder="Cari designator" />
-
-        <Container className="mt-6 max-h-32 overflow-y-scroll">
-          <Flex justify={"space-between"}>
-            <Text>K-ABCD-123</Text>
-            <NumberInput />
-          </Flex>
-          <Flex justify={"space-between"}>
-            <Text>K-ABCD-123</Text>
-            <NumberInput />
-          </Flex>
-          <Flex justify={"space-between"}>
-            <Text>K-ABCD-123</Text>
-            <NumberInput />
-          </Flex>
-          <Flex justify={"space-between"}>
-            <Text>K-ABCD-123</Text>
-            <NumberInput />
-          </Flex>
-        </Container>
-        <br />
-        <ButtonWithIcon onClick={closeAddVolume}>Tambah</ButtonWithIcon>
-      </Modal>
       <Container className="mt-8 font-['Poppins']">
         <p className="font-semibold text-xl text-black">Daftar BOQ</p>
       </Container>
@@ -100,9 +21,9 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={2}>
-            <ButtonWithIcon variant="outline">
+            <ButtonAMDA variant="outline">
               <IconFilter></IconFilter>
-            </ButtonWithIcon>{" "}
+            </ButtonAMDA>{" "}
           </Grid.Col>
         </Grid>
       </Container>
@@ -126,40 +47,35 @@ const App: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>IN12345678</td>
-                <td>Jl. Kelud</td>
-                <td>
-                  <Badge color="green" variant="outline">
-                    sudah lengkap
-                  </Badge>
-                </td>
-                <td>
-                  <ButtonWithIcon onClick={openAddVolume}>
-                    <IconEdit></IconEdit>
-                  </ButtonWithIcon>
-                </td>
-                <td>
-                  <Badge color="red" variant="outline">
-                    belum diupload
-                  </Badge>
-                </td>
-                <td>
-                  <ButtonWithIcon onClick={openEvidence}>
-                    <IconEdit></IconEdit>
-                  </ButtonWithIcon>
-                </td>
-                <td>
-                  <ButtonWithIcon onClick={openCatatanUT}>
-                    <IconEye></IconEye>
-                  </ButtonWithIcon>
-                </td>
-                <td>
-                  <Badge color="red" variant="outline">
-                    belum acc
-                  </Badge>
-                </td>
-              </tr>
+              <TableDaftarBOQ
+                noTiket="IN12345678"
+                workDesc="Jl. Kelud"
+                statusVolume="belum lengkap"
+                catatan="Tidak ada catatan"
+              ></TableDaftarBOQ>
+              <TableDaftarBOQ
+                noTiket="IN12345678"
+                workDesc="Jl. Kelud"
+                statusVolume="sudah lengkap"
+                statusEvidence="belum upload"
+                catatan="Tidak ada catatan"
+              ></TableDaftarBOQ>
+              <TableDaftarBOQ
+                noTiket="IN12345678"
+                workDesc="Jl. Kelud"
+                statusVolume="sudah lengkap"
+                statusEvidence="sudah upload"
+                catatan="Tidak ada catatan"
+                statusAcc="belum acc"
+              ></TableDaftarBOQ>
+              <TableDaftarBOQ
+                noTiket="IN12345678"
+                workDesc="Jl. Kelud"
+                statusVolume="sudah lengkap"
+                statusEvidence="sudah upload"
+                catatan="Tidak ada catatan"
+                statusAcc="sudah acc"
+              ></TableDaftarBOQ>
             </tbody>
           </Table>
         </Card>

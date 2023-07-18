@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   Container,
   Grid,
@@ -22,7 +21,7 @@ import {
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
 import { DateInput, TimeInput } from "@mantine/dates";
-import ButtonWithIcon from "@components/ButtonWithIcon";
+import ButtonAMDA from "@components/ButtonAMDA";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -42,7 +41,7 @@ const App: React.FC = () => {
       <Modal opened={openedAddLOP} onClose={closeAddLOP} title="Add LOP">
         <TextInput withAsterisk label="Nama LOP" placeholder="" />
         <br />
-        <ButtonWithIcon onClick={closeAddLOP}>Tambah</ButtonWithIcon>
+        <ButtonAMDA onClick={closeAddLOP}>Tambah</ButtonAMDA>
       </Modal>
       <Modal
         opened={openedAddKegiatan}
@@ -91,10 +90,10 @@ const App: React.FC = () => {
           </Group>
         </Radio.Group>
         <br />
-        <ButtonWithIcon onClick={closeAddKegiatan}>Tambah</ButtonWithIcon>
+        <ButtonAMDA onClick={closeAddKegiatan}>Tambah</ButtonAMDA>
       </Modal>
       <Container className="mt-8 font-['Poppins']">
-        <p className="font-semibold text-xl text-black">Daftar BOQ</p>
+        <p className="font-semibold text-xl text-black">Daftar Kegiatan</p>
       </Container>
       <Container className="mt-5">
         <Grid>
@@ -102,21 +101,18 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={5}>
-            <ButtonWithIcon variant="outline">
+            <ButtonAMDA variant="outline">
               <IconFilter></IconFilter>
-            </ButtonWithIcon>{" "}
-            <ButtonWithIcon variant="outline">
+            </ButtonAMDA>{" "}
+            <ButtonAMDA variant="outline">
               <IconEdit></IconEdit>
-            </ButtonWithIcon>{" "}
-            <ButtonWithIcon variant="outline">
+            </ButtonAMDA>{" "}
+            <ButtonAMDA variant="outline">
               <IconTrash></IconTrash>
-            </ButtonWithIcon>{" "}
-            <ButtonWithIcon
-              onClick={openAddKegiatan}
-              leftIcon={<IconCirclePlus />}
-            >
+            </ButtonAMDA>{" "}
+            <ButtonAMDA onClick={openAddKegiatan} leftIcon={<IconCirclePlus />}>
               Add Keg
-            </ButtonWithIcon>
+            </ButtonAMDA>
           </Grid.Col>
         </Grid>
       </Container>
@@ -257,17 +253,11 @@ const App: React.FC = () => {
             </tbody>
           </Table>
         </Card>
-        <Flex>
-          <Container className="mt-4 p-0" style={{ width: 435 }}>
-            <ButtonWithIcon onClick={openAddLOP} leftIcon={<IconCirclePlus />}>
-              Add LOP
-            </ButtonWithIcon>
-          </Container>
-          <Container className="mt-4" style={{ width: 435 }}>
-            <ButtonWithIcon leftIcon={<IconDownload />}>
-              Download .xlsx
-            </ButtonWithIcon>
-          </Container>
+        <Flex justify={"space-between"}>
+          <ButtonAMDA onClick={openAddLOP} leftIcon={<IconCirclePlus />}>
+            Add LOP
+          </ButtonAMDA>
+          <ButtonAMDA leftIcon={<IconDownload />}>Download</ButtonAMDA>
         </Flex>
       </Container>
     </>

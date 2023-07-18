@@ -8,11 +8,13 @@ interface Props {
     "gradient" | "filled" | "outline" | "light" | "white" | "default" | "subtle"
   >;
   leftIcon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 function ButtonWithIcon({
   variant = "filled",
   color = "dark",
+  disabled = false,
   ...props
 }: PropsWithChildren<Props>) {
   const hasText = props.children !== undefined;
@@ -25,6 +27,7 @@ function ButtonWithIcon({
       variant={variant}
       color={color}
       leftIcon={hasIcon && !hasText ? undefined : props.leftIcon}
+      disabled={disabled}
     >
       {hasText ? props.children : props.leftIcon}
     </Button>

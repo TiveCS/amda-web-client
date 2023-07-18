@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   Checkbox,
   Container,
@@ -16,8 +15,7 @@ import {
 } from "@tabler/icons-react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
-import { useForm } from "@mantine/form";
-import ButtonWithIcon from "@components/ButtonWithIcon";
+import ButtonAMDA from "@components/ButtonAMDA";
 
 const App: React.FC = () => {
   const handleSearch = (searchTerm: string) => {
@@ -28,18 +26,12 @@ const App: React.FC = () => {
   const [openedAddMitra, { open: openAddMitra, close: closeAddMitra }] =
     useDisclosure(false);
 
-  const form = useForm({
-    initialValues: {
-      name: "",
-    },
-  });
-
   return (
     <>
-      <Modal opened={openedAddMitra} onClose={closeAddMitra} title="Add User">
+      <Modal opened={openedAddMitra} onClose={closeAddMitra} title="Add Mitra">
         <TextInput withAsterisk label="Nama Mitra" placeholder="" />
         <br />
-        <ButtonWithIcon onClick={closeAddMitra}>Tambah</ButtonWithIcon>
+        <ButtonAMDA onClick={closeAddMitra}>Tambah</ButtonAMDA>
       </Modal>
       <Container className="mt-8 font-['Poppins']">
         <p className="font-semibold text-xl text-black">Daftar Mitra</p>
@@ -50,21 +42,18 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={5}>
-            <ButtonWithIcon variant="outline">
+            <ButtonAMDA variant="outline">
               <IconFilter></IconFilter>
-            </ButtonWithIcon>{" "}
-            <ButtonWithIcon variant="outline">
+            </ButtonAMDA>{" "}
+            <ButtonAMDA variant="outline">
               <IconEdit></IconEdit>
-            </ButtonWithIcon>{" "}
-            <ButtonWithIcon variant="outline">
+            </ButtonAMDA>{" "}
+            <ButtonAMDA variant="outline">
               <IconTrash></IconTrash>
-            </ButtonWithIcon>{" "}
-            <ButtonWithIcon
-              onClick={openAddMitra}
-              leftIcon={<IconCirclePlus />}
-            >
+            </ButtonAMDA>{" "}
+            <ButtonAMDA onClick={openAddMitra} leftIcon={<IconCirclePlus />}>
               Add Mitra
-            </ButtonWithIcon>
+            </ButtonAMDA>
           </Grid.Col>
         </Grid>
       </Container>
