@@ -11,6 +11,9 @@ import DaftarBOQ from "@pages/DaftarBOQ";
 import DaftarKegiatan from "@pages/DaftarKegiatan";
 import StatusBOQ from "@pages/StatusBOQ";
 import DaftarRole from "@pages/DaftarRole";
+import DaftarODC from "@pages/DaftarODC";
+import DaftarODP from "@pages/DaftarODP";
+import DaftarOCC from "@pages/DaftarOCC";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +26,9 @@ export const router = createBrowserRouter(
       <Route path="/daftar-kegiatan" element={<DaftarKegiatan />} />
       <Route path="/daftar-boq" element={<DaftarBOQ />} />
       <Route path="/status-boq" element={<StatusBOQ />} />
+      <Route path="/daftar-odc" element={<DaftarODC />} />
+      <Route path="/daftar-odp" element={<DaftarODP />} />
+      <Route path="/daftar-occ" element={<DaftarOCC />} />
     </>
   )
 );

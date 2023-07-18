@@ -20,6 +20,12 @@ function Home() {
       <br />
       <Link to={"/status-boq"}>Status BOQ</Link>
       <br />
+      <Link to={"/daftar-odc"}>Daftar ODC</Link>
+      <br />
+      <Link to={"/daftar-odp"}>Daftar ODP</Link>
+      <br />
+      <Link to={"/daftar-occ"}>Daftar OCC</Link>
+      <br />
       <Sidebar></Sidebar>
     </>
   );
