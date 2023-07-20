@@ -14,12 +14,14 @@ import DaftarRole from "@pages/DaftarRole";
 import DaftarODC from "@pages/DaftarODC";
 import DaftarODP from "@pages/DaftarODP";
 import DaftarOCC from "@pages/DaftarOCC";
+import LoginPage from "@pages/Login";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFoundPage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/daftar-user" element={<DaftarUser />} />
       <Route path="/daftar-role" element={<DaftarRole />} />
       <Route path="/daftar-mitra" element={<DaftarMitra />} />

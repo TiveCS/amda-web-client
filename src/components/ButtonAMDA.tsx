@@ -2,19 +2,23 @@ import { Button, DefaultMantineColor, Variants } from "@mantine/core";
 import { PropsWithChildren } from "react";
 
 interface Props {
-  onClick?: () => any;
+  onClick?: () => unknown;
   color?: DefaultMantineColor;
   variant?: Variants<
     "gradient" | "filled" | "outline" | "light" | "white" | "default" | "subtle"
   >;
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
   leftIcon?: React.ReactNode;
   disabled?: boolean;
+  className?: string;
 }
 
 function ButtonWithIcon({
   variant = "filled",
   color = "dark",
   disabled = false,
+  className = "",
+  type = "button",
   ...props
 }: PropsWithChildren<Props>) {
   const hasText = props.children !== undefined;
@@ -22,12 +26,14 @@ function ButtonWithIcon({
 
   return (
     <Button
+      className={className + " font-poppins"}
       onClick={props.onClick}
       radius="xl"
       variant={variant}
       color={color}
       leftIcon={hasIcon && !hasText ? undefined : props.leftIcon}
       disabled={disabled}
+      type={type}
     >
       {hasText ? props.children : props.leftIcon}
     </Button>

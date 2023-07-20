@@ -60,7 +60,7 @@ const App: React.FC = () => {
         <br />
         <ButtonAMDA onClick={closeAddUser}>Tambah</ButtonAMDA>
       </Modal>
-      <Container className="mt-8 font-['Poppins']">
+      <Container className="mt-8 font-poppins">
         <p className="font-semibold text-xl text-black">Daftar User</p>
       </Container>
       <Container className="mt-5">

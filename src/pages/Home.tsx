@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 function Home() {
   return (
     <>
-      <p className="bg-red-400">Hello</p>
+      <p className="py-8 px-8 text-xl font-poppins">Hello</p>
       <Button>Mantap</Button>
       <br />
       <Link to={"/daftar-user"}>Daftar User</Link>
