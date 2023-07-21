@@ -1,6 +1,6 @@
 import { ProfileType } from "src/types";
 import { create } from "zustand";
-import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface ProfileState {
   profile: ProfileType | null;
@@ -9,17 +9,15 @@ interface ProfileState {
 }
 
 export const useProfileStore = create<ProfileState>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        profile: null,
-        setProfile: (newProfile) => set(() => ({ profile: newProfile })),
-        isAuthenticated: () => get().profile !== null,
-      }),
-      {
-        name: "profile-storage",
-        storage: createJSONStorage(() => sessionStorage),
-      }
-    )
+  persist(
+    (set, get) => ({
+      profile: null,
+      setProfile: (newProfile) => set(() => ({ profile: newProfile })),
+      isAuthenticated: () => get().profile !== null,
+    }),
+    {
+      name: "profile-storage",
+      storage: createJSONStorage(() => sessionStorage),
+    }
   )
 );
