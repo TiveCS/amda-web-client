@@ -1,3 +1,5 @@
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Container,
@@ -19,7 +21,7 @@ import { useDisclosure } from "@mantine/hooks";
 import ButtonAMDA from "@components/ButtonAMDA";
 import TableDaftarUser from "@components/TableDaftarUser";
 
-const App: React.FC = () => {
+function App() {
   const handleSearch = (searchTerm: string) => {
     // Perform search logic using the search term
     console.log("Searching for:", searchTerm);
@@ -27,6 +29,14 @@ const App: React.FC = () => {
 
   const [openedAddUser, { open: openAddUser, close: closeAddUser }] =
     useDisclosure(false);
+
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/management/users")
+      .then((res) => setData(res.data.data))
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <>
@@ -102,26 +112,24 @@ const App: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              <TableDaftarUser
-                role="TA Admin"
-                username="aufamutia"
-                name="Aufa Mutia"
-                mitra="Telkom University"
-                password="aufmut"
-              ></TableDaftarUser>
-              <TableDaftarUser
-                role="Admin Mitra"
-                username="fathan"
-                name="Fathan"
-                mitra="Telkom Solo"
-                password="inipassword"
-              ></TableDaftarUser>
+              {data.map((d, i) => {
+                return (
+                  <TableDaftarUser
+                    key={i}
+                    role={d.role}
+                    username={d.username}
+                    name={d.name}
+                    mitra={d.mitra}
+                    password={d.password}
+                  ></TableDaftarUser>
+                );
+              })}
             </tbody>
           </Table>
         </Card>
       </Container>
     </>
   );
-};
+}
 
 export default App;

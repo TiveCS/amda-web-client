@@ -8,8 +8,8 @@ interface Props {
   role: string;
   username: string;
   name: string;
-  mitra: string;
-  password: string;
+  mitra?: string;
+  password?: string;
 }
 
 const TableUserManagement = ({

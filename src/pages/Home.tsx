@@ -1,4 +1,3 @@
-import Sidebar from "@components/Sidebar";
 import { Button } from "@mantine/core";
 import { Link } from "react-router-dom";
 
@@ -26,7 +25,10 @@ function Home() {
       <br />
       <Link to={"/daftar-occ"}>Daftar OCC</Link>
       <br />
-      <Sidebar></Sidebar>
+      <Link to={"/login"}>Login</Link>
+      <br />
+      <Link to={"/agenda-tim"}>Agenda Tim</Link>
+      <br />
     </>
   );
 }

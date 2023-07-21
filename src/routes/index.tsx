@@ -14,6 +14,8 @@ import DaftarRole from "@pages/DaftarRole";
 import DaftarODC from "@pages/DaftarODC";
 import DaftarODP from "@pages/DaftarODP";
 import DaftarOCC from "@pages/DaftarOCC";
+import Login from "@pages/Login";
+import AgendaTim from "@pages/AgendaTim";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +31,8 @@ export const router = createBrowserRouter(
       <Route path="/daftar-odc" element={<DaftarODC />} />
       <Route path="/daftar-odp" element={<DaftarODP />} />
       <Route path="/daftar-occ" element={<DaftarOCC />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/agenda-tim" element={<AgendaTim />} />
     </>
   )
 );
