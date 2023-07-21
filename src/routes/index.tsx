@@ -1,5 +1,6 @@
 import AuthGuard from "@guards/AuthGuard";
 import GuestOnlyGuard from "@guards/GuestOnlyGuard";
+import DashboardLayout from "@layouts/DashboardLayout";
 import DaftarMitra from "@pages/DaftarMitra";
 import DaftarRole from "@pages/DaftarRole";
 import DaftarUser from "@pages/DaftarUser";
@@ -15,7 +16,11 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        element: <AuthGuard />,
+        element: (
+          <AuthGuard>
+            <DashboardLayout />
+          </AuthGuard>
+        ),
         children: [
           {
             index: true,

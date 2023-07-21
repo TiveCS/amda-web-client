@@ -1,8 +1,8 @@
-import { useProfile } from "@hooks/useProfile";
 import { useProfileStore } from "@zustand/profileStore";
 import { PropsWithChildren } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { RoleType } from "../types";
+import useProfile from "@hooks/useProfile";
 
 interface AuthGuardProps {
   redirectUnauthenticated?: string;
@@ -18,19 +18,13 @@ export default function AuthGuard({
   whitelistRoles,
   children = <Outlet />,
 }: PropsWithChildren<AuthGuardProps>) {
-  const profileStore = useProfileStore();
+  const { isAuthenticated, ...profileStore } = useProfileStore();
 
-  const { data: profile, status } = useProfile();
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (status === "error" || profileStore.status === "unauthenticated") {
+  if (!isAuthenticated()) {
     return <Navigate to={redirectUnauthenticated || "/auth/login"} replace />;
   }
 
-  const role = profile?.data.role.slug;
+  const role = profileStore.profile?.role.slug;
 
   if (
     blacklistRoles?.includes(role as RoleType) ||
