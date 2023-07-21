@@ -5,8 +5,7 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
-import { redirect, useNavigate } from "react-router-dom";
-import { ProfileType } from "src/types";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForms() {
   const navigate = useNavigate();
