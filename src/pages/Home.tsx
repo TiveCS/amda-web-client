@@ -1,12 +1,8 @@
-import Sidebar from "@components/Sidebar";
-import { Button } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 function Home() {
   return (
     <>
-      <p className="py-8 px-8 text-xl font-poppins">Hello</p>
-      <Button>Mantap</Button>
       <br />
       <Link to={"/daftar-user"}>Daftar User</Link>
       <br />
@@ -26,7 +22,6 @@ function Home() {
       <br />
       <Link to={"/daftar-occ"}>Daftar OCC</Link>
       <br />
-      <Sidebar></Sidebar>
     </>
   );
 }

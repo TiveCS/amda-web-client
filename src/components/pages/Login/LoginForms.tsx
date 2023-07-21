@@ -1,12 +1,34 @@
-import { login } from "@api/auth";
+import { getProfile, login } from "@api/auth";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Box, Flex, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useProfileStore } from "@zustand/profileStore";
+import { redirect, useNavigate } from "react-router-dom";
+import { ProfileType } from "src/types";
 
 export default function LoginForms() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const profileStore = useProfileStore();
+
+  const profileMutation = useMutation({
+    mutationFn: async () => {
+      const profile = await getProfile();
+      profileStore.setProfile(profile.data);
+    },
+    onMutate: () => {
+      profileStore.setStatus("loading");
+    },
+    onError: () => {
+      profileStore.setStatus("unauthenticated");
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      profileStore.setStatus("authenticated");
+    },
+  });
 
   const form = useForm({
     initialValues: {
@@ -23,19 +45,34 @@ export default function LoginForms() {
     password: string;
   }) => {
     try {
-      const res = await login({ username, password });
-      showNotification({
-        title: "Success",
-        message: res.message,
-        color: "green",
-      });
+      const loginRes = await login({ username, password });
 
-      navigate("/");
+      profileMutation
+        .mutateAsync()
+        .then(() => {
+          showNotification({
+            title: "Success",
+            message: loginRes.message,
+            color: "green",
+          });
+
+          navigate("/management/users");
+        })
+        .catch((err) => {
+          if (err instanceof Error) {
+            showNotification({
+              title: "Error",
+              message: "Failed to fetch profile",
+              color: "red",
+              autoClose: 5000,
+            });
+          }
+        });
     } catch (err) {
       if (err instanceof Error) {
         showNotification({
           title: "Error",
-          message: err.message, // here err.message will be your NestErrorResponse message
+          message: err.message,
           color: "red",
           autoClose: 5000,
         });

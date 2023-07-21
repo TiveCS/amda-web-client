@@ -27,6 +27,9 @@
       "@hooks/*": ["src/hooks/*"],
       "@layouts/*": ["src/layouts/*"],
       "@api/*": ["src/api/*"],
+      "@context/*": ["src/context/*"],
+      "@guards/*": ["src/guards/*"],
+      "@zustand/*": ["src/zustand/*"],
     }
   },
   "include": ["src"],
