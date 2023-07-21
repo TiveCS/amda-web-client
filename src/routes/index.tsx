@@ -1,4 +1,5 @@
 import AuthGuard from "@guards/AuthGuard";
+import GuestOnlyGuard from "@guards/GuestOnlyGuard";
 import DaftarMitra from "@pages/DaftarMitra";
 import DaftarRole from "@pages/DaftarRole";
 import DaftarUser from "@pages/DaftarUser";
@@ -60,7 +61,11 @@ export const router = createBrowserRouter([
           },
           {
             path: "login",
-            element: <LoginPage />,
+            element: (
+              <GuestOnlyGuard fallback="/">
+                <LoginPage />
+              </GuestOnlyGuard>
+            ),
           },
           {
             element: <AuthGuard />,
