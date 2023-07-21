@@ -1,38 +1,88 @@
-import Home from "@pages/Home";
-import DaftarUser from "@pages/DaftarUser";
+import AuthGuard from "@guards/AuthGuard";
+import GuestOnlyGuard from "@guards/GuestOnlyGuard";
+import DashboardLayout from "@layouts/DashboardLayout";
 import DaftarMitra from "@pages/DaftarMitra";
-import NotFoundPage from "@pages/errors/404";
-import {
-  Route,
-  createBrowserRouter,
-  createRoutesFromElements,
-} from "react-router-dom";
-import DaftarBOQ from "@pages/DaftarBOQ";
-import DaftarKegiatan from "@pages/DaftarKegiatan";
-import StatusBOQ from "@pages/StatusBOQ";
 import DaftarRole from "@pages/DaftarRole";
-import DaftarODC from "@pages/DaftarODC";
-import DaftarODP from "@pages/DaftarODP";
-import DaftarOCC from "@pages/DaftarOCC";
-import Login from "@pages/Login";
-import AgendaTim from "@pages/AgendaTim";
+import DaftarUser from "@pages/DaftarUser";
+import Dashboard from "@pages/Dashboard";
+import LoginPage from "@pages/Login";
+import ErrorPage from "@pages/errors/ErrorPage";
+import LogoutRedirect from "@pages/redirect/Logout";
+import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
 
-export const router = createBrowserRouter(
-  createRoutesFromElements(
-    <>
-      <Route path="/" element={<Home />} />
-      <Route path="*" element={<NotFoundPage />} />
-      <Route path="/daftar-user" element={<DaftarUser />} />
-      <Route path="/daftar-role" element={<DaftarRole />} />
-      <Route path="/daftar-mitra" element={<DaftarMitra />} />
-      <Route path="/daftar-kegiatan" element={<DaftarKegiatan />} />
-      <Route path="/daftar-boq" element={<DaftarBOQ />} />
-      <Route path="/status-boq" element={<StatusBOQ />} />
-      <Route path="/daftar-odc" element={<DaftarODC />} />
-      <Route path="/daftar-odp" element={<DaftarODP />} />
-      <Route path="/daftar-occ" element={<DaftarOCC />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/agenda-tim" element={<AgendaTim />} />
-    </>
-  )
-);
+export const router = createBrowserRouter([
+  {
+    element: <Outlet />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        element: (
+          <AuthGuard>
+            <DashboardLayout />
+          </AuthGuard>
+        ),
+        children: [
+          {
+            index: true,
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        element: <AuthGuard />,
+        errorElement: <Navigate to="/auth/login" />,
+        children: [
+          {
+            path: "management",
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/management/users" />,
+              },
+              {
+                path: "users",
+                element: <DaftarUser />,
+              },
+              {
+                path: "roles",
+                element: <DaftarRole />,
+              },
+              {
+                path: "mitras",
+                element: <DaftarMitra />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "auth",
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/auth/login" />,
+          },
+          {
+            path: "login",
+            element: (
+              <GuestOnlyGuard fallback="/">
+                <LoginPage />
+              </GuestOnlyGuard>
+            ),
+          },
+          {
+            element: <AuthGuard />,
+            children: [
+              {
+                path: "logout",
+                element: <LogoutRedirect />,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);
