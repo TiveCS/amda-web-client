@@ -5,3 +5,33 @@
   margin: 0;
   padding: 0;
 }
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins/Poppins-Light.ttf") format("truetype");
+  font-weight: 300; /* Normal weight */
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+  font-weight: 400; /* Normal weight */
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins/Poppins-Medium.ttf") format("truetype");
+  font-weight: 500; /* Medium weight */
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins/Poppins-SemiBold.ttf") format("truetype");
+  font-weight: 600; /* Medium weight */
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+  font-weight: 700; /* Bold weight */
+}
