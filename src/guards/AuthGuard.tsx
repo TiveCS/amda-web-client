@@ -1,36 +1,37 @@
-import { getProfile } from "@api/auth";
-import { useQuery } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
+import { PropsWithChildren } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { RoleType } from "../types";
+import useProfile from "@hooks/useProfile";
 
-export default function AuthGuard() {
-  const profileStore = useProfileStore();
+interface AuthGuardProps {
+  redirectUnauthenticated?: string;
+  redirectUnauthorized?: string;
+  blacklistRoles?: RoleType[];
+  whitelistRoles?: RoleType[];
+}
 
-  const query = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      try {
-        const response = await getProfile();
-        if (response.data) {
-          profileStore.setProfile(response.data);
-          profileStore.setStatus("authenticated");
-          return response.data; // return the data
-        } else {
-          profileStore.setStatus("unauthenticated");
-          return;
-        }
-      } catch (error) {
-        console.error(error);
-        profileStore.setStatus("error");
-        throw error; // forward the error to react-query
-      }
-    },
-  });
+export default function AuthGuard({
+  redirectUnauthenticated,
+  redirectUnauthorized,
+  blacklistRoles,
+  whitelistRoles,
+  children = <Outlet />,
+}: PropsWithChildren<AuthGuardProps>) {
+  const { isAuthenticated, ...profileStore } = useProfileStore();
 
-  if (query.isFetching) return <p>Loading...</p>;
+  if (!isAuthenticated()) {
+    return <Navigate to={redirectUnauthenticated || "/auth/login"} replace />;
+  }
 
-  if (query.isFetched && profileStore.status === "unauthenticated")
-    return <Navigate to="/auth/login" />;
+  const role = profileStore.profile?.role.slug;
 
-  return <Outlet />;
+  if (
+    blacklistRoles?.includes(role as RoleType) ||
+    (!whitelistRoles?.includes(role as RoleType) && role !== "super-admin")
+  ) {
+    return <Navigate to={redirectUnauthorized || "/"} replace />;
+  }
+
+  return children;
 }

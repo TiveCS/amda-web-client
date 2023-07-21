@@ -1,9 +1,10 @@
 import AuthGuard from "@guards/AuthGuard";
 import GuestOnlyGuard from "@guards/GuestOnlyGuard";
+import DashboardLayout from "@layouts/DashboardLayout";
 import DaftarMitra from "@pages/DaftarMitra";
 import DaftarRole from "@pages/DaftarRole";
 import DaftarUser from "@pages/DaftarUser";
-import Home from "@pages/Home";
+import Dashboard from "@pages/Dashboard";
 import LoginPage from "@pages/Login";
 import ErrorPage from "@pages/errors/ErrorPage";
 import LogoutRedirect from "@pages/redirect/Logout";
@@ -15,8 +16,17 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        index: true,
-        element: <Home />,
+        element: (
+          <AuthGuard>
+            <DashboardLayout />
+          </AuthGuard>
+        ),
+        children: [
+          {
+            index: true,
+            element: <Dashboard />,
+          },
+        ],
       },
       {
         element: <AuthGuard />,
@@ -51,17 +61,16 @@ export const router = createBrowserRouter([
         element: <Outlet />,
         children: [
           {
-            element: <GuestOnlyGuard />,
-            children: [
-              {
-                index: true,
-                element: <Navigate to="/auth/login" />,
-              },
-              {
-                path: "login",
-                element: <LoginPage />,
-              },
-            ],
+            index: true,
+            element: <Navigate to="/auth/login" />,
+          },
+          {
+            path: "login",
+            element: (
+              <GuestOnlyGuard fallback="/">
+                <LoginPage />
+              </GuestOnlyGuard>
+            ),
           },
           {
             element: <AuthGuard />,

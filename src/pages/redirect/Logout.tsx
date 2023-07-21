@@ -1,20 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function LogoutRedirect() {
   const profileStore = useProfileStore();
-  const navigate = useNavigate();
 
-  const logoutQuery = useQuery({
-    queryKey: ["logout"],
-    queryFn: () => {
-      profileStore.logout();
-      return navigate("/auth/login");
-    },
-  });
+  if (profileStore.isAuthenticated()) {
+    profileStore.setProfile(null);
+  }
 
-  if (logoutQuery.isFetching) return <p>Logging out...</p>;
-
-  return <Navigate to="/auth/login" />;
+  return <Navigate to={"/auth/login"} replace />;
 }

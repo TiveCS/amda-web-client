@@ -3,30 +3,24 @@ import ButtonAMDA from "@components/ButtonAMDA";
 import { Box, Flex, Group, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
-import { redirect, useNavigate } from "react-router-dom";
-import { ProfileType } from "src/types";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForms() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const profileStore = useProfileStore();
 
   const profileMutation = useMutation({
-    mutationFn: async () => {
-      const profile = await getProfile();
-      profileStore.setProfile(profile.data);
-    },
+    mutationFn: async () => await getProfile(),
     onMutate: () => {
-      profileStore.setStatus("loading");
+      profileStore.setProfile(null);
     },
     onError: () => {
-      profileStore.setStatus("unauthenticated");
+      profileStore.setProfile(null);
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["profile"] });
-      profileStore.setStatus("authenticated");
+    onSuccess: ({ data: profile }) => {
+      profileStore.setProfile(profile);
     },
   });
 
@@ -56,7 +50,7 @@ export default function LoginForms() {
             color: "green",
           });
 
-          navigate("/management/users");
+          navigate("/");
         })
         .catch((err) => {
           if (err instanceof Error) {
