@@ -27,7 +27,7 @@ export default function Accordion(props: AccordionProps) {
       <button
         id="accordion-button"
         onClick={handleClick}
-        className="text-gray-50 cursor-pointer w-full font-poppins h-fit no-underline px-4 py-3 group bg-red-900 border-none text-left hover:bg-red-800 rounded-md"
+        className="text-gray-50 cursor-pointer w-full font-poppins h-fit no-underline px-4 py-3 group bg-red-800 border-none text-left hover:bg-red-900 rounded-md"
       >
         {props.text}
       </button>

@@ -11,7 +11,7 @@ export default function Sidebar() {
   }
 
   return (
-    <nav className="bg-red-900 h-full text-gray-50 grid grid-row-span-6">
+    <nav className="bg-red-800 h-full text-gray-50 grid grid-row-span-6">
       <div className="flex justify-center items-center py-8 flex-col gap-y-4 row-span-1">
         <Link to={"/"} className="text-white no-underline font-medium text-2xl">
           AMDA
