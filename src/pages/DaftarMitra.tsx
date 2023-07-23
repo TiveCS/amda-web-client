@@ -1,78 +1,32 @@
-import { addMitra, getListMitra } from "@api/mitra";
-import { MitraResponsePayload } from "@api/types/mitra";
+import { getListMitra } from "@api/mitra";
 import ButtonAMDA from "@components/ButtonAMDA";
-import {
-  Card,
-  Checkbox,
-  Container,
-  Flex,
-  Grid,
-  Modal,
-  Table,
-  TextInput,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
+import AddMitraModal from "@components/pages/DaftarMitra/AddMitraModal";
+import MitraItemTable from "@components/pages/DaftarMitra/MitraItemTable";
+import RemoveMitraModal from "@components/pages/DaftarMitra/RemoveMitraModal";
+import { Card, Container, Flex, Grid, Table } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
-import {
-  IconCirclePlus,
-  IconEdit,
-  IconFilter,
-  IconTrash,
-} from "@tabler/icons-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { IconCirclePlus, IconFilter } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import { MitraResponsePayload } from "@api/types/mitra";
 
 const DaftarMitra: React.FC = () => {
-  const addMitraForm = useForm({
-    initialValues: {
-      name: "",
-    },
-  });
+  const [isOpenAddMitraModal, { open: openAddMitra, close: closeAddMitra }] =
+    useDisclosure(false);
 
-  const queryClient = useQueryClient();
+  const [
+    isOpenRemoveMitraModal,
+    { open: openRemoveMitra, close: closeRemoveMitra },
+  ] = useDisclosure(false);
+
+  const [removeMitra, setRemoveMitra] = useState<MitraResponsePayload | null>(
+    null
+  );
+
   const { data: getMitraData, isLoading } = useQuery({
     queryKey: ["mitra"],
     queryFn: async () => getListMitra(),
-  });
-
-  const addMitraMutation = useMutation({
-    mutationFn: async () => addMitra(addMitraForm.values),
-    onSuccess: async () => {
-      addMitraForm.reset();
-      closeAddMitra();
-      await queryClient.invalidateQueries(["mitra"]);
-
-      showNotification({
-        title: "Success",
-        message: "Mitra berhasil ditambahkan",
-        color: "green",
-      });
-    },
-    onError: (error) => {
-      if (error instanceof Error) {
-        showNotification({
-          title: "Error",
-          message: error.message ?? "Gagal menambahkan mitra",
-          color: "red",
-        });
-
-        return;
-      }
-
-      showNotification({
-        title: "Error",
-        message: "Terjadi kesalahan internal",
-        color: "red",
-      });
-    },
-    onMutate: () => {
-      showNotification({
-        title: "Loading",
-        message: "Sedang menambahkan mitra...",
-        color: "blue",
-      });
-    },
   });
 
   const handleSearch = (searchTerm: string) => {
@@ -80,38 +34,19 @@ const DaftarMitra: React.FC = () => {
     console.log("Searching for:", searchTerm);
   };
 
-  const [openedAddMitra, { open: openAddMitra, close: closeAddMitra }] =
-    useDisclosure(false);
-
   if (isLoading) return <p>Loading...</p>;
 
   return (
     <>
-      <Modal
-        opened={openedAddMitra}
-        onClose={closeAddMitra}
-        title="Add Mitra"
-        padding={"xl"}
-      >
-        <Flex direction={"column"} gap={24}>
-          <TextInput
-            withAsterisk
-            label="Nama Mitra"
-            placeholder="Contoh: Telkom Indonesia"
-            {...addMitraForm.getInputProps("name")}
-          />
+      <AddMitraModal isOpen={isOpenAddMitraModal} closeModal={closeAddMitra} />
 
-          <ButtonAMDA
-            type="button"
-            loading={addMitraMutation.isLoading}
-            onClick={() => {
-              addMitraMutation.mutate();
-            }}
-          >
-            Tambah
-          </ButtonAMDA>
-        </Flex>
-      </Modal>
+      <RemoveMitraModal
+        isOpen={isOpenRemoveMitraModal}
+        closeModal={closeRemoveMitra}
+        mitra={removeMitra}
+        setRemoveMitra={setRemoveMitra}
+      />
+
       <Container className="mt-8 font-poppins" fluid>
         <p className="font-semibold text-xl text-black">Daftar Mitra</p>
       </Container>
@@ -121,16 +56,15 @@ const DaftarMitra: React.FC = () => {
             <SearchBar onSearch={handleSearch} />
           </Grid.Col>
           <Grid.Col span={4}>
-            <Flex justify={"space-between"}>
+            <Flex
+              gap={"md"}
+              direction={"row"}
+              align={"center"}
+              justify={"flex-end"}
+            >
               <ButtonAMDA variant="outline">
                 <IconFilter></IconFilter>
-              </ButtonAMDA>{" "}
-              <ButtonAMDA variant="outline">
-                <IconEdit></IconEdit>
-              </ButtonAMDA>{" "}
-              <ButtonAMDA variant="outline">
-                <IconTrash></IconTrash>
-              </ButtonAMDA>{" "}
+              </ButtonAMDA>
               <ButtonAMDA onClick={openAddMitra} leftIcon={<IconCirclePlus />}>
                 Add Mitra
               </ButtonAMDA>
@@ -143,13 +77,18 @@ const DaftarMitra: React.FC = () => {
           <Table striped withBorder withColumnBorders>
             <thead>
               <tr>
-                <th>#</th>
-                <th>Nama Mitra</th>
+                <th className="max-w-lg">Nama Mitra</th>
+                <th className="w-40">Action</th>
               </tr>
             </thead>
             <tbody>
               {getMitraData?.data?.map((mitra) => (
-                <MitraItemComponent key={mitra.id} mitra={mitra} />
+                <MitraItemTable
+                  key={mitra.id}
+                  mitra={mitra}
+                  setRemoveMitraId={setRemoveMitra}
+                  openRemoveMitraModal={openRemoveMitra}
+                />
               ))}
             </tbody>
           </Table>
@@ -158,16 +97,5 @@ const DaftarMitra: React.FC = () => {
     </>
   );
 };
-
-function MitraItemComponent(props: { mitra: MitraResponsePayload }) {
-  return (
-    <tr>
-      <td>
-        <Checkbox name="selectedMitra[]" value={props.mitra.id}></Checkbox>
-      </td>
-      <td>{props.mitra.name}</td>
-    </tr>
-  );
-}
 
 export default DaftarMitra;

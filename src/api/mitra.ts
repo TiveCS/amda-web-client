@@ -21,3 +21,9 @@ export async function getListMitra() {
 
   return await apiRequest<NestResponse<GetMitraResponse>>(request);
 }
+
+export async function removeMitra(mitraId: number) {
+  const request = axios.delete<never>(`${MANAGEMENT_MITRA_URL}/${mitraId}`);
+
+  return await apiRequest<NestResponse<never>>(request);
+}
