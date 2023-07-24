@@ -7,4 +7,6 @@ export const AUTH_LOGOUT_URL = `${API_URL}/auth/logout`;
 export const AUTH_CHECK_URL = `${API_URL}/auth/check`;
 export const AUTH_ROLE_URL = `${API_URL}/auth/role`;
 
+export const MANAGEMENT_MITRA_URL = `${API_URL}/management/mitra`;
+
 export const LOPS_URL = `${API_URL}/lops`;

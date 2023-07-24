@@ -1,7 +1,11 @@
 import AuthGuard from "@guards/AuthGuard";
 import GuestOnlyGuard from "@guards/GuestOnlyGuard";
 import DashboardLayout from "@layouts/DashboardLayout";
+import DaftarBOQ from "@pages/DaftarBOQ";
 import DaftarMitra from "@pages/DaftarMitra";
+import DaftarOCC from "@pages/DaftarOCC";
+import DaftarODC from "@pages/DaftarODC";
+import DaftarODP from "@pages/DaftarODP";
 import DaftarRole from "@pages/DaftarRole";
 import DaftarUser from "@pages/DaftarUser";
 import Dashboard from "@pages/Dashboard";
@@ -29,7 +33,11 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <AuthGuard />,
+        element: (
+          <AuthGuard>
+            <DashboardLayout />
+          </AuthGuard>
+        ),
         errorElement: <Navigate to="/auth/login" />,
         children: [
           {
@@ -51,6 +59,32 @@ export const router = createBrowserRouter([
               {
                 path: "mitras",
                 element: <DaftarMitra />,
+              },
+            ],
+          },
+          {
+            path: "boq",
+            element: <DaftarBOQ />,
+          },
+          {
+            path: "kordinat",
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/kordinat/odc" />,
+              },
+              {
+                path: "odc",
+                element: <DaftarODC />,
+              },
+              {
+                path: "odp",
+                element: <DaftarODP />,
+              },
+              {
+                path: "occ",
+                element: <DaftarOCC />,
               },
             ],
           },
