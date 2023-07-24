@@ -16,10 +16,43 @@ export async function addMitra(payload: AddMitraPayload) {
   return await apiRequest<NestResponse<AddMitraResponse>>(request);
 }
 
-export async function getListMitra() {
-  const request = axios.get<never>(MANAGEMENT_MITRA_URL);
+export async function getListMitra({
+  cursor,
+  limit,
+  page,
+  search,
+}: {
+  page?: number;
+  limit?: number;
+  cursor?: number;
+  search?: string;
+}) {
+  const request = axios.get<never>(MANAGEMENT_MITRA_URL, {
+    params: {
+      page: page || 1,
+      limit,
+      cursor,
+      search,
+    },
+  });
 
   return await apiRequest<NestResponse<GetMitraResponse>>(request);
+}
+
+export async function editMitra({
+  mitraId,
+  payload,
+}: {
+  mitraId: number;
+  payload: {
+    name: string;
+  };
+}) {
+  const request = axios.put<never>(`${MANAGEMENT_MITRA_URL}/${mitraId}`, {
+    name: payload.name,
+  });
+
+  return await apiRequest<NestResponse<never>>(request);
 }
 
 export async function removeMitra(mitraId: number) {
