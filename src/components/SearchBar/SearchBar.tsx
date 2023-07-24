@@ -1,36 +1,36 @@
-import React, { useState } from 'react';
-import { Input, Button } from '@mantine/core';
-import {IconSearch} from '@tabler/icons-react';
+import { Button, TextInput } from "@mantine/core";
+import { UseFormReturnType } from "@mantine/form";
+import { IconSearch } from "@tabler/icons-react";
+import React from "react";
 
 interface SearchBarProps {
-  onSearch: (searchTerm: string) => void;
+  searchForm: UseFormReturnType<
+    {
+      search: string;
+    },
+    (values: { search: string }) => {
+      search: string;
+    }
+  >;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSearch(searchTerm);
-  };
-
+const SearchBar: React.FC<SearchBarProps> = ({ searchForm }) => {
   return (
-    <form onSubmit={handleSubmit}>
-      <Input
-        value={searchTerm}
-        onChange={handleInputChange}
+    <form>
+      <TextInput
         placeholder="Search"
         radius="xl"
-        className='max-w-3xl'
+        className="max-w-3xl"
         rightSection={
-          <Button type="submit" variant="default" color="dark" radius="xl">
+          <Button type="button" variant="default" color="dark" radius="xl">
             <IconSearch></IconSearch>
           </Button>
         }
+        value={searchForm.values.search}
+        onChange={(event) =>
+          searchForm.setFieldValue("search", event.currentTarget.value)
+        }
+        error={searchForm.errors.search}
       />
     </form>
   );

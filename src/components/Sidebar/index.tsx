@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import SidebarNav from "./SidebarNav";
 import { useProfileStore } from "@zustand/profileStore";
+import Accordion from "./Accordion";
 
 export default function Sidebar() {
   const { profile } = useProfileStore();
@@ -10,7 +11,7 @@ export default function Sidebar() {
   }
 
   return (
-    <nav className="bg-slate-900 h-full text-gray-50 grid grid-row-span-6">
+    <nav className="bg-red-800 h-full text-gray-50 grid grid-row-span-6">
       <div className="flex justify-center items-center py-8 flex-col gap-y-4 row-span-1">
         <Link to={"/"} className="text-white no-underline font-medium text-2xl">
           AMDA
@@ -25,10 +26,42 @@ export default function Sidebar() {
       <div className="px-8 row-span-3">
         <div className="flex flex-col gap-y-4">
           <SidebarNav to={"/"}>Dashboard</SidebarNav>
-          <SidebarNav to={"/management"}>Management</SidebarNav>
+          <Accordion
+            items={[
+              {
+                title: "Users",
+                to: "/management/users",
+              },
+              {
+                title: "Roles",
+                to: "/management/roles",
+              },
+              {
+                title: "Mitra",
+                to: "/management/mitras",
+              },
+            ]}
+            text="Management"
+          />
           <SidebarNav to={"/agenda"}>Agenda Tim</SidebarNav>
           <SidebarNav to={"/boq"}>BOQ</SidebarNav>
-          <SidebarNav to={"/kordinat"}>ODP/ODC/OCC</SidebarNav>
+          <Accordion
+            items={[
+              {
+                title: "ODC",
+                to: "/kordinat/odc",
+              },
+              {
+                title: "ODP",
+                to: "/kordinat/odp",
+              },
+              {
+                title: "OCC",
+                to: "/kordinat/occ",
+              },
+            ]}
+            text="Kordinat"
+          />
         </div>
       </div>
 

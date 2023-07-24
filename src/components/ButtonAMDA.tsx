@@ -11,12 +11,14 @@ interface Props {
   leftIcon?: React.ReactNode;
   disabled?: boolean;
   className?: string;
+  loading?: boolean;
 }
 
 function ButtonWithIcon({
   variant = "filled",
   color = "dark",
   disabled = false,
+  loading = false,
   className = "",
   type = "button",
   ...props
@@ -29,6 +31,7 @@ function ButtonWithIcon({
       className={className + " font-poppins"}
       onClick={props.onClick}
       radius="xl"
+      loading={loading}
       variant={variant}
       color={color}
       leftIcon={hasIcon && !hasText ? undefined : props.leftIcon}

@@ -5,6 +5,6 @@ export interface NestErrorResponse {
 }
 
 export interface NestResponse<T> {
-  message: string;
+  message: string | string[];
   data: T;
 }
