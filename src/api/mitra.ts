@@ -19,20 +19,17 @@ export async function addMitra(payload: AddMitraPayload) {
 export async function getListMitra({
   cursor,
   limit,
-  page,
   search,
 }: {
-  page?: number;
   limit?: number;
   cursor?: number;
   search?: string;
 }) {
   const request = axios.get<never>(MANAGEMENT_MITRA_URL, {
     params: {
-      page: page || 1,
       limit,
       cursor,
-      search,
+      search: search && search?.trim().length > 0 ? search?.trim() : undefined,
     },
   });
 
