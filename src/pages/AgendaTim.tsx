@@ -11,10 +11,10 @@ import {
 import { Calendar, TimeInput } from "@mantine/dates";
 import ButtonAMDA from "@components/ButtonAMDA";
 
-const App: React.FC = () => {
+const AgendaTim: React.FC = () => {
   return (
     <>
-      <Container className="mt-8 font-['Poppins']">
+      <Container className="mt-8 font-poppins">
         <p className="font-semibold text-xl text-black">Agenda Tim</p>
       </Container>
       <Container className="mt-8">
@@ -128,4 +128,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default AgendaTim;
