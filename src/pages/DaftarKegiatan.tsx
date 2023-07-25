@@ -18,7 +18,8 @@ import {
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { Lop } from "@api/types/lops";
+import { Lop, LopActivity } from "@api/types/lops";
+import EditKegiatanModal from "@components/pages/DaftarKegiatan/EditKegiatanModal";
 
 const DaftarKegiatan: React.FC = () => {
   const searchForm = useForm({
@@ -34,6 +35,10 @@ const DaftarKegiatan: React.FC = () => {
 
   const [removeLop, setRemoveLop] = React.useState<Lop | null>(null);
 
+  const [editActivity, setEditActivity] = React.useState<LopActivity | null>(
+    null
+  );
+
   const [
     openedAddKegiatan,
     { open: openAddKegiatan, close: closeAddKegiatan },
@@ -46,6 +51,11 @@ const DaftarKegiatan: React.FC = () => {
   ] = useDisclosure(false);
   const [openedRemoveLop, { open: openRemoveLop, close: closeRemoveLop }] =
     useDisclosure(false);
+
+  const [
+    openedEditActivity,
+    { open: openEditActivity, close: closeEditActivity },
+  ] = useDisclosure(false);
 
   const getListLopQuery = useInfiniteQuery({
     queryKey: ["lops"],
@@ -64,6 +74,14 @@ const DaftarKegiatan: React.FC = () => {
 
   return (
     <>
+      {/* TODO: Implement edit kegiatan */}
+      <EditKegiatanModal
+        isOpen={openedEditActivity}
+        closeModal={closeEditActivity}
+        editActivity={editActivity}
+        setEditActivity={setEditActivity}
+      />
+
       <RemoveActivityModal
         isOpen={openedRemoveActivity}
         closeModal={closeRemoveActivity}
