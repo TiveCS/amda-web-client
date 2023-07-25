@@ -9,6 +9,10 @@ export const AUTH_ROLE_URL = `${API_URL}/auth/role`;
 
 export const MANAGEMENT_MITRA_URL = `${API_URL}/management/mitra`;
 
+export const MANAGEMENT_USERS_URL = `${API_URL}/management/users`;
+
+export const MANAGEMENT_ROLES_URL = `${API_URL}/management/roles`;
+
 export const STO_URL = `${API_URL}/sto`;
 
 export const LOPS_URL = `${API_URL}/lops`;
