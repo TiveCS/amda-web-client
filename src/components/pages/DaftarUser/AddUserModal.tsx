@@ -96,12 +96,6 @@ export default function AddUserModal({
     queryFn: async () => getListRole(),
   });
 
-  useEffect(() => {
-    void getListRoleQuery.refetch();
-  }, [searchDebounced, getListRoleQuery]);
-
-  if (getListRoleQuery.isLoading) return <p>Loading...</p>;
-
   //Mitra
   const getListMitraQuery = useQuery({
     queryKey: ["mitra"],
@@ -115,11 +109,17 @@ export default function AddUserModal({
     void getListMitraQuery.refetch();
   }, [searchDebounced, getListMitraQuery]);
 
-  if (getListMitraQuery.isLoading) return <p>Loading...</p>;
+  useEffect(() => {
+    void getListRoleQuery.refetch();
+  }, [searchDebounced, getListRoleQuery]);
 
-  // Option
-  const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
-  const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
+  // // Option
+  // const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
+  // const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
+
+  if (getListRoleQuery.isLoading) return <p>Loading...</p>;
+
+  if (getListMitraQuery.isLoading) return <p>Loading...</p>;
 
   const selectOptionsRole: RoleSelectOption[] | undefined =
     getListRoleQuery.data?.data.map((role) => ({
