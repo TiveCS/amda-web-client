@@ -13,4 +13,7 @@ export const MANAGEMENT_USERS_URL = `${API_URL}/management/users`;
 
 export const MANAGEMENT_ROLES_URL = `${API_URL}/management/roles`;
 
+export const STO_URL = `${API_URL}/sto`;
+
 export const LOPS_URL = `${API_URL}/lops`;
+export const LOPS_ACTIVITIES_URL = `${API_URL}/lops/activities`;

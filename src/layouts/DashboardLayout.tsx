@@ -9,7 +9,7 @@ function DashboardLayout() {
           <Sidebar />
         </div>
 
-        <div className="col-span-8 w-full px-8">
+        <div className="col-span-8 w-full px-8 max-h-screen overflow-y-clip">
           <Outlet />
         </div>
       </div>

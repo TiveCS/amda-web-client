@@ -24,7 +24,7 @@ export default function Sidebar() {
       </div>
 
       <div className="px-8 row-span-3">
-        <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-y-2">
           <SidebarNav to={"/"}>Dashboard</SidebarNav>
           <Accordion
             items={[
@@ -44,7 +44,23 @@ export default function Sidebar() {
             text="Management"
           />
           <SidebarNav to={"/agenda"}>Agenda Tim</SidebarNav>
-          <SidebarNav to={"/boq"}>BOQ</SidebarNav>
+          <Accordion
+            items={[
+              {
+                title: "Kegiatan Mitra",
+                to: "/boq/kegiatan-mitra",
+              },
+              {
+                title: "Info Volume",
+                to: "/boq/kegiatan-mitra/volume",
+              },
+              {
+                title: "Laporan BOQ",
+                to: "/boq",
+              },
+            ]}
+            text="BOQ"
+          />
           <Accordion
             items={[
               {

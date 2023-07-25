@@ -5,6 +5,10 @@ export default {
     extend: {
       fontFamily: {
         poppins: ["Poppins", 'sans-serif', 'ui-sans-serif', 'system-ui'],
+      },
+      maxHeight: {
+        '1/2': '50%',
+        '3/4': '75%',
       }
     },
   },
