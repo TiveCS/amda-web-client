@@ -44,7 +44,19 @@ export default function Sidebar() {
             text="Management"
           />
           <SidebarNav to={"/agenda"}>Agenda Tim</SidebarNav>
-          <SidebarNav to={"/boq"}>BOQ</SidebarNav>
+          <Accordion
+            items={[
+              {
+                title: "Kegiatan Mitra",
+                to: "/boq/kegiatan-mitra",
+              },
+              {
+                title: "Laporan BOQ",
+                to: "/boq",
+              },
+            ]}
+            text="BOQ"
+          />
           <Accordion
             items={[
               {

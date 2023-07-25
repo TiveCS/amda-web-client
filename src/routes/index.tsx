@@ -2,6 +2,7 @@ import AuthGuard from "@guards/AuthGuard";
 import GuestOnlyGuard from "@guards/GuestOnlyGuard";
 import DashboardLayout from "@layouts/DashboardLayout";
 import DaftarBOQ from "@pages/DaftarBOQ";
+import DaftarKegiatan from "@pages/DaftarKegiatan";
 import DaftarMitra from "@pages/DaftarMitra";
 import DaftarOCC from "@pages/DaftarOCC";
 import DaftarODC from "@pages/DaftarODC";
@@ -64,7 +65,17 @@ export const router = createBrowserRouter([
           },
           {
             path: "boq",
-            element: <DaftarBOQ />,
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                element: <DaftarBOQ />,
+              },
+              {
+                path: "kegiatan-mitra",
+                element: <DaftarKegiatan />,
+              },
+            ],
           },
           {
             path: "kordinat",
