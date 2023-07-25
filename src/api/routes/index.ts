@@ -9,4 +9,7 @@ export const AUTH_ROLE_URL = `${API_URL}/auth/role`;
 
 export const MANAGEMENT_MITRA_URL = `${API_URL}/management/mitra`;
 
+export const STO_URL = `${API_URL}/sto`;
+
 export const LOPS_URL = `${API_URL}/lops`;
+export const LOPS_ACTIVITIES_URL = `${API_URL}/lops/activities`;

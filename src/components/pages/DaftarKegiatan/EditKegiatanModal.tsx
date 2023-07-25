@@ -2,6 +2,7 @@ import { addActivity } from "@api/activities";
 import { getLops } from "@api/lops";
 import { getListMitra } from "@api/mitra";
 import { getListSto } from "@api/sto";
+import { LopActivity } from "@api/types/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Checkbox, Flex, Grid, Modal, Select, TextInput } from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
@@ -9,19 +10,23 @@ import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-interface AddKegiatanModalProps {
-  openedAddKegiatan: boolean;
-  closeAddKegiatan: () => void;
+interface EditKegiatanModalProps {
+  isOpen: boolean;
+  closeModal: () => void;
+  editActivity: LopActivity | null;
+  setEditActivity: React.Dispatch<React.SetStateAction<LopActivity | null>>;
 }
 
-export default function AddKegiatanModal({
-  closeAddKegiatan,
-  openedAddKegiatan,
-}: AddKegiatanModalProps) {
+export default function EditKegiatanModal({
+  closeModal,
+  isOpen,
+  editActivity,
+  setEditActivity,
+}: EditKegiatanModalProps) {
   const queryClient = useQueryClient();
-  const addKegiatanForm = useForm({
+  const editKegiatanForm = useForm({
     initialValues: {
       lopId: -1,
       stoId: -1,
@@ -57,7 +62,7 @@ export default function AddKegiatanModal({
   const [searchMitraDebounced] = useDebouncedValue(searchMitra, 500);
 
   const getListLopQuery = useQuery({
-    queryKey: ["add_activity_lops"],
+    queryKey: ["edit_activity_lops"],
     queryFn: async () => {
       const result = await getLops({
         lopOnly: true,
@@ -73,7 +78,7 @@ export default function AddKegiatanModal({
   });
 
   const getListMitraQuery = useQuery({
-    queryKey: ["add_activity_mitras"],
+    queryKey: ["edit_activity_mitras"],
     queryFn: async () => {
       const result = await getListMitra({
         limit: 30,
@@ -87,7 +92,7 @@ export default function AddKegiatanModal({
   });
 
   const getListStoQuery = useQuery({
-    queryKey: ["add_activity_stos"],
+    queryKey: ["edit_activity_stos"],
     queryFn: async () => {
       const result = await getListSto({
         search: searchStoDebounced,
@@ -115,22 +120,22 @@ export default function AddKegiatanModal({
 
   const addKegiatanMutation = useMutation({
     mutationFn: async () => {
-      const inputAt = addKegiatanForm.values.inputDate;
+      const inputAt = editKegiatanForm.values.inputDate;
       inputAt.setHours(
-        parseInt(addKegiatanForm.values.inputTime.split(":")[0])
+        parseInt(editKegiatanForm.values.inputTime.split(":")[0])
       );
       inputAt.setMinutes(
-        parseInt(addKegiatanForm.values.inputTime.split(":")[1])
+        parseInt(editKegiatanForm.values.inputTime.split(":")[1])
       );
 
       return await addActivity({
-        lopId: addKegiatanForm.values.lopId,
-        stoId: addKegiatanForm.values.stoId,
-        mitraId: addKegiatanForm.values.mitraId,
-        ticketIdentifier: addKegiatanForm.values.ticketIdentifier,
-        ticketLocation: addKegiatanForm.values.ticketLocation,
-        workType: addKegiatanForm.values.workType,
-        isForMitra: addKegiatanForm.values.isForMitra,
+        lopId: editKegiatanForm.values.lopId,
+        stoId: editKegiatanForm.values.stoId,
+        mitraId: editKegiatanForm.values.mitraId,
+        ticketIdentifier: editKegiatanForm.values.ticketIdentifier,
+        ticketLocation: editKegiatanForm.values.ticketLocation,
+        workType: editKegiatanForm.values.workType,
+        isForMitra: editKegiatanForm.values.isForMitra,
         inputAt,
       });
     },
@@ -138,17 +143,17 @@ export default function AddKegiatanModal({
       await queryClient.invalidateQueries(["lops"]);
       showNotification({
         title: "Success",
-        message: "Kegiatan berhasil ditambahkan!",
+        message: "Kegiatan berhasil diubah!",
         color: "green",
       });
-      addKegiatanForm.reset();
-      closeAddKegiatan();
+      editKegiatanForm.reset();
+      closeModal();
     },
     onError: (error) => {
       if (error instanceof Error) {
         showNotification({
           title: "Error",
-          message: error.message ?? "Gagal menambahkan kegiatan!",
+          message: error.message ?? "Gagal mengubah kegiatan!",
           color: "red",
         });
         return;
@@ -162,16 +167,16 @@ export default function AddKegiatanModal({
     onMutate: () => {
       showNotification({
         title: "Loading",
-        message: "Kegiatan sedang ditambahkan...",
+        message: "Kegiatan sedang diubah...",
       });
     },
   });
 
   return (
     <Modal
-      opened={openedAddKegiatan}
-      onClose={closeAddKegiatan}
-      title="Add Kegiatan"
+      opened={isOpen}
+      onClose={closeModal}
+      title="Edit Kegiatan"
       size={"lg"}
       padding={"xl"}
     >
@@ -183,10 +188,10 @@ export default function AddKegiatanModal({
           nothingFound="LOP tidak ditemukan"
           label="LOP"
           placeholder="Pilih LOP"
-          error={addKegiatanForm.errors.lopId}
+          error={editKegiatanForm.errors.lopId}
           withAsterisk
           onChange={(value) => {
-            addKegiatanForm.setFieldValue(
+            editKegiatanForm.setFieldValue(
               "lopId",
               value !== null ? parseInt(value) : -1
             );
@@ -204,9 +209,9 @@ export default function AddKegiatanModal({
           label="STO"
           placeholder="Pilih STO"
           withAsterisk
-          error={addKegiatanForm.errors.stoId}
+          error={editKegiatanForm.errors.stoId}
           onChange={(value) => {
-            addKegiatanForm.setFieldValue(
+            editKegiatanForm.setFieldValue(
               "stoId",
               value !== null ? parseInt(value) : -1
             );
@@ -221,9 +226,9 @@ export default function AddKegiatanModal({
           label="Jenis Pekerjaan"
           placeholder="Pilih Jenis Pekerjaan"
           withAsterisk
-          error={addKegiatanForm.errors.workType}
+          error={editKegiatanForm.errors.workType}
           onChange={(value) =>
-            addKegiatanForm.setFieldValue("workType", value ?? "")
+            editKegiatanForm.setFieldValue("workType", value ?? "")
           }
         />
 
@@ -234,10 +239,10 @@ export default function AddKegiatanModal({
           nothingFound="Mitra tidak ditemukan"
           label="Mitra"
           placeholder="Pilih Mitra"
-          error={addKegiatanForm.errors.mitraId}
+          error={editKegiatanForm.errors.mitraId}
           withAsterisk
           onChange={(value) => {
-            addKegiatanForm.setFieldValue(
+            editKegiatanForm.setFieldValue(
               "mitraId",
               value !== null ? parseInt(value) : -1
             );
@@ -253,16 +258,16 @@ export default function AddKegiatanModal({
               label="ID Tiket"
               placeholder="IN123456789"
               withAsterisk
-              error={addKegiatanForm.errors.ticketIdentifier}
-              {...addKegiatanForm.getInputProps("ticketIdentifier")}
+              error={editKegiatanForm.errors.ticketIdentifier}
+              {...editKegiatanForm.getInputProps("ticketIdentifier")}
             />
           </Grid.Col>
           <Grid.Col span={6}>
             <TextInput
               label="Lokasi Tiket"
               placeholder="Contoh: Sragen, dll"
-              error={addKegiatanForm.errors.ticketLocation}
-              {...addKegiatanForm.getInputProps("ticketLocation")}
+              error={editKegiatanForm.errors.ticketLocation}
+              {...editKegiatanForm.getInputProps("ticketLocation")}
             />
           </Grid.Col>
         </Grid>
@@ -272,14 +277,14 @@ export default function AddKegiatanModal({
             <DateInput
               label="Tanggal Input"
               withAsterisk
-              {...addKegiatanForm.getInputProps("inputDate")}
+              {...editKegiatanForm.getInputProps("inputDate")}
             />
           </Grid.Col>
           <Grid.Col span={6}>
             <TimeInput
               label="Waktu Input"
               withAsterisk
-              {...addKegiatanForm.getInputProps("inputTime")}
+              {...editKegiatanForm.getInputProps("inputTime")}
             />
           </Grid.Col>
         </Grid>
@@ -287,20 +292,22 @@ export default function AddKegiatanModal({
         <Checkbox
           mt={"md"}
           label="Ditunjukan untuk Admin Mitra"
-          {...addKegiatanForm.getInputProps("isForMitra", { type: "checkbox" })}
+          {...editKegiatanForm.getInputProps("isForMitra", {
+            type: "checkbox",
+          })}
         />
       </Flex>
 
       <Flex justify={"space-between"} mt={"xl"}>
         <Flex>
-          <ButtonAMDA variant="white" onClick={addKegiatanForm.reset}>
+          <ButtonAMDA variant="white" onClick={editKegiatanForm.reset}>
             Reset
           </ButtonAMDA>
         </Flex>
         <Flex direction={"row-reverse"} gap={12}>
           <ButtonAMDA
             onClick={() => {
-              const validate = addKegiatanForm.validate();
+              const validate = editKegiatanForm.validate();
 
               if (validate.hasErrors) {
                 showNotification({
@@ -318,8 +325,8 @@ export default function AddKegiatanModal({
           <ButtonAMDA
             variant="white"
             onClick={() => {
-              addKegiatanForm.reset();
-              closeAddKegiatan();
+              editKegiatanForm.reset();
+              closeModal();
             }}
           >
             Batal

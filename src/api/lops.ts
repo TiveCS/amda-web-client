@@ -8,16 +8,19 @@ export async function getLops({
   cursor,
   take,
   search,
+  lopOnly = false,
 }: {
   cursor?: number;
   take?: number;
   search?: string;
+  lopOnly?: boolean;
 }) {
   const request = axios.get<never>(LOPS_URL, {
     params: {
       cursor: cursor ? cursor : undefined,
       take: take ? take : undefined,
       search: search ? search : undefined,
+      lopOnly,
     },
   });
 
