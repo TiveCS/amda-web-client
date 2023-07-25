@@ -1,15 +1,15 @@
 import { addUser } from "@api/users";
 import ButtonAMDA from "@components/ButtonAMDA";
-import {
-  Flex,
-  Modal,
-  NumberInput,
-  PasswordInput,
-  TextInput,
-} from "@mantine/core";
+import { Flex, Modal, PasswordInput, Select, TextInput } from "@mantine/core";
 import { matches, useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useDebouncedValue } from "@mantine/hooks";
+import { getListRole } from "@api/role";
+import { getListMitra } from "@api/mitra";
+import { useEffect, useState } from "react";
+import { RoleSelectOption } from "@api/types/role";
+import { MitraSelectOption } from "@api/types/mitra";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -21,6 +21,12 @@ export default function AddUserModal({
   isOpen,
 }: AddUserModalProps) {
   //   const [isOpen, { open: openModal, close: closeModal }] = useDisclosure(false);
+  const searchForm = useForm({
+    initialValues: {
+      search: "",
+    },
+  });
+  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
   const addUserForm = useForm({
     initialValues: {
@@ -84,14 +90,68 @@ export default function AddUserModal({
     addUserMutation.mutate();
   };
 
+  //Role
+  const getListRoleQuery = useQuery({
+    queryKey: ["role"],
+    queryFn: async () => getListRole(),
+  });
+
+  useEffect(() => {
+    void getListRoleQuery.refetch();
+  }, [searchDebounced, getListRoleQuery]);
+
+  if (getListRoleQuery.isLoading) return <p>Loading...</p>;
+
+  //Mitra
+  const getListMitraQuery = useQuery({
+    queryKey: ["mitra"],
+    queryFn: async () =>
+      getListMitra({
+        search: searchDebounced,
+      }),
+  });
+
+  useEffect(() => {
+    void getListMitraQuery.refetch();
+  }, [searchDebounced, getListMitraQuery]);
+
+  if (getListMitraQuery.isLoading) return <p>Loading...</p>;
+
+  // Option
+  const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
+  const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
+
+  const selectOptionsRole: RoleSelectOption[] | undefined =
+    getListRoleQuery.data?.data.map((role) => ({
+      value: String(role.id),
+      label: role.name,
+    }));
+
+  const selectOptionsMitra: MitraSelectOption[] | undefined =
+    getListMitraQuery.data?.data.map((mitra) => ({
+      value: String(mitra.id),
+      label: mitra.name,
+    }));
+
+  if (selectOptionsRole === undefined) return <p>loading...</p>;
+  if (selectOptionsMitra === undefined) return <p>loading...</p>;
+
   return (
     <Modal opened={isOpen} onClose={closeModal} title="Add User" padding={"xl"}>
       <Flex direction={"column"} gap={24}>
-        <NumberInput
+        <Select
           withAsterisk
           label="Role"
-          placeholder="Contoh: 1"
-          {...addUserForm.getInputProps("roleId")}
+          placeholder="Select one"
+          searchable
+          nothingFound="No options"
+          data={selectOptionsRole}
+          onChange={(value) => {
+            addUserForm.setFieldValue(
+              "roleId",
+              value !== null ? parseInt(value) : -1
+            );
+          }}
         />
         <TextInput
           withAsterisk
@@ -105,11 +165,19 @@ export default function AddUserModal({
           placeholder=""
           {...addUserForm.getInputProps("name")}
         />
-        <NumberInput
+        <Select
           withAsterisk
           label="Mitra"
-          placeholder="Contoh: 1"
-          {...addUserForm.getInputProps("mitraId")}
+          placeholder="Select one"
+          searchable
+          nothingFound="No options"
+          data={selectOptionsMitra}
+          onChange={(value) => {
+            addUserForm.setFieldValue(
+              "mitraId",
+              value !== null ? parseInt(value) : -1
+            );
+          }}
         />
         <PasswordInput
           withAsterisk

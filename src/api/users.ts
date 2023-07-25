@@ -17,6 +17,8 @@ export async function addUser(payload: AddUserPayload) {
     password: payload.password, 
   });
 
+  console.log(payload);
+
   return await apiRequest<NestResponse<AddUserResponse>>(request);
 }
 
@@ -49,11 +51,15 @@ export async function editUser({
 }: {
   userId: number;
   payload: {
+    roleId: number;
     name: string;
+    mitraId: number;
   };
 }) {
   const request = axios.put<never>(`${MANAGEMENT_USERS_URL}/${userId}`, {
     name: payload.name,
+    roleId: payload.roleId,
+    mitraId: payload.mitraId,
   });
 
   return await apiRequest<NestResponse<never>>(request);

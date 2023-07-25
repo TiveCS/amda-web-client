@@ -15,3 +15,8 @@ export type AddMitraResponse = {
   name: string;
   slug: string;
 };
+
+export interface MitraSelectOption {
+  value: string;
+  label: string;
+}

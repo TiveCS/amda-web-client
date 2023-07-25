@@ -1,8 +1,11 @@
+import { getListMitra } from "@api/mitra";
+import { getListRole } from "@api/role";
 import { UserResponsePayload } from "@api/types/users";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Flex } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface UserItemTableProps {
   user: UserResponsePayload;
@@ -34,12 +37,28 @@ export default function UserItemTable({
   openRemoveUserModal,
   openEditUserModal,
 }: UserItemTableProps) {
+  const getListRoleQuery = useQuery({
+    queryKey: ["role"],
+    queryFn: async () => getListRole(),
+    retry: false,
+  });
+  const getListMitraQuery = useQuery({
+    queryKey: ["mitra"],
+    queryFn: async () => getListMitra({}),
+    retry: false,
+  });
+  const role = getListRoleQuery.data?.data.filter((r) => r.id === user.roleId);
+
+  const mitra = getListMitraQuery.data?.data.filter(
+    (r) => r.id === user.mitraId
+  );
+
   return (
     <tr>
-      <td>{user.roleId}</td>
+      <td>{role !== undefined ? role[0].name : "??"}</td>
       <td>{user.username}</td>
       <td>{user.name}</td>
-      <td>{user.mitraId}</td>
+      <td>{mitra !== undefined ? mitra[0].name : "??"}</td>
       <td className="w-40">
         <Flex direction={"row"} justify={"space-between"}>
           <ButtonAMDA

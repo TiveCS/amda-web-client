@@ -1,10 +1,16 @@
 import { editUser } from "@api/users";
 import { UserResponsePayload } from "@api/types/users";
 import ButtonAMDA from "@components/ButtonAMDA";
-import { Flex, Modal, TextInput } from "@mantine/core";
-import { UseFormReturnType } from "@mantine/form";
+import { Flex, Modal, Select, TextInput } from "@mantine/core";
+import { UseFormReturnType, useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useDebouncedValue } from "@mantine/hooks";
+import { RoleSelectOption } from "@api/types/role";
+import { MitraSelectOption } from "@api/types/mitra";
+import { getListMitra } from "@api/mitra";
+import { getListRole } from "@api/role";
 
 interface EditUserModalProps {
   user: UserResponsePayload | null;
@@ -41,6 +47,8 @@ export default function EditUserModal({
         userId: user.id,
         payload: {
           name: editForm.values.name,
+          roleId: editForm.values.roleId,
+          mitraId: editForm.values.mitraId,
         },
       });
     },
@@ -98,6 +106,59 @@ export default function EditUserModal({
     editUserMutation.mutate();
   };
 
+  const searchForm = useForm({
+    initialValues: {
+      search: "",
+    },
+  });
+  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  //Role
+  const getListRoleQuery = useQuery({
+    queryKey: ["role"],
+    queryFn: async () => getListRole(),
+  });
+
+  useEffect(() => {
+    void getListRoleQuery.refetch();
+  }, [searchDebounced, getListRoleQuery]);
+
+  if (getListRoleQuery.isLoading) return <p>Loading...</p>;
+
+  //Mitra
+  const getListMitraQuery = useQuery({
+    queryKey: ["mitra"],
+    queryFn: async () =>
+      getListMitra({
+        search: searchDebounced,
+      }),
+  });
+
+  useEffect(() => {
+    void getListMitraQuery.refetch();
+  }, [searchDebounced, getListMitraQuery]);
+
+  if (getListMitraQuery.isLoading) return <p>Loading...</p>;
+
+  // Option
+  const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
+  const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
+
+  const selectOptionsRole: RoleSelectOption[] | undefined =
+    getListRoleQuery.data?.data.map((role) => ({
+      value: String(role.id),
+      label: role.name,
+    }));
+
+  const selectOptionsMitra: MitraSelectOption[] | undefined =
+    getListMitraQuery.data?.data.map((mitra) => ({
+      value: String(mitra.id),
+      label: mitra.name,
+    }));
+
+  if (selectOptionsRole === undefined) return <p>loading...</p>;
+  if (selectOptionsMitra === undefined) return <p>loading...</p>;
+
   return (
     <Modal
       onClose={() => {
@@ -109,10 +170,24 @@ export default function EditUserModal({
       padding={"xl"}
     >
       <Flex direction={"column"} gap={"md"}>
-        <TextInput label="Role" {...editForm.getInputProps("roleId")} />
-        <TextInput disabled label="Username" value={user?.username} />
+        <Select
+          label="Role"
+          searchable
+          nothingFound="No options"
+          data={selectOptionsRole}
+          {...editForm.getInputProps("roleId")}
+          defaultValue={user?.roleId.toString()}
+        />
+        <TextInput readOnly label="Username" value={user?.username} />
         <TextInput label="Nama" {...editForm.getInputProps("name")} />
-        <TextInput label="Mitra" {...editForm.getInputProps("mitraId")} />
+        <Select
+          label="Mitra"
+          searchable
+          nothingFound="No options"
+          data={selectOptionsMitra}
+          {...editForm.getInputProps("mitraId")}
+          defaultValue={user?.mitraId.toString()}
+        />
 
         <ButtonAMDA onClick={handleEditUser}>Simpan</ButtonAMDA>
       </Flex>
