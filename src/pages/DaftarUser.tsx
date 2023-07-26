@@ -110,7 +110,7 @@ const DaftarUser: React.FC = () => {
         </Flex>
       </Container>
 
-      <Container fluid mt={24} className="max-h-3/4 overflow-y-scroll">
+      <Container fluid mt={24} className="max-h-[60%] overflow-y-scroll">
         <Table striped withBorder withColumnBorders>
           <thead>
             <tr>

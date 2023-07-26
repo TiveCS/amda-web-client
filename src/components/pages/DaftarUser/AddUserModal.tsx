@@ -90,7 +90,14 @@ export default function AddUserModal({
   //Role
   const getListRoleQuery = useQuery({
     queryKey: ["add_user_modal_role"],
-    queryFn: async () => getListRole(),
+    queryFn: async () => {
+      const result = await getListRole();
+
+      return result.data.map((role) => ({
+        value: role.id.toString(),
+        label: role.name,
+      }));
+    },
   });
 
   //Mitra
@@ -98,12 +105,12 @@ export default function AddUserModal({
     queryKey: ["add_user_modal_mitra"],
     queryFn: async () => {
       const result = await getListMitra({
-        search: searchMitraDebounced,
+        limit: 30,
       });
 
-      return result.data.map((role) => ({
-        value: role.id.toString(),
-        label: role.name,
+      return result.data.map((mitra) => ({
+        value: mitra.id.toString(),
+        label: mitra.name,
       }));
     },
   });
@@ -121,9 +128,9 @@ export default function AddUserModal({
   if (getListMitraQuery.isLoading) return <p>Loading...</p>;
 
   const selectOptionsRole: RoleSelectOption[] | undefined =
-    getListRoleQuery.data?.data.map((role) => ({
-      value: String(role.id),
-      label: role.name,
+    getListRoleQuery.data?.map((role) => ({
+      value: String(role.value),
+      label: role.label,
     }));
 
   const selectOptionsMitra: MitraSelectOption[] | undefined =
