@@ -1,11 +1,13 @@
 import { Card, Checkbox, Container, Grid, Table } from "@mantine/core";
 import SearchBar from "../components/SearchBar/SearchBar";
+import { useForm } from "@mantine/form";
 
-const App: React.FC = () => {
-  const handleSearch = (searchTerm: string) => {
-    // Perform search logic using the search term
-    console.log("Searching for:", searchTerm);
-  };
+const DaftarRole: React.FC = () => {
+  const searchForm = useForm({
+    initialValues: {
+      search: "",
+    },
+  });
 
   return (
     <>
@@ -15,7 +17,7 @@ const App: React.FC = () => {
       <Container className="mt-5 font-['Poppins']">
         <Grid>
           <Grid.Col span={12}>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar searchForm={searchForm} />
           </Grid.Col>
         </Grid>
       </Container>
@@ -65,4 +67,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default DaftarRole;

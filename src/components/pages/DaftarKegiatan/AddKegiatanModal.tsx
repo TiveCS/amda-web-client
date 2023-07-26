@@ -1,14 +1,14 @@
-import { addActivity } from "@api/activities";
 import { getLops } from "@api/lops";
 import { getListMitra } from "@api/mitra";
 import { getListSto } from "@api/sto";
 import ButtonAMDA from "@components/ButtonAMDA";
+import useActivityForm from "@hooks/useActivityForm";
+import useAddActivityMutation from "@hooks/useAddActivityMutation";
 import { Checkbox, Flex, Grid, Modal, Select, TextInput } from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
-import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 interface AddKegiatanModalProps {
@@ -20,32 +20,11 @@ export default function AddKegiatanModal({
   closeAddKegiatan,
   openedAddKegiatan,
 }: AddKegiatanModalProps) {
-  const queryClient = useQueryClient();
-  const addKegiatanForm = useForm({
-    initialValues: {
-      lopId: -1,
-      stoId: -1,
-      mitraId: -1,
-      ticketIdentifier: "",
-      ticketLocation: "",
-      workType: "",
-      isForMitra: false,
-      inputDate: new Date(),
-      inputTime: "00:00",
-    },
-    validate: {
-      lopId: (value) => (value === -1 ? "LOP harus dipilih" : null),
-      stoId: (value) => (value === -1 ? "STO harus dipilih" : null),
-      mitraId: (value) => (value === -1 ? "Mitra harus dipilih" : null),
-      workType: (value) =>
-        value === "" ? "Jenis pekerjaan harus dipilih" : null,
-      inputDate: (value) =>
-        value === null ? "Tanggal input harus diisi" : null,
-      inputTime: (value) => (value === "" ? "Waktu input harus diisi" : null),
-      ticketIdentifier: (value) =>
-        /^IN\d+$/.test(value) ? null : "ID Tiket tidak valid",
-    },
-  });
+  const { form: addKegiatanForm } = useActivityForm({});
+  const addKegiatanMutation = useAddActivityMutation(
+    addKegiatanForm,
+    closeAddKegiatan
+  );
 
   const [searchLop, setSearchLop] = useState("");
   const [searchLopDebounced] = useDebouncedValue(searchLop, 500);
@@ -112,60 +91,6 @@ export default function AddKegiatanModal({
   useEffect(() => {
     void getListMitraQuery.refetch();
   }, [getListMitraQuery, searchMitraDebounced]);
-
-  const addKegiatanMutation = useMutation({
-    mutationFn: async () => {
-      const inputAt = addKegiatanForm.values.inputDate;
-      inputAt.setHours(
-        parseInt(addKegiatanForm.values.inputTime.split(":")[0])
-      );
-      inputAt.setMinutes(
-        parseInt(addKegiatanForm.values.inputTime.split(":")[1])
-      );
-
-      return await addActivity({
-        lopId: addKegiatanForm.values.lopId,
-        stoId: addKegiatanForm.values.stoId,
-        mitraId: addKegiatanForm.values.mitraId,
-        ticketIdentifier: addKegiatanForm.values.ticketIdentifier,
-        ticketLocation: addKegiatanForm.values.ticketLocation,
-        workType: addKegiatanForm.values.workType,
-        isForMitra: addKegiatanForm.values.isForMitra,
-        inputAt,
-      });
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries(["lops"]);
-      showNotification({
-        title: "Success",
-        message: "Kegiatan berhasil ditambahkan!",
-        color: "green",
-      });
-      addKegiatanForm.reset();
-      closeAddKegiatan();
-    },
-    onError: (error) => {
-      if (error instanceof Error) {
-        showNotification({
-          title: "Error",
-          message: error.message ?? "Gagal menambahkan kegiatan!",
-          color: "red",
-        });
-        return;
-      }
-      showNotification({
-        title: "Error",
-        message: "Terjadi kesalahan internal",
-        color: "red",
-      });
-    },
-    onMutate: () => {
-      showNotification({
-        title: "Loading",
-        message: "Kegiatan sedang ditambahkan...",
-      });
-    },
-  });
 
   return (
     <Modal

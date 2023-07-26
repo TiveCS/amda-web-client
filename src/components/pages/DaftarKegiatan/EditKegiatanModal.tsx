@@ -1,56 +1,46 @@
-import { addActivity } from "@api/activities";
 import { getLops } from "@api/lops";
 import { getListMitra } from "@api/mitra";
 import { getListSto } from "@api/sto";
-import { LopActivity } from "@api/types/lops";
+import { LopActivity, LopActivityForm } from "@api/types/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
+import useEditActivityMutation from "@hooks/useEditActivityMutation";
 import { Checkbox, Flex, Grid, Modal, Select, TextInput } from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
-import { useForm } from "@mantine/form";
+import { UseFormReturnType } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 
 interface EditKegiatanModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  editActivity: LopActivity | null;
+  currentActivity: LopActivity | null;
   setEditActivity: React.Dispatch<React.SetStateAction<LopActivity | null>>;
+  setSelectedActivities: React.Dispatch<React.SetStateAction<LopActivity[]>>;
+  editForm: UseFormReturnType<
+    LopActivityForm,
+    (values: LopActivityForm) => LopActivityForm
+  >;
+  updateEditForm: (activity: LopActivity) => void;
 }
 
 export default function EditKegiatanModal({
   closeModal,
   isOpen,
-  editActivity,
+  currentActivity,
   setEditActivity,
+  setSelectedActivities,
+  editForm: editKegiatanForm,
+  updateEditForm,
 }: EditKegiatanModalProps) {
-  const queryClient = useQueryClient();
-  const editKegiatanForm = useForm({
-    initialValues: {
-      lopId: -1,
-      stoId: -1,
-      mitraId: -1,
-      ticketIdentifier: "",
-      ticketLocation: "",
-      workType: "",
-      isForMitra: false,
-      inputDate: new Date(),
-      inputTime: "00:00",
-    },
-    validate: {
-      lopId: (value) => (value === -1 ? "LOP harus dipilih" : null),
-      stoId: (value) => (value === -1 ? "STO harus dipilih" : null),
-      mitraId: (value) => (value === -1 ? "Mitra harus dipilih" : null),
-      workType: (value) =>
-        value === "" ? "Jenis pekerjaan harus dipilih" : null,
-      inputDate: (value) =>
-        value === null ? "Tanggal input harus diisi" : null,
-      inputTime: (value) => (value === "" ? "Waktu input harus diisi" : null),
-      ticketIdentifier: (value) =>
-        /^IN\d+$/.test(value) ? null : "ID Tiket tidak valid",
-    },
-  });
+  const editKegiatanMutation = useEditActivityMutation(
+    editKegiatanForm,
+    closeModal,
+    currentActivity,
+    setEditActivity,
+    setSelectedActivities
+  );
 
   const [searchLop, setSearchLop] = useState("");
   const [searchLopDebounced] = useDebouncedValue(searchLop, 500);
@@ -118,64 +108,14 @@ export default function EditKegiatanModal({
     void getListMitraQuery.refetch();
   }, [getListMitraQuery, searchMitraDebounced]);
 
-  const addKegiatanMutation = useMutation({
-    mutationFn: async () => {
-      const inputAt = editKegiatanForm.values.inputDate;
-      inputAt.setHours(
-        parseInt(editKegiatanForm.values.inputTime.split(":")[0])
-      );
-      inputAt.setMinutes(
-        parseInt(editKegiatanForm.values.inputTime.split(":")[1])
-      );
-
-      return await addActivity({
-        lopId: editKegiatanForm.values.lopId,
-        stoId: editKegiatanForm.values.stoId,
-        mitraId: editKegiatanForm.values.mitraId,
-        ticketIdentifier: editKegiatanForm.values.ticketIdentifier,
-        ticketLocation: editKegiatanForm.values.ticketLocation,
-        workType: editKegiatanForm.values.workType,
-        isForMitra: editKegiatanForm.values.isForMitra,
-        inputAt,
-      });
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries(["lops"]);
-      showNotification({
-        title: "Success",
-        message: "Kegiatan berhasil diubah!",
-        color: "green",
-      });
-      editKegiatanForm.reset();
-      closeModal();
-    },
-    onError: (error) => {
-      if (error instanceof Error) {
-        showNotification({
-          title: "Error",
-          message: error.message ?? "Gagal mengubah kegiatan!",
-          color: "red",
-        });
-        return;
-      }
-      showNotification({
-        title: "Error",
-        message: "Terjadi kesalahan internal",
-        color: "red",
-      });
-    },
-    onMutate: () => {
-      showNotification({
-        title: "Loading",
-        message: "Kegiatan sedang diubah...",
-      });
-    },
-  });
-
   return (
     <Modal
       opened={isOpen}
-      onClose={closeModal}
+      onClose={() => {
+        setEditActivity(null);
+        editKegiatanForm.reset();
+        closeModal();
+      }}
       title="Edit Kegiatan"
       size={"lg"}
       padding={"xl"}
@@ -188,17 +128,16 @@ export default function EditKegiatanModal({
           nothingFound="LOP tidak ditemukan"
           label="LOP"
           placeholder="Pilih LOP"
-          error={editKegiatanForm.errors.lopId}
           withAsterisk
-          onChange={(value) => {
-            editKegiatanForm.setFieldValue(
-              "lopId",
-              value !== null ? parseInt(value) : -1
-            );
-          }}
           onSearchChange={(query) => {
             setSearchLop(query);
           }}
+          {...editKegiatanForm.getInputProps("lopId")}
+          onChange={(value) => {
+            const num = value !== null ? parseInt(value) : -1;
+            editKegiatanForm.setFieldValue("lopId", num);
+          }}
+          value={editKegiatanForm.values.lopId.toString()}
         />
 
         <Select
@@ -209,16 +148,15 @@ export default function EditKegiatanModal({
           label="STO"
           placeholder="Pilih STO"
           withAsterisk
-          error={editKegiatanForm.errors.stoId}
-          onChange={(value) => {
-            editKegiatanForm.setFieldValue(
-              "stoId",
-              value !== null ? parseInt(value) : -1
-            );
-          }}
           onSearchChange={(query) => {
             setSearchSto(query);
           }}
+          {...editKegiatanForm.getInputProps("stoId")}
+          onChange={(value) => {
+            const num = value !== null ? parseInt(value) : -1;
+            editKegiatanForm.setFieldValue("stoId", num);
+          }}
+          value={editKegiatanForm.values.stoId.toString()}
         />
 
         <Select
@@ -226,10 +164,7 @@ export default function EditKegiatanModal({
           label="Jenis Pekerjaan"
           placeholder="Pilih Jenis Pekerjaan"
           withAsterisk
-          error={editKegiatanForm.errors.workType}
-          onChange={(value) =>
-            editKegiatanForm.setFieldValue("workType", value ?? "")
-          }
+          {...editKegiatanForm.getInputProps("workType")}
         />
 
         <Select
@@ -239,17 +174,16 @@ export default function EditKegiatanModal({
           nothingFound="Mitra tidak ditemukan"
           label="Mitra"
           placeholder="Pilih Mitra"
-          error={editKegiatanForm.errors.mitraId}
           withAsterisk
-          onChange={(value) => {
-            editKegiatanForm.setFieldValue(
-              "mitraId",
-              value !== null ? parseInt(value) : -1
-            );
-          }}
           onSearchChange={(query) => {
             setSearchMitra(query);
           }}
+          {...editKegiatanForm.getInputProps("mitraId")}
+          onChange={(value) => {
+            const num = value !== null ? parseInt(value) : -1;
+            editKegiatanForm.setFieldValue("mitraId", num);
+          }}
+          value={editKegiatanForm.values.mitraId.toString()}
         />
 
         <Grid>
@@ -292,15 +226,25 @@ export default function EditKegiatanModal({
         <Checkbox
           mt={"md"}
           label="Ditunjukan untuk Admin Mitra"
-          {...editKegiatanForm.getInputProps("isForMitra", {
-            type: "checkbox",
-          })}
+          checked={editKegiatanForm.values.isForMitra}
+          onChange={(e) =>
+            editKegiatanForm.setFieldValue(
+              "isForMitra",
+              e.currentTarget.checked
+            )
+          }
         />
       </Flex>
 
       <Flex justify={"space-between"} mt={"xl"}>
         <Flex>
-          <ButtonAMDA variant="white" onClick={editKegiatanForm.reset}>
+          <ButtonAMDA
+            variant="white"
+            onClick={() => {
+              if (!currentActivity) return;
+              updateEditForm(currentActivity);
+            }}
+          >
             Reset
           </ButtonAMDA>
         </Flex>
@@ -317,14 +261,15 @@ export default function EditKegiatanModal({
                 return;
               }
 
-              addKegiatanMutation.mutate();
+              editKegiatanMutation.mutate();
             }}
           >
-            Tambah
+            Ubah
           </ButtonAMDA>
           <ButtonAMDA
             variant="white"
             onClick={() => {
+              setEditActivity(null);
               editKegiatanForm.reset();
               closeModal();
             }}
