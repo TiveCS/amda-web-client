@@ -1,6 +1,6 @@
 import axios from "axios";
-import { LOPS_ACTIVITIES_URL } from "./routes";
 import { apiRequest } from "./helpers";
+import { LOPS_ACTIVITIES_URL } from "./routes";
 import { NestResponse } from "./types/common";
 
 export async function removeActivity(activityId: number) {

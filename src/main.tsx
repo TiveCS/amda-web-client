@@ -7,6 +7,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import "./index.css";
 import { router } from "./routes/index";
+import { ModalsProvider } from "@mantine/modals";
 
 const queryClient = new QueryClient({});
 
@@ -15,8 +16,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <MantineProvider withGlobalStyles withNormalizeCSS>
-        <Notifications />
-        <RouterProvider router={router} />
+        <ModalsProvider>
+          <Notifications />
+          <RouterProvider router={router} />
+        </ModalsProvider>
       </MantineProvider>
     </QueryClientProvider>
   </React.StrictMode>

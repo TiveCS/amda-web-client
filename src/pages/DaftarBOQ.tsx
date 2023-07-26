@@ -1,14 +1,36 @@
+import { getListTickets } from "@api/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import TableDaftarBOQ from "@components/TableDaftarBOQ";
 import { Container, Grid, Table } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconFilter } from "@tabler/icons-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import SearchBar from "../components/SearchBar/SearchBar";
+import { useDebouncedValue } from "@mantine/hooks";
+import { useEffect } from "react";
+import React from "react";
+import TicketTableItem from "@components/pages/DaftarBOQ/TicketTableItem";
 
 const DaftarBOQ: React.FC = () => {
   const searchForm = useForm({
     initialValues: { search: "" },
   });
+
+  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const getListTicketQuery = useInfiniteQuery({
+    queryKey: ["tickets"],
+    queryFn: async ({ pageParam = 0 }) =>
+      getListTickets({
+        search: searchDebounced,
+        cursor: pageParam as number,
+      }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
+
+  useEffect(() => {
+    void getListTicketQuery.refetch();
+  }, [getListTicketQuery, searchDebounced]);
 
   return (
     <>
@@ -16,15 +38,19 @@ const DaftarBOQ: React.FC = () => {
         <p className="font-semibold text-xl text-black">Daftar BOQ</p>
       </Container>
 
-      <Container className="mt-5" fluid>
+      <Container className="my-5" fluid>
         <Grid>
-          <Grid.Col span={10}>
+          <Grid.Col span={6}>
             <SearchBar searchForm={searchForm} />
           </Grid.Col>
-          <Grid.Col span={2}>
+          <Grid.Col span={6}>
             <ButtonAMDA variant="outline">
               <IconFilter></IconFilter>
-            </ButtonAMDA>{" "}
+            </ButtonAMDA>
+
+            <ButtonAMDA onClick={() => void getListTickets({})}>
+              Get Volumes
+            </ButtonAMDA>
           </Grid.Col>
         </Grid>
       </Container>
@@ -33,9 +59,9 @@ const DaftarBOQ: React.FC = () => {
         <Table striped withBorder withColumnBorders>
           <thead>
             <tr>
-              <th>Tiket Insident</th>
-              <th>Work Desc</th>
-              <th>Status Volume</th>
+              <th>ID Tiket</th>
+              <th>Lokasi Tiket</th>
+              <th className="w-36">Status Volume</th>
               <th>Detail Volume</th>
               <th>Status Evidence</th>
               <th>Evidence</th>
@@ -44,35 +70,13 @@ const DaftarBOQ: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            <TableDaftarBOQ
-              noTiket="IN12345678"
-              workDesc="Jl. Kelud"
-              statusVolume="belum lengkap"
-              catatan="Tidak ada catatan"
-            ></TableDaftarBOQ>
-            <TableDaftarBOQ
-              noTiket="IN12345678"
-              workDesc="Jl. Kelud"
-              statusVolume="sudah lengkap"
-              statusEvidence="belum upload"
-              catatan="Tidak ada catatan"
-            ></TableDaftarBOQ>
-            <TableDaftarBOQ
-              noTiket="IN12345678"
-              workDesc="Jl. Kelud"
-              statusVolume="sudah lengkap"
-              statusEvidence="sudah upload"
-              catatan="Tidak ada catatan"
-              statusAcc="belum acc"
-            ></TableDaftarBOQ>
-            <TableDaftarBOQ
-              noTiket="IN12345678"
-              workDesc="Jl. Kelud"
-              statusVolume="sudah lengkap"
-              statusEvidence="sudah upload"
-              catatan="Tidak ada catatan"
-              statusAcc="sudah acc"
-            ></TableDaftarBOQ>
+            {getListTicketQuery.data?.pages.map((group, i) => (
+              <React.Fragment key={i}>
+                {group.data.map((ticket) => (
+                  <TicketTableItem key={ticket.id} ticket={ticket} />
+                ))}
+              </React.Fragment>
+            ))}
           </tbody>
         </Table>
       </Container>
