@@ -5,7 +5,7 @@ import { Flex, Modal, Select, TextInput } from "@mantine/core";
 import { UseFormReturnType, useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
 import { RoleSelectOption } from "@api/types/role";
 import { MitraSelectOption } from "@api/types/mitra";
@@ -115,7 +115,7 @@ export default function EditUserModal({
 
   //Role
   const getListRoleQuery = useQuery({
-    queryKey: ["role"],
+    queryKey: ["edit_user_modal_role"],
     queryFn: async () => getListRole(),
   });
 
@@ -125,7 +125,7 @@ export default function EditUserModal({
 
   //Mitra
   const getListMitraQuery = useQuery({
-    queryKey: ["mitra"],
+    queryKey: ["edit_user_modal_mitra"],
     queryFn: async () =>
       getListMitra({
         search: searchDebounced,

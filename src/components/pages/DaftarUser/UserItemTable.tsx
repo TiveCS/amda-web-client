@@ -38,15 +38,15 @@ export default function UserItemTable({
   openEditUserModal,
 }: UserItemTableProps) {
   const getListRoleQuery = useQuery({
-    queryKey: ["role"],
+    queryKey: ["user_item_table_role"],
     queryFn: async () => getListRole(),
-    retry: false,
   });
+
   const getListMitraQuery = useQuery({
-    queryKey: ["mitra"],
+    queryKey: ["user_item_table_mitra"],
     queryFn: async () => getListMitra({}),
-    retry: false,
   });
+
   const role = getListRoleQuery.data?.data.filter((r) => r.id === user.roleId);
 
   const mitra = getListMitraQuery.data?.data.filter(

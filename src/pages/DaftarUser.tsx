@@ -5,11 +5,11 @@ import AddUserModal from "@components/pages/DaftarUser/AddUserModal";
 import EditUserModal from "@components/pages/DaftarUser/EditUserModal";
 import UserItemTable from "@components/pages/DaftarUser/UserItemTable";
 import RemoveUserModal from "@components/pages/DaftarUser/RemoveUserModal";
-import { Card, Container, Flex, Grid, Table } from "@mantine/core";
+import { Container, Flex, Grid, Table } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconCirclePlus } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
 
@@ -48,12 +48,15 @@ const DaftarUser: React.FC = () => {
     },
   });
 
-  const getListUserQuery = useQuery({
+  const getListUserQuery = useInfiniteQuery({
     queryKey: ["user"],
-    queryFn: async () =>
+    queryFn: async ({ pageParam = 0 }) =>
       getListUser({
         search: searchDebounced,
+        cursor: pageParam as number,
+        limit: 5,
       }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
   useEffect(() => {
@@ -82,57 +85,69 @@ const DaftarUser: React.FC = () => {
       />
 
       <Container className="mt-8 font-poppins" fluid>
-        <p className="font-semibold text-xl text-black">Daftar User</p>
+        <Flex direction={"column"} gap={12}>
+          <p className="font-semibold text-left text-xl text-black">
+            Daftar User
+          </p>
+
+          <Grid justify="space-between" align="flex-start" columns={12}>
+            <Grid.Col span={7}>
+              <SearchBar searchForm={searchForm} />
+            </Grid.Col>
+            <Grid.Col span={4}>
+              <Flex
+                gap={"md"}
+                direction={"row"}
+                align={"center"}
+                justify={"flex-end"}
+              >
+                <ButtonAMDA onClick={openAddUser} leftIcon={<IconCirclePlus />}>
+                  Add User
+                </ButtonAMDA>
+              </Flex>
+            </Grid.Col>
+          </Grid>
+        </Flex>
       </Container>
 
-      <Container className="mt-5 font-poppins" fluid>
-        <Grid justify="space-between" align="flex-start" columns={12}>
-          <Grid.Col span={7}>
-            <SearchBar searchForm={searchForm} />
-          </Grid.Col>
-          <Grid.Col span={4}>
-            <Flex
-              gap={"md"}
-              direction={"row"}
-              align={"center"}
-              justify={"flex-end"}
-            >
-              <ButtonAMDA onClick={openAddUser} leftIcon={<IconCirclePlus />}>
-                Add User
-              </ButtonAMDA>
-            </Flex>
-          </Grid.Col>
-        </Grid>
+      <Container fluid mt={24} className="max-h-3/4 overflow-y-scroll">
+        <Table striped withBorder withColumnBorders>
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Username</th>
+              <th>Nama</th>
+              <th>Mitra</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getListUserQuery.data?.pages.map((group, i) => (
+              <React.Fragment key={i}>
+                {group.data.map((user) => (
+                  <UserItemTable
+                    key={user.id}
+                    user={user}
+                    editUserForm={editUserForm}
+                    setRemoveUser={setRemoveUser}
+                    setEditUser={setEditUser}
+                    openRemoveUserModal={openRemoveUser}
+                    openEditUserModal={openEditUser}
+                  />
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </Table>
       </Container>
 
-      <Container fluid>
-        <Card withBorder className="mt-4 overflow-y-scroll max-h-96">
-          <Table striped withBorder withColumnBorders>
-            <thead>
-              <tr>
-                <th>Role</th>
-                <th>Username</th>
-                <th>Nama</th>
-                <th>Mitra</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {getListUserQuery.data?.data?.map((user) => (
-                <UserItemTable
-                  key={user.id}
-                  user={user}
-                  editUserForm={editUserForm}
-                  setRemoveUser={setRemoveUser}
-                  setEditUser={setEditUser}
-                  openRemoveUserModal={openRemoveUser}
-                  openEditUserModal={openEditUser}
-                />
-              ))}
-            </tbody>
-          </Table>
-        </Card>
-      </Container>
+      <ButtonAMDA
+        className="mt-4 ml-4"
+        disabled={!getListUserQuery.hasNextPage}
+        onClick={() => getListUserQuery.fetchNextPage()}
+      >
+        Load More
+      </ButtonAMDA>
     </>
   );
 };
