@@ -19,8 +19,9 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import FilterKegiatanModal from "@components/pages/DaftarKegiatan/FilterKegiatanModal";
 
 const DaftarKegiatan: React.FC = () => {
   const searchForm = useForm({
@@ -54,6 +55,10 @@ const DaftarKegiatan: React.FC = () => {
   ] = useDisclosure(false);
   const [openedRemoveLop, { open: openRemoveLop, close: closeRemoveLop }] =
     useDisclosure(false);
+  const [
+    openedFilterActivity,
+    { open: openFilterActivity, close: closeFilterActivity },
+  ] = useDisclosure(false);
 
   const [
     openedEditActivity,
@@ -74,8 +79,17 @@ const DaftarKegiatan: React.FC = () => {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
+  useEffect(() => {
+    void getListLopQuery.refetch();
+  }, [getListLopQuery, searchDebounced]);
+
   return (
     <>
+      <FilterKegiatanModal
+        isOpen={openedFilterActivity}
+        closeModal={closeFilterActivity}
+      />
+
       <EditKegiatanModal
         isOpen={openedEditActivity}
         closeModal={closeEditActivity}
@@ -115,7 +129,7 @@ const DaftarKegiatan: React.FC = () => {
           </Grid.Col>
           <Grid.Col span={6}>
             <Flex justify={"flex-end"} gap={"md"}>
-              <ButtonAMDA variant="outline">
+              <ButtonAMDA variant="outline" onClick={openFilterActivity}>
                 <IconFilter></IconFilter>
               </ButtonAMDA>{" "}
               <ButtonAMDA
