@@ -65,23 +65,25 @@ const DaftarKegiatan: React.FC = () => {
     { open: openEditActivity, close: closeEditActivity },
   ] = useDisclosure(false);
 
-  const getListLopQuery = useInfiniteQuery({
-    queryKey: ["lops"],
-    queryFn: async ({ pageParam = 0 }) => {
-      const lops = await getLops({
-        search: searchDebounced,
-        cursor: pageParam as number,
-        take: 5,
-      });
+  const { refetch: refetchListLopQuery, ...getListLopQuery } = useInfiniteQuery(
+    {
+      queryKey: ["lops"],
+      queryFn: async ({ pageParam = 0 }) => {
+        const lops = await getLops({
+          search: searchDebounced,
+          cursor: pageParam as number,
+          take: 5,
+        });
 
-      return { nextCursor: lops.nextCursor, lops: lops.data };
-    },
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-  });
+        return { nextCursor: lops.nextCursor, lops: lops.data };
+      },
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  );
 
   useEffect(() => {
-    void getListLopQuery.refetch();
-  }, [getListLopQuery, searchDebounced]);
+    void refetchListLopQuery();
+  }, [refetchListLopQuery, searchDebounced]);
 
   return (
     <>

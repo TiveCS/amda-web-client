@@ -47,20 +47,21 @@ const DaftarMitra: React.FC = () => {
     },
   });
 
-  const getListMitraQuery = useInfiniteQuery({
-    queryKey: ["mitra"],
-    queryFn: async ({ pageParam = 0 }) =>
-      getListMitra({
-        search: searchDebounced,
-        cursor: pageParam as number,
-        limit: 5,
-      }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-  });
+  const { refetch: refetchListMitraQuery, ...getListMitraQuery } =
+    useInfiniteQuery({
+      queryKey: ["mitra"],
+      queryFn: async ({ pageParam = 0 }) =>
+        getListMitra({
+          search: searchDebounced,
+          cursor: pageParam as number,
+          limit: 5,
+        }),
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
 
   useEffect(() => {
-    void getListMitraQuery.refetch();
-  }, [searchDebounced, getListMitraQuery]);
+    void refetchListMitraQuery;
+  }, [searchDebounced, refetchListMitraQuery]);
 
   if (getListMitraQuery.isLoading) return <p>Loading...</p>;
 

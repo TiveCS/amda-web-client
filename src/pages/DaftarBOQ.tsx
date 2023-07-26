@@ -1,15 +1,13 @@
 import { getListTickets } from "@api/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
-import TableDaftarBOQ from "@components/TableDaftarBOQ";
+import TicketTableItem from "@components/pages/DaftarBOQ/TicketTableItem";
 import { Container, Grid, Table } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDebouncedValue } from "@mantine/hooks";
 import { IconFilter } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import React, { useEffect } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { useDebouncedValue } from "@mantine/hooks";
-import { useEffect } from "react";
-import React from "react";
-import TicketTableItem from "@components/pages/DaftarBOQ/TicketTableItem";
 
 const DaftarBOQ: React.FC = () => {
   const searchForm = useForm({
@@ -18,19 +16,20 @@ const DaftarBOQ: React.FC = () => {
 
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
-  const getListTicketQuery = useInfiniteQuery({
-    queryKey: ["tickets"],
-    queryFn: async ({ pageParam = 0 }) =>
-      getListTickets({
-        search: searchDebounced,
-        cursor: pageParam as number,
-      }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-  });
+  const { refetch: refetchListTicketQuery, ...getListTicketQuery } =
+    useInfiniteQuery({
+      queryKey: ["tickets"],
+      queryFn: async ({ pageParam = 0 }) =>
+        getListTickets({
+          search: searchDebounced,
+          cursor: pageParam as number,
+        }),
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
 
   useEffect(() => {
-    void getListTicketQuery.refetch();
-  }, [getListTicketQuery, searchDebounced]);
+    void refetchListTicketQuery;
+  }, [refetchListTicketQuery, searchDebounced]);
 
   return (
     <>
