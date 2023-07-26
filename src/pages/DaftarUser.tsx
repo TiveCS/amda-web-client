@@ -84,7 +84,7 @@ const DaftarUser: React.FC = () => {
         editForm={editUserForm}
       />
 
-      <Container className="mt-8 font-poppins" fluid>
+      <Container className="mt-5 font-poppins" fluid>
         <Flex direction={"column"} gap={12}>
           <p className="font-semibold text-left text-xl text-black">
             Daftar User
