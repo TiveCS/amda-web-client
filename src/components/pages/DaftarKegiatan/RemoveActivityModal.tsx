@@ -1,4 +1,5 @@
 import { removeActivity } from "@api/activities";
+import { LopActivity } from "@api/types/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Flex, Modal, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -7,8 +8,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface RemoveActivityModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  listRemoveActivity: number[];
-  setListRemoveActivity: React.Dispatch<React.SetStateAction<number[]>>;
+  listRemoveActivity: LopActivity[];
+  setSelectedActivities: React.Dispatch<React.SetStateAction<LopActivity[]>>;
 }
 
 export default function RemoveActivityModal(props: RemoveActivityModalProps) {
@@ -17,7 +18,9 @@ export default function RemoveActivityModal(props: RemoveActivityModalProps) {
   const removeActivityMutation = useMutation({
     mutationFn: async () => {
       const result = await Promise.all(
-        props.listRemoveActivity.map(async (id) => await removeActivity(id))
+        props.listRemoveActivity.map(
+          async (activity) => await removeActivity(activity.id)
+        )
       );
 
       return result;
@@ -31,7 +34,7 @@ export default function RemoveActivityModal(props: RemoveActivityModalProps) {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(["lops"]);
-      props.setListRemoveActivity([]);
+      props.setSelectedActivities([]);
 
       showNotification({
         title: "Success",
