@@ -3,12 +3,12 @@ import { IconFilter } from "@tabler/icons-react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import ButtonAMDA from "@components/ButtonAMDA";
 import TableStatusBOQ from "@components/TableStatusBOQ";
+import { useForm } from "@mantine/form";
 
-const App: React.FC = () => {
-  const handleSearch = (searchTerm: string) => {
-    // Perform search logic using the search term
-    console.log("Searching for:", searchTerm);
-  };
+const StatusBOQ: React.FC = () => {
+  const searchForm = useForm({
+    initialValues: { search: "" },
+  });
 
   return (
     <>
@@ -18,7 +18,7 @@ const App: React.FC = () => {
       <Container className="mt-5">
         <Grid>
           <Grid.Col span={10}>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar searchForm={searchForm} />
           </Grid.Col>
           <Grid.Col span={2}>
             <ButtonAMDA variant="outline">
@@ -63,4 +63,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default StatusBOQ;
