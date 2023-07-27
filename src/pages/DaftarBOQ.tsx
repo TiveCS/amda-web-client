@@ -117,6 +117,14 @@ const DaftarBOQ: React.FC = () => {
                         "volumes",
                         ticket.volumes
                       );
+                      volumeDetailsForm.form.setDirty({
+                        volumes: false,
+                      });
+                      console.log(
+                        "dirty",
+                        volumeDetailsForm.form.isDirty("volumes")
+                      );
+
                       openVolumeDetailsModal();
                     }}
                   />

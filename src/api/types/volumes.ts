@@ -12,4 +12,8 @@ export type GetListVolumesOfTicketResponse = {
   volumes: LopVolume[];
 };
 
-export type GetAddVolumeToTicketResponse = LopVolume;
+export type PostAddVolumeToTicketResponse = LopVolume;
+
+export type PutUpdateVolumeFromTicketResponse = LopVolume;
+
+export type DeleteVolumeFromTicketResponse = { id: number };

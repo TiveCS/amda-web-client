@@ -1,11 +1,15 @@
 import { getListDesignator } from "@api/designators";
 import { LopTicket } from "@api/types/tickets";
-import { addVolumeToTicket } from "@api/volumes";
 import ButtonAMDA from "@components/ButtonAMDA";
+import useAddVolumeMutation from "@hooks/useAddVolumeMutation";
+import useRemoveVolumeMutation from "@hooks/useRemoveVolumeMutation";
+import useUpdateVolumeMutation from "@hooks/useUpdateVolumeMutation";
 import useVolumeDetailsForm from "@hooks/useVolumeDetailsForm";
 import {
   ActionIcon,
+  Alert,
   Flex,
+  LoadingOverlay,
   Modal,
   NumberInput,
   ScrollArea,
@@ -16,9 +20,8 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconCross, IconTrash } from "@tabler/icons-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { IconTrash } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 interface TicketVolumeDetailsModalProps {
@@ -71,50 +74,20 @@ export default function TicketVolumeDetailsModal({
       },
     });
 
-  const queryClient = useQueryClient();
-  const addVolumeMutation = useMutation({
-    mutationFn: async (designatorId: number) => {
-      if (ticket === null) return;
-      return addVolumeToTicket(ticket.identifier, { designatorId });
-    },
-    onSuccess: async (result) => {
-      setSelectedDesignator(null);
+  const addVolumeMutation = useAddVolumeMutation({
+    setSelectedDesignator,
+    ticket,
+    volumeDetailsForm,
+  });
 
-      await queryClient.invalidateQueries(["tickets"]);
-      await queryClient.invalidateQueries([
-        "ticket_volume_details_modal_designators",
-      ]);
+  const removeVolumeMutation = useRemoveVolumeMutation({
+    ticket,
+    volumeDetailsForm,
+  });
 
-      const newVolume = result?.data;
-      if (ticket !== null && newVolume !== undefined) {
-        volumeDetailsForm.addVolume(newVolume);
-        ticket.volumes.push(newVolume);
-      }
-
-      showNotification({
-        title: "Success",
-        message: "Berhasil menambahkan volume",
-        color: "green",
-        icon: <IconCheck />,
-      });
-    },
-    onError: (error) => {
-      if (error instanceof Error) {
-        showNotification({
-          title: "Error",
-          message: error.message ?? "Gagal menambahkan volume",
-          color: "red",
-          icon: <IconCross />,
-        });
-        return;
-      }
-      showNotification({
-        title: "Error",
-        message: "Terjadi kesalahan internal",
-        color: "red",
-        icon: <IconCross />,
-      });
-    },
+  const updateVolumeMutation = useUpdateVolumeMutation({
+    ticket,
+    volumeDetailsForm,
   });
 
   useEffect(() => {
@@ -180,7 +153,21 @@ export default function TicketVolumeDetailsModal({
           offsetScrollbars
           className="max-h-96 mx-auto w-full px-1 mt-2"
         >
+          <LoadingOverlay
+            visible={
+              updateVolumeMutation.isLoading ||
+              addVolumeMutation.isLoading ||
+              removeVolumeMutation.isLoading
+            }
+          />
+
           <Stack spacing={"md"}>
+            {ticket?.volumes.length === 0 && (
+              <Alert color="pink" title="Volume Kosong" variant="outline">
+                <Text>Belum ada volume yang ditambahkan pada tiket ini</Text>
+              </Alert>
+            )}
+
             {ticket?.volumes.map((volume, index) => (
               <Flex
                 direction={"row"}
@@ -194,7 +181,10 @@ export default function TicketVolumeDetailsModal({
                   gap={"lg"}
                   direction={"row"}
                 >
-                  <ActionIcon color="red">
+                  <ActionIcon
+                    color="red"
+                    onClick={() => removeVolumeMutation.mutate(volume.id)}
+                  >
                     <IconTrash size={16} />
                   </ActionIcon>
 
@@ -217,7 +207,20 @@ export default function TicketVolumeDetailsModal({
         </ScrollArea.Autosize>
 
         <Flex direction={"column"} gap={"xl"} className="mt-1">
-          <ButtonAMDA>Simpan</ButtonAMDA>
+          <ButtonAMDA
+            loading={updateVolumeMutation.isLoading}
+            onClick={() => {
+              if (!volumeDetailsForm.form.isDirty("volumes")) {
+                onClose();
+                return;
+              }
+              updateVolumeMutation.mutate();
+            }}
+          >
+            {volumeDetailsForm.form.isDirty("volumes")
+              ? "Simpan Perubahan"
+              : "Tutup"}
+          </ButtonAMDA>
           <ButtonAMDA
             variant="white"
             onClick={() => {

@@ -3,8 +3,10 @@ import { apiRequest } from "./helpers";
 import { LOPS_TICKETS_URL } from "./routes";
 import { NestResponse } from "./types/common";
 import {
-  GetAddVolumeToTicketResponse,
+  PostAddVolumeToTicketResponse,
   GetListVolumesOfTicketResponse,
+  DeleteVolumeFromTicketResponse,
+  PutUpdateVolumeFromTicketResponse,
 } from "./types/volumes";
 
 export async function addVolumeToTicket(
@@ -21,23 +23,34 @@ export async function addVolumeToTicket(
     }
   );
 
-  return await apiRequest<NestResponse<GetAddVolumeToTicketResponse>>(requset);
+  return await apiRequest<NestResponse<PostAddVolumeToTicketResponse>>(requset);
 }
 
 export async function updateVolume(
-  volumeId: string,
+  ticketIdentifier: string,
+  volumeId: number,
   payload: {
-    designatorId: number;
     value: number;
   }
-) {}
-
-export async function deleteVolume(designatorId: number, volumeId: string) {
-  const request = axios.delete<never>(
-    `${LOPS_TICKETS_URL}/${designatorId}/volumes/${volumeId}`
+) {
+  const request = axios.put<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/volumes/${volumeId}`,
+    payload
   );
 
-  return await apiRequest<NestResponse<never>>(request);
+  return await apiRequest<NestResponse<PutUpdateVolumeFromTicketResponse>>(
+    request
+  );
+}
+
+export async function deleteVolume(ticketIdentifier: string, volumeId: number) {
+  const request = axios.delete<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/volumes/${volumeId}`
+  );
+
+  return await apiRequest<NestResponse<DeleteVolumeFromTicketResponse>>(
+    request
+  );
 }
 
 export async function getListVolumesOfTicket(ticketIdentifier: string) {
@@ -48,8 +61,6 @@ export async function getListVolumesOfTicket(ticketIdentifier: string) {
   const response = await apiRequest<
     NestResponse<GetListVolumesOfTicketResponse>
   >(request);
-
-  console.log(response);
 
   return response;
 }
