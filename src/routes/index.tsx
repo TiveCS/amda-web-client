@@ -2,6 +2,7 @@ import AuthGuard from "@guards/AuthGuard";
 import GuestOnlyGuard from "@guards/GuestOnlyGuard";
 import DashboardLayout from "@layouts/DashboardLayout";
 import DaftarBOQ from "@pages/DaftarBOQ";
+import DaftarDesignator from "@pages/DaftarDesignator";
 import DaftarKegiatan from "@pages/DaftarKegiatan";
 import DaftarMitra from "@pages/DaftarMitra";
 import DaftarOCC from "@pages/DaftarOCC";
@@ -11,6 +12,7 @@ import DaftarRole from "@pages/DaftarRole";
 import DaftarUser from "@pages/DaftarUser";
 import Dashboard from "@pages/Dashboard";
 import LoginPage from "@pages/Login";
+import StatusBOQ from "@pages/StatusBOQ";
 import ErrorPage from "@pages/errors/ErrorPage";
 import LogoutRedirect from "@pages/redirect/Logout";
 import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
@@ -64,6 +66,10 @@ export const router = createBrowserRouter([
             ],
           },
           {
+            path: "designator",
+            element: <DaftarDesignator />,
+          },
+          {
             path: "boq",
             element: <Outlet />,
             children: [
@@ -72,8 +78,18 @@ export const router = createBrowserRouter([
                 element: <DaftarBOQ />,
               },
               {
+                path: "status",
+                element: <StatusBOQ />,
+              },
+              {
                 path: "kegiatan-mitra",
-                element: <DaftarKegiatan />,
+                element: <Outlet />,
+                children: [
+                  {
+                    index: true,
+                    element: <DaftarKegiatan />,
+                  },
+                ],
               },
             ],
           },
