@@ -4,16 +4,16 @@ import ButtonAMDA from "@components/ButtonAMDA";
 import AddKegiatanModal from "@components/pages/DaftarKegiatan/AddKegiatanModal";
 import AddLopModal from "@components/pages/DaftarKegiatan/AddLopModal";
 import EditKegiatanModal from "@components/pages/DaftarKegiatan/EditKegiatanModal";
+import FilterKegiatanModal from "@components/pages/DaftarKegiatan/FilterKegiatanModal";
 import LopTableItem from "@components/pages/DaftarKegiatan/LopTableItem";
 import RemoveActivityModal from "@components/pages/DaftarKegiatan/RemoveActivityModal";
 import RemoveLopModal from "@components/pages/DaftarKegiatan/RemoveLopModal";
 import useActivityForm from "@hooks/useActivityForm";
-import { Container, Flex, Grid, Table } from "@mantine/core";
+import { Container, Flex, Grid, ScrollArea, Table } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import {
   IconCirclePlus,
-  IconDownload,
   IconEdit,
   IconFilter,
   IconTrash,
@@ -21,7 +21,6 @@ import {
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import FilterKegiatanModal from "@components/pages/DaftarKegiatan/FilterKegiatanModal";
 
 const DaftarKegiatan: React.FC = () => {
   const searchForm = useForm({
@@ -171,7 +170,7 @@ const DaftarKegiatan: React.FC = () => {
         </Grid>
       </Container>
 
-      <Container fluid className="overflow-y-scroll max-h-3/4 mt-8">
+      <ScrollArea.Autosize className="max-h-1/2 mt-8 ml-4" offsetScrollbars>
         <Table striped withBorder withColumnBorders>
           <thead>
             <tr>
@@ -201,9 +200,9 @@ const DaftarKegiatan: React.FC = () => {
             ))}
           </tbody>
         </Table>
-      </Container>
+      </ScrollArea.Autosize>
 
-      <Flex justify={"space-between"} className="mt-8 mx-3">
+      <Flex justify={"space-between"} className="mt-4 mx-3">
         <Flex gap={16}>
           <ButtonAMDA
             onClick={getListLopQuery.fetchNextPage}
@@ -212,7 +211,6 @@ const DaftarKegiatan: React.FC = () => {
             Load More
           </ButtonAMDA>
         </Flex>
-        <ButtonAMDA leftIcon={<IconDownload />}>Export XLSX</ButtonAMDA>
       </Flex>
     </>
   );

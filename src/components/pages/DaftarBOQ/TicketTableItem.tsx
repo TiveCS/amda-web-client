@@ -1,6 +1,6 @@
 import { LopTicket } from "@api/types/tickets";
-import ButtonAMDA from "@components/ButtonAMDA";
-import { IconEdit } from "@tabler/icons-react";
+import { Badge, Flex } from "@mantine/core";
+import { IconEdit, IconEye } from "@tabler/icons-react";
 import StatusVolumeTiket from "./StatusVolumeTiket";
 
 interface TicketTableItemProps {
@@ -19,15 +19,30 @@ export default function TicketTableItem({
       <td>
         <StatusVolumeTiket ticket={ticket} />
       </td>
-      <td className="w-20">
-        <ButtonAMDA variant="white" onClick={() => openModal(ticket)}>
-          <IconEdit size={20} />
-        </ButtonAMDA>
+      <td>
+        <Flex justify={"center"} className="group">
+          <IconEdit
+            className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+            onClick={() => openModal(ticket)}
+          />
+        </Flex>
       </td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>
+        <Badge fullWidth color="red" variant="outline">
+          Belum Lengkap
+        </Badge>
+      </td>
+      <td>
+        <Flex justify={"center"} className="group">
+          <IconEye className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer" />
+        </Flex>
+      </td>
+      <td>Catatan UT</td>
+      <td>
+        <Badge fullWidth color="red" variant="outline">
+          Belum Acc
+        </Badge>
+      </td>
     </tr>
   );
 }

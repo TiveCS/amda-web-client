@@ -7,4 +7,10 @@ export type LopTicket = {
   volumes: LopVolume[];
 };
 
+export type LopTicketLocation = {
+  location: string | null;
+};
+
 export type GetAllTicketsResponse = LopTicket[];
+
+export type GetAllTicketLocationsResponse = LopTicketLocation[];

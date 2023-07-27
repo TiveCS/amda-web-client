@@ -21,11 +21,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchForm }) => {
         placeholder="Search"
         radius="xl"
         className="max-w-3xl"
-        rightSection={
-          <Button type="button" variant="default" color="dark" radius="xl">
-            <IconSearch></IconSearch>
-          </Button>
-        }
+        // rightSection={
+        //   <Button type="button" variant="default" color="dark" radius="xl">
+        //     <IconSearch></IconSearch>
+        //   </Button>
+        // }
         value={searchForm.values.search}
         onChange={(event) =>
           searchForm.setFieldValue("search", event.currentTarget.value)
