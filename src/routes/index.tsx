@@ -1,6 +1,7 @@
 import AuthGuard from "@guards/AuthGuard";
 import GuestOnlyGuard from "@guards/GuestOnlyGuard";
 import DashboardLayout from "@layouts/DashboardLayout";
+import AgendaTim from "@pages/AgendaTim";
 import DaftarBOQ from "@pages/DaftarBOQ";
 import DaftarKegiatan from "@pages/DaftarKegiatan";
 import DaftarMitra from "@pages/DaftarMitra";
@@ -62,6 +63,10 @@ export const router = createBrowserRouter([
                 element: <DaftarMitra />,
               },
             ],
+          },
+          {
+            path: "agenda",
+            element: <AgendaTim />,
           },
           {
             path: "boq",

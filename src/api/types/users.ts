@@ -23,4 +23,9 @@ export type UserResponsePayload = {
     roleId: number;
     mitraId: number;
   };
+
+  export interface UserSelectOption {
+    value: string;
+    label: string;
+  }
   

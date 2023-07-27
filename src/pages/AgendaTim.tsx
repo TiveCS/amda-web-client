@@ -1,128 +1,154 @@
-import React from "react";
-import {
-  Container,
-  Card,
-  Select,
-  TextInput,
-  Table,
-  Flex,
-  Center,
-} from "@mantine/core";
-import { Calendar, TimeInput } from "@mantine/dates";
+import React, { useEffect, useState } from "react";
+import { Container, Card, Table, Flex } from "@mantine/core";
+import { Calendar } from "@mantine/dates";
 import ButtonAMDA from "@components/ButtonAMDA";
+import AddAgendaModal from "@components/pages/AgendaTim/AddAgendaModal";
+import { useDisclosure } from "@mantine/hooks";
+import { IconCirclePlus } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
+import { getListAgenda } from "@api/agenda";
+import { useForm } from "@mantine/form";
+import AgendaItemTable from "@components/pages/AgendaTim/AgendaItemTable";
+import { AgendaResponsePayload } from "@api/types/agenda";
+import RemoveAgendaModal from "@components/pages/AgendaTim/RemoveAgendaModal";
+import EditAgendaModal from "@components/pages/AgendaTim/EditAgendaModal";
 
 const AgendaTim: React.FC = () => {
+  const [isOpenAddAgendaModal, { open: openAddAgenda, close: closeAddAgenda }] =
+    useDisclosure(false);
+
+  const [
+    isOpenRemoveAgendaModal,
+    { open: openRemoveAgenda, close: closeRemoveAgenda },
+  ] = useDisclosure(false);
+
+  const [
+    isOpenEditAgendaModal,
+    { open: openEditAgenda, close: closeEditAgenda },
+  ] = useDisclosure(false);
+
+  const [removeAgenda, setRemoveAgenda] =
+    useState<AgendaResponsePayload | null>(null);
+
+  const [editAgenda, setEditAgenda] = useState<AgendaResponsePayload | null>(
+    null
+  );
+  const editAgendaForm = useForm({
+    initialValues: {
+      title: "",
+      basisOfAgenda: "",
+      currentDate: new Date(),
+      time: "00:00",
+      note: "",
+      picId: -1,
+    },
+    validate: {
+      title: (value) => (value.trim().length > 0 ? null : "Judul wajib diisi"),
+    },
+  });
+
+  // Select Date
+  const [selected, setSelected] = useState<Date | null>(new Date());
+
+  // Get List Agenda
+  const { refetch: refetchListAgenda, ...getListAgendaQuery } = useQuery({
+    queryKey: ["agenda"],
+    queryFn: async () => {
+      if (selected === null) throw new Error("selected kosong");
+      const cek = await getListAgenda({
+        limit: 5,
+        time: selected,
+      });
+      return cek;
+    },
+  });
+
+  const handleSelect = (date: Date) => {
+    const isSelected = selected?.toDateString() === date.toDateString();
+    if (!isSelected) {
+      setSelected(date);
+    }
+  };
+
+  useEffect(() => {
+    refetchListAgenda();
+  }, [selected]);
+
+  if (getListAgendaQuery.isLoading) return <p>Loading...</p>;
+
   return (
     <>
-      <Container className="mt-8 font-poppins">
-        <p className="font-semibold text-xl text-black">Agenda Tim</p>
+      {selected && (
+        <AddAgendaModal
+          isOpen={isOpenAddAgendaModal}
+          closeModal={closeAddAgenda}
+          selectedDate={selected}
+        />
+      )}
+
+      <RemoveAgendaModal
+        isOpen={isOpenRemoveAgendaModal}
+        closeModal={closeRemoveAgenda}
+        agenda={removeAgenda}
+        setRemoveAgenda={setRemoveAgenda}
+      />
+
+      <EditAgendaModal
+        isOpen={isOpenEditAgendaModal}
+        closeModal={closeEditAgenda}
+        agenda={editAgenda}
+        setAgenda={setEditAgenda}
+        editForm={editAgendaForm}
+      />
+
+      <Container className="mt-5 font-poppins" fluid>
+        <p className="font-semibold text-left text-xl text-black">Agenda Tim</p>
       </Container>
-      <Container className="mt-8">
+
+      <Container mt={24}>
         <Flex>
-          <Card withBorder style={{ width: 300, height: 320 }}>
-            <Calendar />
-          </Card>
           <Container>
-            <TextInput withAsterisk placeholder="" label="Agenda"></TextInput>
-            <br />
-            <Select
-              withAsterisk
-              label="Dasar Kegiatan"
-              placeholder="Select one"
-              data={[
-                { value: "1", label: "Dasar Kegiatan 1" },
-                { value: "2", label: "Dasar Kegiatan 2" },
-                { value: "3", label: "Dasar Kegiatan 3" },
-                { value: "4", label: "Dasar Kegiatan 4" },
-              ]}
-            />
-            <br />
-            <Select
-              withAsterisk
-              label="Sub Unit"
-              placeholder="Select one"
-              data={[
-                { value: "1", label: "Optima" },
-                { value: "2", label: "Data Management" },
-                { value: "3", label: "Maintenance" },
-                { value: "4", label: "Hubungan Antar Instansi" },
-              ]}
-            />
+            <Card withBorder>
+              <Calendar
+                getDayProps={(date) => ({
+                  selected: selected?.toDateString() === date.toDateString(),
+                  onClick: () => handleSelect(date),
+                })}
+              />
+            </Card>
+            <ButtonAMDA
+              className="mt-4"
+              onClick={openAddAgenda}
+              leftIcon={<IconCirclePlus />}
+            >
+              Add Agenda
+            </ButtonAMDA>
           </Container>
-          <Container>
-            <TextInput withAsterisk placeholder="" label="PIC"></TextInput>
-            <br />
-            <TimeInput withAsterisk label="Pukul" placeholder=""></TimeInput>
-            <br />
-            <Center>
-              <ButtonAMDA>Reset</ButtonAMDA>
-              <ButtonAMDA>Submit</ButtonAMDA>
-            </Center>
+          <Container fluid className="overflow-y-scroll">
+            <Table striped withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th className="w-44">Waktu</th>
+                  <th className="w-60">Agenda</th>
+                  <th className="w-44">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {getListAgendaQuery.data?.data.map((agenda) => (
+                  <AgendaItemTable
+                    key={agenda.id}
+                    agenda={agenda}
+                    editAgendaForm={editAgendaForm}
+                    setRemoveAgenda={setRemoveAgenda}
+                    setEditAgenda={setEditAgenda}
+                    openRemoveAgendaModal={openRemoveAgenda}
+                    openEditAgendaModal={openEditAgenda}
+                  />
+                ))}
+              </tbody>
+            </Table>
           </Container>
         </Flex>
-      </Container>
-      <Container>
-        <Card withBorder className="mt-8">
-          <Table
-            striped
-            withBorder
-            withColumnBorders
-            className="text-center text-sm"
-          >
-            <thead>
-              <tr>
-                <th>Waktu</th>
-                <th>Agenda</th>
-                <th>PIC</th>
-                <th>Dasar Kegiatan</th>
-                <th>Evidence</th>
-                <th>Catatan Meeting</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>23/07/2023 3:45 PM</td>
-                <td>Meeting dengan tim Marketing</td>
-                <td>Achmad Adib</td>
-                <td>Planning pemasaran</td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>23/07/2023 3:45 PM</td>
-                <td>Meeting dengan tim Marketing</td>
-                <td>Achmad Adib</td>
-                <td>Planning pemasaran</td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>23/07/2023 3:45 PM</td>
-                <td>Meeting dengan tim Marketing</td>
-                <td>Achmad Adib</td>
-                <td>Planning pemasaran</td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>23/07/2023 3:45 PM</td>
-                <td>Meeting dengan tim Marketing</td>
-                <td>Achmad Adib</td>
-                <td>Planning pemasaran</td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>23/07/2023 3:45 PM</td>
-                <td>Meeting dengan tim Marketing</td>
-                <td>Achmad Adib</td>
-                <td>Planning pemasaran</td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </Table>
-        </Card>
       </Container>
     </>
   );

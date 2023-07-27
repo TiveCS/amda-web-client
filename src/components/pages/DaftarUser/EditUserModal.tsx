@@ -136,7 +136,6 @@ export default function EditUserModal({
     void getListMitraQuery.refetch();
   }, [searchDebounced, getListMitraQuery]);
 
-  // Option
   // const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
   // const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
 
@@ -144,6 +143,7 @@ export default function EditUserModal({
 
   if (getListMitraQuery.isLoading) return <p>Loading...</p>;
 
+  // Option
   const selectOptionsRole: RoleSelectOption[] | undefined =
     getListRoleQuery.data?.data.map((role) => ({
       value: String(role.id),
