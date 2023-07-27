@@ -1,10 +1,9 @@
+import { DesignatorForLop } from "./designators";
+
 export type LopVolume = {
-  id: string;
+  id: number;
   value: number;
-  designator: {
-    id: true;
-    name: string;
-  };
+  designator: DesignatorForLop;
 };
 
 export type GetListVolumesOfTicketResponse = {
@@ -12,3 +11,5 @@ export type GetListVolumesOfTicketResponse = {
   identifier: string;
   volumes: LopVolume[];
 };
+
+export type GetAddVolumeToTicketResponse = LopVolume;

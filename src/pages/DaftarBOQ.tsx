@@ -1,9 +1,18 @@
 import { getListTickets } from "@api/tickets";
+import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import TicketTableItem from "@components/pages/DaftarBOQ/TicketTableItem";
-import { Container, Grid, Table } from "@mantine/core";
+import TicketVolumeDetailsModal from "@components/pages/DaftarBOQ/TicketVolumeDetailsModal";
+import useVolumeDetailsForm from "@hooks/useVolumeDetailsForm";
+import {
+  Container,
+  Grid,
+  LoadingOverlay,
+  ScrollArea,
+  Table,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useDebouncedValue } from "@mantine/hooks";
+import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconFilter } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect } from "react";
@@ -13,26 +22,54 @@ const DaftarBOQ: React.FC = () => {
   const searchForm = useForm({
     initialValues: { search: "" },
   });
-
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
-  const { refetch: refetchListTicketQuery, ...getListTicketQuery } =
-    useInfiniteQuery({
-      queryKey: ["tickets"],
-      queryFn: async ({ pageParam = 0 }) =>
-        getListTickets({
-          search: searchDebounced,
-          cursor: pageParam as number,
-        }),
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    });
+  const [selectedTicket, setSelectedTicket] = React.useState<LopTicket | null>(
+    null
+  );
+
+  const {
+    refetch: refetchListTicketQuery,
+    isFetching: isFetchingListTicketQuery,
+    isLoading: isLoadingListTicketQuery,
+    data: listTicketQueryData,
+    ...getListTicketQuery
+  } = useInfiniteQuery({
+    queryKey: ["tickets"],
+    queryFn: async ({ pageParam = 0 }) =>
+      getListTickets({
+        search: searchDebounced,
+        cursor: pageParam as number,
+        take: 20,
+      }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
 
   useEffect(() => {
-    void refetchListTicketQuery;
+    const refetch = async () => {
+      await refetchListTicketQuery();
+    };
+
+    void refetch();
   }, [refetchListTicketQuery, searchDebounced]);
+
+  const [
+    isVolumeDetailsModalOpen,
+    { open: openVolumeDetailsModal, close: closeVolumeDetailsModal },
+  ] = useDisclosure(false);
+
+  const volumeDetailsForm = useVolumeDetailsForm();
 
   return (
     <>
+      <TicketVolumeDetailsModal
+        selectedTicket={selectedTicket}
+        setSelectedTicket={setSelectedTicket}
+        isOpen={isVolumeDetailsModalOpen}
+        onClose={closeVolumeDetailsModal}
+        volumeDetailsForm={volumeDetailsForm}
+      />
+
       <Container className="mt-8 font-poppins" fluid>
         <p className="font-semibold text-xl text-black">Daftar BOQ</p>
       </Container>
@@ -46,15 +83,14 @@ const DaftarBOQ: React.FC = () => {
             <ButtonAMDA variant="outline">
               <IconFilter></IconFilter>
             </ButtonAMDA>
-
-            <ButtonAMDA onClick={() => void getListTickets({})}>
-              Get Volumes
-            </ButtonAMDA>
           </Grid.Col>
         </Grid>
       </Container>
 
-      <Container className="max-h-1/2 overflow-y-scroll" fluid>
+      <ScrollArea.Autosize offsetScrollbars className="max-h-1/2 mx-4">
+        {isFetchingListTicketQuery ||
+          (isLoadingListTicketQuery && <LoadingOverlay visible={true} />)}
+
         <Table striped withBorder withColumnBorders>
           <thead>
             <tr>
@@ -69,16 +105,36 @@ const DaftarBOQ: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {getListTicketQuery.data?.pages.map((group, i) => (
+            {listTicketQueryData?.pages.map((group, i) => (
               <React.Fragment key={i}>
                 {group.data.map((ticket) => (
-                  <TicketTableItem key={ticket.id} ticket={ticket} />
+                  <TicketTableItem
+                    key={ticket.id}
+                    ticket={ticket}
+                    openModal={(ticket: LopTicket) => {
+                      setSelectedTicket(ticket);
+                      volumeDetailsForm.form.setFieldValue(
+                        "volumes",
+                        ticket.volumes
+                      );
+                      openVolumeDetailsModal();
+                    }}
+                  />
                 ))}
               </React.Fragment>
             ))}
           </tbody>
         </Table>
-      </Container>
+      </ScrollArea.Autosize>
+
+      <ButtonAMDA
+        className="mt-4 ml-4"
+        disabled={!getListTicketQuery.hasNextPage}
+        loading={isFetchingListTicketQuery}
+        onClick={getListTicketQuery.fetchNextPage}
+      >
+        Load More
+      </ButtonAMDA>
     </>
   );
 };

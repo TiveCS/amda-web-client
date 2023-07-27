@@ -1,33 +1,26 @@
 import { LopTicket } from "@api/types/tickets";
-import StatusVolumeTiket from "./StatusVolumeTiket";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { IconEdit } from "@tabler/icons-react";
-import { modals } from "@mantine/modals";
-import TicketDetailModalContent from "./TicketDetailModalContent";
+import StatusVolumeTiket from "./StatusVolumeTiket";
 
 interface TicketTableItemProps {
   ticket: LopTicket;
+  openModal: (ticket: LopTicket) => void;
 }
 
-export default function TicketTableItem({ ticket }: TicketTableItemProps) {
+export default function TicketTableItem({
+  ticket,
+  openModal,
+}: TicketTableItemProps) {
   return (
     <tr>
       <td>{ticket.identifier}</td>
       <td>{ticket.location}</td>
       <td>
-        <StatusVolumeTiket />
+        <StatusVolumeTiket ticket={ticket} />
       </td>
       <td className="w-20">
-        <ButtonAMDA
-          variant="white"
-          onClick={() =>
-            modals.open({
-              title: "Detail Tiket",
-              size: "lg",
-              children: <TicketDetailModalContent ticket={ticket} />,
-            })
-          }
-        >
+        <ButtonAMDA variant="white" onClick={() => openModal(ticket)}>
           <IconEdit size={20} />
         </ButtonAMDA>
       </td>

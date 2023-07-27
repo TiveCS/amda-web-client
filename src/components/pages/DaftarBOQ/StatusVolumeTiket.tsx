@@ -1,19 +1,18 @@
+import { LopTicket } from "@api/types/tickets";
 import { Badge } from "@mantine/core";
 
-export default function StatusVolumeTiket() {
-  const isPartialCompleted = true;
-  const isCompleted = true;
+interface StatusVolumeTiketProps {
+  ticket: LopTicket;
+}
+
+export default function StatusVolumeTiket({ ticket }: StatusVolumeTiketProps) {
+  const isCompleted =
+    ticket.volumes.length > 0 &&
+    ticket.volumes.every((volume) => volume.value > 0);
 
   return (
-    <Badge
-      color={isCompleted ? "green" : isPartialCompleted ? "blue" : "red"}
-      variant="outline"
-    >
-      {isCompleted
-        ? "Lengkap"
-        : isPartialCompleted
-        ? "Kurang Lengkap"
-        : "Belum Lengkap"}
+    <Badge color={isCompleted ? "green" : "red"} variant="outline">
+      {isCompleted ? "Lengkap" : "Belum Dilengkapi"}
     </Badge>
   );
 }

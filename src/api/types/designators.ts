@@ -7,6 +7,11 @@ export type Designator = {
   unit: string;
 };
 
+export type DesignatorForLop = {
+  id: number;
+  name: string;
+};
+
 export type DesignatorWithCount = Designator & {
   _count: {
     volumes: number;

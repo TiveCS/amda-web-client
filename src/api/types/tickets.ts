@@ -1,13 +1,4 @@
-type LopDesignator = {
-  id: number;
-  name: string;
-};
-
-type LopVolume = {
-  id: number;
-  value: number;
-  designator: LopDesignator;
-};
+import { LopVolume } from "./volumes";
 
 export type LopTicket = {
   id: number;
