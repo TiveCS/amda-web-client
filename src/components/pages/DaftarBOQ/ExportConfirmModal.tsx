@@ -6,6 +6,7 @@ import {
   Alert,
   Button,
   Flex,
+  LoadingOverlay,
   Modal,
   ScrollArea,
   Select,
@@ -14,7 +15,7 @@ import {
 } from "@mantine/core";
 import { isInRange, useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
+import { notifications, showNotification } from "@mantine/notifications";
 import { IconAlertTriangle, IconCheck, IconCross } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -90,14 +91,16 @@ export default function ExportConfirmModal({
     },
     onMutate: () => {
       showNotification({
+        id: "export-boq-notification",
         title: "Loading",
         message: "Sedang mengekspor laporan BOQ...",
-        color: "cyan",
+        color: "blue",
         loading: exportMutation.isLoading,
       });
     },
     onSuccess: (res) => {
-      showNotification({
+      notifications.update({
+        id: "export-boq-notification",
         title: "Ekspor Berhasil",
         withCloseButton: true,
         autoClose: false,
@@ -118,7 +121,8 @@ export default function ExportConfirmModal({
     },
     onError: (err) => {
       if (err instanceof Error) {
-        showNotification({
+        notifications.update({
+          id: "export-boq-notification",
           title: "Error",
           message:
             err.message ?? "Terjadi kesalahan saat mengekspor laporan BOQ",
@@ -127,7 +131,8 @@ export default function ExportConfirmModal({
         });
         return;
       }
-      showNotification({
+      notifications.update({
+        id: "export-boq-notification",
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
@@ -169,6 +174,8 @@ export default function ExportConfirmModal({
       size="lg"
       padding="xl"
     >
+      <LoadingOverlay visible={exportMutation.isLoading} />
+
       <ScrollArea.Autosize className="max-h-[50%]">
         <Stack spacing={"lg"} className="mb-4">
           <Alert

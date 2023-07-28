@@ -9,7 +9,15 @@ import LopTableItem from "@components/pages/DaftarKegiatan/LopTableItem";
 import RemoveActivityModal from "@components/pages/DaftarKegiatan/RemoveActivityModal";
 import RemoveLopModal from "@components/pages/DaftarKegiatan/RemoveLopModal";
 import useActivityForm from "@hooks/useActivityForm";
-import { Container, Flex, Grid, ScrollArea, Table } from "@mantine/core";
+import {
+  Container,
+  Flex,
+  Grid,
+  LoadingOverlay,
+  ScrollArea,
+  Table,
+  Text,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import {
@@ -19,7 +27,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
 
 const DaftarKegiatan: React.FC = () => {
@@ -83,6 +91,25 @@ const DaftarKegiatan: React.FC = () => {
   useEffect(() => {
     void refetchListLopQuery();
   }, [refetchListLopQuery, searchDebounced]);
+
+  const lopsTotal = useMemo(() => {
+    return getListLopQuery.data?.pages.reduce(
+      (acc, curr) => acc + curr.lops.length,
+      0
+    );
+  }, [getListLopQuery.data?.pages]);
+
+  const activityTotal = useMemo(() => {
+    return getListLopQuery.data?.pages.reduce(
+      (acc, curr) =>
+        acc +
+        curr.lops.reduce(
+          (acc2, curr2) => acc2 + (curr2.activities?.length ?? 0),
+          0
+        ),
+      0
+    );
+  }, [getListLopQuery.data?.pages]);
 
   return (
     <>
@@ -171,6 +198,8 @@ const DaftarKegiatan: React.FC = () => {
       </Container>
 
       <ScrollArea.Autosize className="max-h-1/2 mt-8 ml-4" offsetScrollbars>
+        <LoadingOverlay visible={getListLopQuery.isFetching} />
+
         <Table striped withBorder withColumnBorders>
           <thead>
             <tr>
@@ -184,6 +213,14 @@ const DaftarKegiatan: React.FC = () => {
             </tr>
           </thead>
           <tbody>
+            {lopsTotal === 0 && (
+              <tr>
+                <td colSpan={7} className="text-center">
+                  Tidak ada data
+                </td>
+              </tr>
+            )}
+
             {getListLopQuery.data?.pages.map((group, i) => (
               <React.Fragment key={i}>
                 {group.lops.map((lop) => (
@@ -203,13 +240,18 @@ const DaftarKegiatan: React.FC = () => {
       </ScrollArea.Autosize>
 
       <Flex justify={"space-between"} className="mt-4 mx-3">
-        <Flex gap={16}>
+        <Flex gap={16} align={"center"}>
           <ButtonAMDA
             onClick={getListLopQuery.fetchNextPage}
             disabled={!getListLopQuery.hasNextPage}
           >
             Load More
           </ButtonAMDA>
+
+          <Text>
+            Menampilan <strong>{lopsTotal}</strong> LOP dan{" "}
+            <strong>{activityTotal}</strong> Kegiatan
+          </Text>
         </Flex>
       </Flex>
     </>

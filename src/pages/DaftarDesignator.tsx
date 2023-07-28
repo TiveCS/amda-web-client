@@ -7,13 +7,21 @@ import EditDesignatorModal from "@components/pages/DaftarDesignator/EditDesignat
 import TableDesignatorItem from "@components/pages/DaftarDesignator/TableDesignatorItem";
 import useDesignatorForm from "@hooks/useDesignatorForm";
 import useRemoveDesignatorMutation from "@hooks/useRemoveDesignatorMutation";
-import { Container, Flex, Grid, ScrollArea, Table, Text } from "@mantine/core";
+import {
+  Container,
+  Flex,
+  Grid,
+  LoadingOverlay,
+  ScrollArea,
+  Table,
+  Text,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const DaftarDesignator = () => {
   const searchForm = useForm({ initialValues: { search: "" } });
@@ -58,6 +66,14 @@ const DaftarDesignator = () => {
   useEffect(() => {
     void refetchDesignatorList();
   }, [searchDebounced, refetchDesignatorList]);
+
+  const designatorTotal = useMemo(() => {
+    if (!designatorList) return 0;
+    return designatorList.pages.reduce(
+      (acc, page) => acc + page.data.length,
+      0
+    );
+  }, [designatorList]);
 
   return (
     <>
@@ -127,6 +143,8 @@ const DaftarDesignator = () => {
       </Container>
 
       <ScrollArea.Autosize className="max-h-[60%] px-4 w-full">
+        <LoadingOverlay visible={getListDesingatorQuery.isFetching} />
+
         <Table striped withColumnBorders withBorder verticalSpacing={"sm"}>
           <thead>
             <tr>
@@ -139,6 +157,14 @@ const DaftarDesignator = () => {
             </tr>
           </thead>
           <tbody>
+            {designatorTotal === 0 && (
+              <tr>
+                <td colSpan={6} className="text-center">
+                  <Text>Tidak ditemukan data</Text>
+                </td>
+              </tr>
+            )}
+
             {designatorList?.pages.map((page, index) => (
               <React.Fragment key={index}>
                 {page.data.map((designator) => (
@@ -156,14 +182,20 @@ const DaftarDesignator = () => {
         </Table>
       </ScrollArea.Autosize>
 
-      <ButtonAMDA
-        className="ml-4 mt-4"
-        disabled={!getListDesingatorQuery.hasNextPage}
-        onClick={getListDesingatorQuery.fetchNextPage}
-        loading={getListDesingatorQuery.isFetching}
-      >
-        Load More
-      </ButtonAMDA>
+      <Flex align={"center"}>
+        <ButtonAMDA
+          className="ml-4 mt-4"
+          disabled={!getListDesingatorQuery.hasNextPage}
+          onClick={getListDesingatorQuery.fetchNextPage}
+          loading={getListDesingatorQuery.isFetching}
+        >
+          Load More
+        </ButtonAMDA>
+
+        <Text className="ml-4 mt-4">
+          Menampilkan <strong>{designatorTotal}</strong> designator
+        </Text>
+      </Flex>
     </>
   );
 };
