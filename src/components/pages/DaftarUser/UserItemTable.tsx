@@ -38,27 +38,45 @@ export default function UserItemTable({
   openEditUserModal,
 }: UserItemTableProps) {
   const getListRoleQuery = useQuery({
-    queryKey: ["role"],
-    queryFn: async () => getListRole(),
-    retry: false,
-  });
-  const getListMitraQuery = useQuery({
-    queryKey: ["mitra"],
-    queryFn: async () => getListMitra({}),
-    retry: false,
-  });
-  const role = getListRoleQuery.data?.data.filter((r) => r.id === user.roleId);
+    queryKey: ["user_item_table_role"],
+    queryFn: async () => {
+      const result = await getListRole();
 
-  const mitra = getListMitraQuery.data?.data.filter(
-    (r) => r.id === user.mitraId
+      return result.data.map((mitra) => ({
+        value: mitra.id.toString(),
+        label: mitra.name,
+      }));
+    },
+  });
+
+  const getListMitraQuery = useQuery({
+    queryKey: ["user_item_table_mitra"],
+    queryFn: async () => {
+      const result = await getListMitra({
+        limit: 30,
+      });
+
+      return result.data.map((mitra) => ({
+        value: mitra.id.toString(),
+        label: mitra.name,
+      }));
+    },
+  });
+
+  const role = getListRoleQuery.data?.filter(
+    (r) => parseInt(r.value) === user.roleId
+  );
+
+  const mitra = getListMitraQuery.data?.filter(
+    (r) => parseInt(r.value) === user.mitraId
   );
 
   return (
     <tr>
-      <td>{role !== undefined ? role[0].name : "??"}</td>
+      <td>{role !== undefined ? role[0].label : "??"}</td>
       <td>{user.username}</td>
       <td>{user.name}</td>
-      <td>{mitra !== undefined ? mitra[0].name : "??"}</td>
+      <td>{mitra !== undefined ? mitra[0].label : "??"}</td>
       <td className="w-40">
         <Flex direction={"row"} justify={"space-between"}>
           <ButtonAMDA

@@ -38,7 +38,7 @@ export async function getListUser({
       page: page || 1,
       limit: limit? limit:undefined,
       cursor: cursor? cursor:undefined,
-      search: search? search:undefined,
+      search: search && search?.trim().length > 0 ? search?.trim() : undefined,
     },
   });
 

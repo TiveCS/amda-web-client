@@ -19,6 +19,9 @@ export const DESIGNATOR_URL = `${API_URL}/designators`;
 
 export const LOPS_URL = `${API_URL}/lops`;
 export const LOPS_ACTIVITIES_URL = `${API_URL}/lops/activities`;
+
+export const AGENDAS_URL = `${API_URL}/agendas`
+
 export const LOPS_TICKETS_URL = `${API_URL}/lops/tickets`;
 
 export const BOQ_REPORTS_URL = `${API_URL}/boq/reports`;
