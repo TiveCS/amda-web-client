@@ -21,12 +21,9 @@ export default function AddUserModal({
   isOpen,
 }: AddUserModalProps) {
   //   const [isOpen, { open: openModal, close: closeModal }] = useDisclosure(false);
-  const searchForm = useForm({
-    initialValues: {
-      search: "",
-    },
-  });
-  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const [searchMitra] = useState("");
+  const [searchMitraDebounced] = useDebouncedValue(searchMitra, 500);
 
   const addUserForm = useForm({
     initialValues: {
@@ -92,26 +89,36 @@ export default function AddUserModal({
 
   //Role
   const getListRoleQuery = useQuery({
-    queryKey: ["role"],
-    queryFn: async () => getListRole(),
+    queryKey: ["add_user_modal_role"],
+    queryFn: async () => {
+      const result = await getListRole();
+
+      return result.data.map((role) => ({
+        value: role.id.toString(),
+        label: role.name,
+      }));
+    },
   });
 
   //Mitra
   const getListMitraQuery = useQuery({
-    queryKey: ["mitra"],
-    queryFn: async () =>
-      getListMitra({
-        search: searchDebounced,
-      }),
+    queryKey: ["add_user_modal_mitra"],
+    queryFn: async () => {
+      const result = await getListMitra({
+        search: searchMitraDebounced,
+        limit: 30,
+      });
+
+      return result.data.map((mitra) => ({
+        value: mitra.id.toString(),
+        label: mitra.name,
+      }));
+    },
   });
 
   useEffect(() => {
     void getListMitraQuery.refetch();
-  }, [searchDebounced, getListMitraQuery]);
-
-  useEffect(() => {
-    void getListRoleQuery.refetch();
-  }, [searchDebounced, getListRoleQuery]);
+  }, [getListMitraQuery, searchMitraDebounced]);
 
   // // Option
   // const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
@@ -122,15 +129,15 @@ export default function AddUserModal({
   if (getListMitraQuery.isLoading) return <p>Loading...</p>;
 
   const selectOptionsRole: RoleSelectOption[] | undefined =
-    getListRoleQuery.data?.data.map((role) => ({
-      value: String(role.id),
-      label: role.name,
+    getListRoleQuery.data?.map((role) => ({
+      value: String(role.value),
+      label: role.label,
     }));
 
   const selectOptionsMitra: MitraSelectOption[] | undefined =
-    getListMitraQuery.data?.data.map((mitra) => ({
-      value: String(mitra.id),
-      label: mitra.name,
+    getListMitraQuery.data?.map((mitra) => ({
+      value: String(mitra.value),
+      label: mitra.label,
     }));
 
   if (selectOptionsRole === undefined) return <p>loading...</p>;
