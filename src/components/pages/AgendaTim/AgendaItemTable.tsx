@@ -1,8 +1,11 @@
 import { AgendaResponsePayload } from "@api/types/agenda";
+import { getListUser } from "@api/users";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Flex } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
+import moment from "moment";
 
 interface AgendaItemTableProps {
   agenda: AgendaResponsePayload;
@@ -49,10 +52,32 @@ export default function UserItemTable({
   openRemoveAgendaModal: openRemoveAgendaModal,
   openEditAgendaModal: openEditAgendaModal,
 }: AgendaItemTableProps) {
+  const waktuMoment = agenda.time.toString();
+  const waktu = new Date(agenda.time);
+
+  const getListUserQuery = useQuery({
+    queryKey: ["agenda_item_table_user"],
+    queryFn: async () => {
+      const result = await getListUser({
+        limit: 30,
+      });
+
+      return result.data.map((user) => ({
+        value: user.id.toString(),
+        label: user.name,
+      }));
+    },
+  });
+
+  const user = getListUserQuery.data?.filter(
+    (r) => parseInt(r.value) === agenda.picId
+  );
+
   return (
     <tr>
-      <td>{agenda.time.toString()}</td>
+      <td>{moment(waktuMoment).format("DD-MM-YYYY HH:mm A")}</td>
       <td>{agenda.title}</td>
+      <td>{user !== undefined ? user[0].label : "??"}</td>
       <td className="w-40">
         <Flex direction={"row"} justify={"space-between"}>
           <ButtonAMDA
@@ -63,11 +88,10 @@ export default function UserItemTable({
                 title: agenda.title,
                 basisOfAgenda: agenda.basisOfAgenda,
                 currentDate: agenda.time,
-                time: `${agenda.time.getHours
+                time: `${waktu.getHours().toString().padStart(2, "0")}:${waktu
+                  .getMinutes()
                   .toString()
-                  .padStart(2, "0")}:${agenda.time.getMinutes
-                  .toString()
-                  .padStart(2, "0")}:`,
+                  .padStart(2, "0")}`,
                 note: agenda.note,
                 picId: agenda.picId,
               });

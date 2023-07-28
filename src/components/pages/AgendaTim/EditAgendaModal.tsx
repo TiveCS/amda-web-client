@@ -67,7 +67,7 @@ export default function EditAgendaModal({
           basisOfAgenda: editForm.values.basisOfAgenda,
           time: now,
           note: editForm.values.note,
-          picId: editForm.values.picId,
+          picId: Number(editForm.values.picId),
         },
       });
     },
@@ -126,21 +126,25 @@ export default function EditAgendaModal({
   };
 
   // User or PIC
-  const searchForm = useForm({
+  const searchUser = useForm({
     initialValues: {
       search: "",
     },
   });
-  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+  const [searchUserDebounced] = useDebouncedValue(
+    searchUser.values.search,
+    500
+  );
 
   const getListUserQuery = useQuery({
-    queryKey: ["edit_agenda_modal_user"],
-    queryFn: async () => getListUser({ search: searchDebounced }),
+    queryKey: ["edit_agenda_modal_user", {}],
+    queryFn: async () =>
+      getListUser({ search: searchUserDebounced, limit: 100 }),
   });
 
   useEffect(() => {
     void getListUserQuery.refetch();
-  }, [getListUserQuery, searchDebounced]);
+  }, [getListUserQuery, searchUserDebounced]);
 
   // Option
   const selectOptionsUser: UserSelectOption[] | undefined =
@@ -169,8 +173,10 @@ export default function EditAgendaModal({
           searchable
           nothingFound="No options"
           data={selectOptionsUser}
-          {...editForm.getInputProps("picId")}
-          defaultValue={agenda?.picId.toString()}
+          value={editForm.values.picId.toString()}
+          onChange={(value: string) =>
+            editForm.setFieldValue("picId", parseInt(value))
+          }
         />
         <TextInput
           label="Dasar Kegiatan"

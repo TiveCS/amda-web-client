@@ -105,6 +105,7 @@ export default function AddUserModal({
     queryKey: ["add_user_modal_mitra"],
     queryFn: async () => {
       const result = await getListMitra({
+        search: searchMitraDebounced,
         limit: 30,
       });
 

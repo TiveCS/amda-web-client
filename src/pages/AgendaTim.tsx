@@ -128,9 +128,10 @@ const AgendaTim: React.FC = () => {
             <Table striped withBorder withColumnBorders>
               <thead>
                 <tr>
-                  <th className="w-44">Waktu</th>
-                  <th className="w-60">Agenda</th>
-                  <th className="w-44">Action</th>
+                  <th className="w-32">Waktu</th>
+                  <th className="w-40">Agenda</th>
+                  <th className="w-40">PIC</th>
+                  <th className="w-40">Action</th>
                 </tr>
               </thead>
               <tbody>

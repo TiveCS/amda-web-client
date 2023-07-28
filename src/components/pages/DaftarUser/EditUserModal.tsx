@@ -111,7 +111,11 @@ export default function EditUserModal({
       search: "",
     },
   });
-  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const [searchMitraDebounced] = useDebouncedValue(
+    searchForm.values.search,
+    500
+  );
 
   //Role
   const getListRoleQuery = useQuery({
@@ -119,22 +123,19 @@ export default function EditUserModal({
     queryFn: async () => getListRole(),
   });
 
-  useEffect(() => {
-    void getListRoleQuery.refetch();
-  }, [searchDebounced, getListRoleQuery]);
-
   //Mitra
   const getListMitraQuery = useQuery({
     queryKey: ["edit_user_modal_mitra"],
     queryFn: async () =>
       getListMitra({
-        search: searchDebounced,
+        search: searchMitraDebounced,
+        limit: 30,
       }),
   });
 
   useEffect(() => {
     void getListMitraQuery.refetch();
-  }, [searchDebounced, getListMitraQuery]);
+  }, [searchMitraDebounced, getListMitraQuery]);
 
   // const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
   // const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
@@ -175,8 +176,12 @@ export default function EditUserModal({
           searchable
           nothingFound="No options"
           data={selectOptionsRole}
-          {...editForm.getInputProps("roleId")}
-          defaultValue={user?.roleId.toString()}
+          value={editForm.values.roleId.toString()}
+          onChange={(value: string) =>
+            editForm.setFieldValue("roleId", parseInt(value))
+          }
+          // {...editForm.getInputProps("roleId")}
+          // defaultValue={user?.roleId.toString()}
         />
         <TextInput readOnly label="Username" value={user?.username} />
         <TextInput label="Nama" {...editForm.getInputProps("name")} />
@@ -185,8 +190,12 @@ export default function EditUserModal({
           searchable
           nothingFound="No options"
           data={selectOptionsMitra}
-          {...editForm.getInputProps("mitraId")}
-          defaultValue={user?.mitraId.toString()}
+          value={editForm.values.mitraId.toString()}
+          onChange={(value: string) =>
+            editForm.setFieldValue("mitraId", parseInt(value))
+          }
+          // {...editForm.getInputProps("mitraId")}
+          // defaultValue={user?.mitraId.toString()}
         />
 
         <ButtonAMDA onClick={handleEditUser}>Simpan</ButtonAMDA>

@@ -31,7 +31,6 @@ export async function getListAgenda({
 }) {console.log(time)
   const request = axios.get<never>(AGENDAS_URL, {
     params: {
-    
       search: search && search?.trim().length > 0 ? search?.trim() : undefined,
       time,
     },

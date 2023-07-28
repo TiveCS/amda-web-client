@@ -100,7 +100,10 @@ export default function AddAgendaModal({
   const getListUserQuery = useQuery({
     queryKey: ["add_agenda_modal_user"],
     queryFn: async () => {
-      const result = await getListUser({});
+      const result = await getListUser({
+        search: searchUserDebounced,
+        limit: 100,
+      });
 
       return result.data.map((user) => ({
         value: user.id.toString(),
