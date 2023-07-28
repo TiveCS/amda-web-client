@@ -4,7 +4,15 @@ import { getListSto } from "@api/sto";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useActivityForm from "@hooks/useActivityForm";
 import useAddActivityMutation from "@hooks/useAddActivityMutation";
-import { Checkbox, Flex, Grid, Modal, Select, TextInput } from "@mantine/core";
+import {
+  Checkbox,
+  Flex,
+  Grid,
+  Modal,
+  Select,
+  TextInput,
+  Text,
+} from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -125,7 +133,13 @@ export default function AddKegiatanModal({
           id="select-sto"
           data={getListStoQuery.data ?? []}
           searchable
+          creatable
           nothingFound="STO tidak ditemukan"
+          getCreateLabel={(query) => (
+            <Text color="blue">
+              Tambahkan STO <strong>"{query}"</strong>
+            </Text>
+          )}
           label="STO"
           placeholder="Pilih STO"
           withAsterisk

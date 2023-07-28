@@ -13,8 +13,8 @@ import {
   Container,
   Flex,
   Grid,
-  LoadingOverlay,
   ScrollArea,
+  Skeleton,
   Table,
   Text,
 } from "@mantine/core";
@@ -198,45 +198,45 @@ const DaftarKegiatan: React.FC = () => {
       </Container>
 
       <ScrollArea.Autosize className="max-h-1/2 mt-8 ml-4" offsetScrollbars>
-        <LoadingOverlay visible={getListLopQuery.isFetching} />
-
-        <Table striped withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>Nama LOP</th>
-              <th className="w-10">#</th>
-              <th>STO</th>
-              <th className="w-48">Jenis Pekerjaan</th>
-              <th>No Tiket</th>
-              <th>Lokasi Tiket</th>
-              <th>Mitra</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lopsTotal === 0 && (
+        <Skeleton visible={getListLopQuery.isFetching}>
+          <Table striped withBorder withColumnBorders>
+            <thead>
               <tr>
-                <td colSpan={7} className="text-center">
-                  Tidak ada data
-                </td>
+                <th>Nama LOP</th>
+                <th className="w-10">#</th>
+                <th>STO</th>
+                <th className="w-48">Jenis Pekerjaan</th>
+                <th>No Tiket</th>
+                <th>Lokasi Tiket</th>
+                <th>Mitra</th>
               </tr>
-            )}
+            </thead>
+            <tbody>
+              {lopsTotal === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center">
+                    Tidak ada data
+                  </td>
+                </tr>
+              )}
 
-            {getListLopQuery.data?.pages.map((group, i) => (
-              <React.Fragment key={i}>
-                {group.lops.map((lop) => (
-                  <LopTableItem
-                    key={lop.id}
-                    lop={lop}
-                    selectedActivities={selectedActivities}
-                    openRemoveLop={openRemoveLop}
-                    setSelectedActivities={setSelectedActivities}
-                    setRemoveLop={setRemoveLop}
-                  />
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </Table>
+              {getListLopQuery.data?.pages.map((group, i) => (
+                <React.Fragment key={i}>
+                  {group.lops.map((lop) => (
+                    <LopTableItem
+                      key={lop.id}
+                      lop={lop}
+                      selectedActivities={selectedActivities}
+                      openRemoveLop={openRemoveLop}
+                      setSelectedActivities={setSelectedActivities}
+                      setRemoveLop={setRemoveLop}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </Table>
+        </Skeleton>
       </ScrollArea.Autosize>
 
       <Flex justify={"space-between"} className="mt-4 mx-3">

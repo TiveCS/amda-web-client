@@ -13,6 +13,7 @@ import {
   Grid,
   LoadingOverlay,
   ScrollArea,
+  Skeleton,
   Table,
   Text,
 } from "@mantine/core";
@@ -143,43 +144,43 @@ const DaftarDesignator = () => {
       </Container>
 
       <ScrollArea.Autosize className="max-h-[60%] px-4 w-full">
-        <LoadingOverlay visible={getListDesingatorQuery.isFetching} />
-
-        <Table striped withColumnBorders withBorder verticalSpacing={"sm"}>
-          <thead>
-            <tr>
-              <th>Designator</th>
-              <th className="w-8">#</th>
-              <th>Jenis Pekerjaan</th>
-              <th>Tipe</th>
-              <th>Satuan</th>
-              <th>Harga Satuan</th>
-            </tr>
-          </thead>
-          <tbody>
-            {designatorTotal === 0 && (
+        <Skeleton visible={getListDesingatorQuery.isFetching}>
+          <Table striped withColumnBorders withBorder verticalSpacing={"sm"}>
+            <thead>
               <tr>
-                <td colSpan={6} className="text-center">
-                  <Text>Tidak ditemukan data</Text>
-                </td>
+                <th>Designator</th>
+                <th className="w-8">#</th>
+                <th>Jenis Pekerjaan</th>
+                <th>Tipe</th>
+                <th>Satuan</th>
+                <th>Harga Satuan</th>
               </tr>
-            )}
+            </thead>
+            <tbody>
+              {designatorTotal === 0 && (
+                <tr>
+                  <td colSpan={6} className="text-center">
+                    <Text>Tidak ditemukan data</Text>
+                  </td>
+                </tr>
+              )}
 
-            {designatorList?.pages.map((page, index) => (
-              <React.Fragment key={index}>
-                {page.data.map((designator) => (
-                  <TableDesignatorItem
-                    key={designator.id}
-                    designator={designator}
-                    updateEditDesignatorForm={updateEditDesignatorForm}
-                    setSelectedDesignators={setSelectedDesignators}
-                    isSelected={selectedDesignators.includes(designator)}
-                  />
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </Table>
+              {designatorList?.pages.map((page, index) => (
+                <React.Fragment key={index}>
+                  {page.data.map((designator) => (
+                    <TableDesignatorItem
+                      key={designator.id}
+                      designator={designator}
+                      updateEditDesignatorForm={updateEditDesignatorForm}
+                      setSelectedDesignators={setSelectedDesignators}
+                      isSelected={selectedDesignators.includes(designator)}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </Table>
+        </Skeleton>
       </ScrollArea.Autosize>
 
       <Flex align={"center"}>
