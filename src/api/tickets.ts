@@ -12,6 +12,7 @@ export async function getListTickets({
   search,
   take,
   location,
+  identifier,
   statusAcc,
   evidenceStatus,
 }: {
@@ -19,6 +20,7 @@ export async function getListTickets({
   cursor?: number;
   search?: string;
   location?: string[];
+  identifier?: string[];
   statusAcc?: boolean | null;
   evidenceStatus?: boolean | null;
 }) {
@@ -26,7 +28,9 @@ export async function getListTickets({
     params: {
       take: take ? take : undefined,
       cursor: cursor ? cursor : undefined,
+
       search: search && search.trim().length > 0 ? search.trim() : undefined,
+      identifier: identifier && identifier.length > 0 ? identifier : undefined,
 
       location: location && location.length > 0 ? location : undefined,
       isAccepted:

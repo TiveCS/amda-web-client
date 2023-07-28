@@ -33,9 +33,9 @@ export default function FilterModal({ closeModal, isOpen }: FilterModalProps) {
           data={[]}
           label="STO"
           nothingFound="STO tidak ditemukan."
-          {...filterForm.getInputProps("sto")}
+          {...filterForm.getInputProps("stoId")}
           onChange={(value) => {
-            filterForm.setFieldValue("sto", value);
+            filterForm.setFieldValue("stoId", value);
           }}
         />
 

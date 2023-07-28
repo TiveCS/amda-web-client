@@ -1,4 +1,4 @@
-import { getListTicketLocations } from "@api/tickets";
+import { getListTicketLocations, getListTickets } from "@api/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useFilterForm from "@hooks/useFilterForm";
 import {
@@ -30,11 +30,17 @@ export default function FilterDaftarBOQModal({
   const searchForm = useForm({
     initialValues: {
       location: "",
+      identifier: "",
     },
   });
 
   const [locationDebounced] = useDebouncedValue(
     searchForm.values.location,
+    500
+  );
+
+  const [identifierDebounced] = useDebouncedValue(
+    searchForm.values.identifier,
     500
   );
 
@@ -51,9 +57,25 @@ export default function FilterDaftarBOQModal({
     },
   });
 
+  const { refetch: refetchListIdentifiers, ...getListIdentifiersQuery } =
+    useQuery({
+      queryKey: ["filter_daftar_boq_modal_ticket_identifiers"],
+      queryFn: async () => {
+        const result = await getListTickets({
+          take: 10,
+        });
+
+        return result.data.map((found) => found.identifier);
+      },
+    });
+
   useEffect(() => {
     void refetchListLocations();
   }, [locationDebounced, refetchListLocations]);
+
+  useEffect(() => {
+    void refetchListIdentifiers();
+  }, [identifierDebounced, refetchListIdentifiers]);
 
   return (
     <Modal
@@ -64,6 +86,22 @@ export default function FilterDaftarBOQModal({
       padding={"xl"}
     >
       <Stack spacing={"md"}>
+        <MultiSelect
+          searchable
+          clearable
+          multiple
+          limit={10}
+          label="ID Tiket"
+          nothingFound="Tiket tidak ditemukan"
+          data={getListIdentifiersQuery.data ?? []}
+          placeholder="Pilih id tiket"
+          onSearchChange={(value) =>
+            searchForm.setFieldValue("identifier", value)
+          }
+          value={filterForm.values.identifier}
+          onChange={(value) => filterForm.setFieldValue("identifier", value)}
+        />
+
         <MultiSelect
           searchable
           clearable

@@ -1,17 +1,19 @@
 import { getListTickets } from "@api/tickets";
 import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
+import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQModal";
 import TicketTableItem from "@components/pages/DaftarBOQ/TicketTableItem";
 import TicketVolumeDetailsModal from "@components/pages/DaftarBOQ/TicketVolumeDetailsModal";
+import useFilterForm from "@hooks/useFilterForm";
 import useVolumeDetailsForm from "@hooks/useVolumeDetailsForm";
 import {
   Container,
   Flex,
   Grid,
-  Text,
   ScrollArea,
   Skeleton,
   Table,
+  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
@@ -19,13 +21,13 @@ import { IconDownload, IconFilter } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQModal";
-import useFilterForm from "@hooks/useFilterForm";
+import ExportConfirmModal from "@components/pages/DaftarBOQ/ExportConfirmModal";
 
 const DaftarBOQ: React.FC = () => {
   const searchForm = useForm({
     initialValues: { search: "" },
   });
+
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
   const [selectedTicket, setSelectedTicket] = React.useState<LopTicket | null>(
@@ -44,9 +46,10 @@ const DaftarBOQ: React.FC = () => {
     queryKey: ["tickets"],
     queryFn: async ({ pageParam = 0 }) =>
       getListTickets({
-        search: searchDebounced,
         cursor: pageParam as number,
         take: 20,
+        search: searchDebounced,
+        identifier: filterForm.form.values.identifier,
         location: filterForm.form.values.location,
         statusAcc: filterForm.form.values.accStatus,
         evidenceStatus: filterForm.form.values.evidenceStatus,
@@ -72,6 +75,11 @@ const DaftarBOQ: React.FC = () => {
     { open: openFilterModal, close: closeFilterModal },
   ] = useDisclosure(false);
 
+  const [
+    isExportModalOpen,
+    { open: openExportModal, close: closeExportModal },
+  ] = useDisclosure(false);
+
   const volumeDetailsForm = useVolumeDetailsForm();
 
   const filter = () => {
@@ -89,8 +97,22 @@ const DaftarBOQ: React.FC = () => {
     return 0;
   }, [listTicketQueryData?.pages]);
 
+  const handleExportTicket = () => {
+    openExportModal();
+  };
+
   return (
     <>
+      <ExportConfirmModal
+        opened={isExportModalOpen}
+        onClose={closeExportModal}
+        ticketIdentifiers={
+          listTicketQueryData?.pages.flatMap((page) =>
+            page.data.map((ticket) => ticket.identifier)
+          ) || []
+        }
+      />
+
       <TicketVolumeDetailsModal
         selectedTicket={selectedTicket}
         setSelectedTicket={setSelectedTicket}
@@ -203,7 +225,13 @@ const DaftarBOQ: React.FC = () => {
           </Text>
         </Flex>
 
-        <ButtonAMDA leftIcon={<IconDownload />}>Export XLSX</ButtonAMDA>
+        <ButtonAMDA
+          disabled={totalTickets === 0}
+          leftIcon={<IconDownload />}
+          onClick={handleExportTicket}
+        >
+          Export XLSX
+        </ButtonAMDA>
       </Flex>
     </>
   );
