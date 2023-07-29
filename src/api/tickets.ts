@@ -4,6 +4,7 @@ import { apiRequest } from "./helpers";
 import {
   GetAllTicketLocationsResponse,
   GetAllTicketsResponse,
+  GetTicketEvidencesResponse,
 } from "./types/tickets";
 import { NestResponse } from "./types/common";
 
@@ -65,4 +66,45 @@ export async function getListTicketLocations({
   });
 
   return apiRequest<NestResponse<GetAllTicketLocationsResponse>>(request);
+}
+
+export async function getEvidences(
+  ticketIdentifier: string,
+  select: {
+    after: boolean;
+    before: boolean;
+    onProgress: boolean;
+  }
+) {
+  const request = axios.get<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences`,
+    {
+      params: {
+        after: select.after,
+        before: select.before,
+        onProgress: select.onProgress,
+      },
+    }
+  );
+
+  return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
+}
+
+export async function uploadEvidence(
+  ticketIdentifier: string,
+  payload: {
+    file: File;
+    type: "after" | "onProgress" | "before";
+  }
+) {
+  const formData = new FormData();
+  formData.append("file", payload.file);
+  formData.append("type", payload.type);
+
+  const request = axios.post<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences`,
+    formData
+  );
+
+  return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
 }

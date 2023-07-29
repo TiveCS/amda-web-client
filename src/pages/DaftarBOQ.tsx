@@ -22,6 +22,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import ExportConfirmModal from "@components/pages/DaftarBOQ/ExportConfirmModal";
+import EvidenceDrawer from "@components/pages/DaftarBOQ/EvidenceDrawer";
 
 const DaftarBOQ: React.FC = () => {
   const searchForm = useForm({
@@ -80,6 +81,11 @@ const DaftarBOQ: React.FC = () => {
     { open: openExportModal, close: closeExportModal },
   ] = useDisclosure(false);
 
+  const [
+    isEvidenceDrawerOpen,
+    { open: openEvidenceDrawer, close: closeEvidenceDrawer },
+  ] = useDisclosure(false);
+
   const volumeDetailsForm = useVolumeDetailsForm();
 
   const filter = () => {
@@ -103,6 +109,15 @@ const DaftarBOQ: React.FC = () => {
 
   return (
     <>
+      <EvidenceDrawer
+        opened={isEvidenceDrawerOpen}
+        onClose={() => {
+          setSelectedTicket(null);
+          closeEvidenceDrawer();
+        }}
+        ticket={selectedTicket}
+      />
+
       <ExportConfirmModal
         opened={isExportModalOpen}
         onClose={closeExportModal}
@@ -184,6 +199,10 @@ const DaftarBOQ: React.FC = () => {
                     <TicketTableItem
                       key={ticket.id}
                       ticket={ticket}
+                      openEvidenceDrawer={(ticket: LopTicket) => {
+                        setSelectedTicket(ticket);
+                        openEvidenceDrawer();
+                      }}
                       openModal={(ticket: LopTicket) => {
                         setSelectedTicket(ticket);
                         volumeDetailsForm.form.setFieldValue(
