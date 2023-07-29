@@ -1,8 +1,8 @@
-import { uploadEvidence } from "@api/tickets";
+import { uploadTicketEvidence } from "@api/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { FileButton } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconPlus } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -27,7 +27,7 @@ export default function EvidenceUploadButton({
       if (!ticketIdentifier) return null;
       if (!file) return null;
 
-      const res = await uploadEvidence(ticketIdentifier, {
+      const res = await uploadTicketEvidence(ticketIdentifier, {
         file,
         type,
       });
@@ -96,7 +96,12 @@ export default function EvidenceUploadButton({
       accept="image/png, image/jpeg, image/jpg"
     >
       {(props) => (
-        <ButtonAMDA {...props} variant="outline" loading={isLoading}>
+        <ButtonAMDA
+          {...props}
+          variant="outline"
+          loading={isLoading}
+          leftIcon={<IconPlus size={"1.25rem"} />}
+        >
           {text}
         </ButtonAMDA>
       )}

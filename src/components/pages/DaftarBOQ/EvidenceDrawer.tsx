@@ -1,8 +1,8 @@
-import { getEvidences } from "@api/tickets";
+import { getTicketEvidences } from "@api/tickets";
 import { LopTicket } from "@api/types/tickets";
 import { Container, Drawer, Flex, Grid } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import EvidenceImageItem from "./EvidenceImageItem";
 import EvidenceUploadButton from "./EvidenceUploadButton";
 
@@ -21,7 +21,7 @@ export default function EvidenceDrawer({
     queryKey: ["evidence_drawer_evidence", ticket?.identifier],
     queryFn: async () => {
       if (!ticket) return null;
-      const { data: result } = await getEvidences(ticket.identifier, {
+      const { data: result } = await getTicketEvidences(ticket.identifier, {
         after: true,
         before: true,
         onProgress: true,
@@ -29,7 +29,6 @@ export default function EvidenceDrawer({
 
       return result;
     },
-    retryDelay: 1000,
   });
 
   useEffect(() => {
@@ -39,6 +38,23 @@ export default function EvidenceDrawer({
 
     void refetch();
   }, [refetchEvidence, ticket]);
+
+  const checkUrlEmpty = (url: string | null | undefined) => {
+    return url === null || url === undefined || url === "";
+  };
+
+  const hasAfter = useMemo(
+    () => !checkUrlEmpty(evidences?.afterUrl),
+    [evidences?.afterUrl]
+  );
+  const hasOnProgress = useMemo(
+    () => !checkUrlEmpty(evidences?.onProgressUrl),
+    [evidences?.onProgressUrl]
+  );
+  const hasBefore = useMemo(
+    () => !checkUrlEmpty(evidences?.beforeUrl),
+    [evidences?.beforeUrl]
+  );
 
   return (
     <Drawer
@@ -58,17 +74,19 @@ export default function EvidenceDrawer({
           <Flex align={"center"} gap={"lg"}>
             <EvidenceUploadButton
               ticketIdentifier={ticket?.identifier}
-              text="Upload Before"
+              text={hasBefore ? "Replace Before" : "Upload Before"}
               type="before"
             />
             <EvidenceUploadButton
               ticketIdentifier={ticket?.identifier}
-              text="Upload On Progress"
+              text={
+                hasOnProgress ? "Replace On Progress" : "Upload On Progress"
+              }
               type="onProgress"
             />
             <EvidenceUploadButton
               ticketIdentifier={ticket?.identifier}
-              text="Upload After"
+              text={hasAfter ? "Replace After" : "Upload After"}
               type="after"
             />
           </Flex>
@@ -77,16 +95,28 @@ export default function EvidenceDrawer({
 
       <Grid px={"md"} mx={"xl"} mt={"md"}>
         <Grid.Col span={4}>
-          <EvidenceImageItem label="Before" src={evidences?.beforeUrl} />
+          <EvidenceImageItem
+            label="Before"
+            src={evidences?.beforeUrl}
+            identifier={ticket?.identifier}
+            type="before"
+          />
         </Grid.Col>
         <Grid.Col span={4}>
           <EvidenceImageItem
             label="On Progress"
             src={evidences?.onProgressUrl}
+            identifier={ticket?.identifier}
+            type="onProgress"
           />
         </Grid.Col>
         <Grid.Col span={4}>
-          <EvidenceImageItem label="After" src={evidences?.afterUrl} />
+          <EvidenceImageItem
+            label="After"
+            src={evidences?.afterUrl}
+            identifier={ticket?.identifier}
+            type="after"
+          />
         </Grid.Col>
       </Grid>
     </Drawer>

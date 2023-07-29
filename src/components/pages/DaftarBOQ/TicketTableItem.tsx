@@ -1,5 +1,5 @@
 import { LopTicket } from "@api/types/tickets";
-import { Flex } from "@mantine/core";
+import { Flex, Tooltip } from "@mantine/core";
 import { IconEdit, IconEye } from "@tabler/icons-react";
 import StatusAccTiket from "./StatusAccTiket";
 import StatusEvidenceTiket from "./StatusEvidenceTiket";
@@ -25,10 +25,12 @@ export default function TicketTableItem({
       </td>
       <td>
         <Flex justify={"center"} className="group">
-          <IconEdit
-            className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
-            onClick={() => openModal(ticket)}
-          />
+          <Tooltip label={"Edit Volume"}>
+            <IconEdit
+              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+              onClick={() => openModal(ticket)}
+            />
+          </Tooltip>
         </Flex>
       </td>
       <td>
@@ -36,10 +38,12 @@ export default function TicketTableItem({
       </td>
       <td>
         <Flex justify={"center"} className="group">
-          <IconEye
-            onClick={() => openEvidenceDrawer(ticket)}
-            className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
-          />
+          <Tooltip label={"Lihat Evidence"}>
+            <IconEye
+              onClick={() => openEvidenceDrawer(ticket)}
+              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+            />
+          </Tooltip>
         </Flex>
       </td>
       <td>Catatan UT</td>

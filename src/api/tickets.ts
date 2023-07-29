@@ -68,7 +68,7 @@ export async function getListTicketLocations({
   return apiRequest<NestResponse<GetAllTicketLocationsResponse>>(request);
 }
 
-export async function getEvidences(
+export async function getTicketEvidences(
   ticketIdentifier: string,
   select: {
     after: boolean;
@@ -90,7 +90,7 @@ export async function getEvidences(
   return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
 }
 
-export async function uploadEvidence(
+export async function uploadTicketEvidence(
   ticketIdentifier: string,
   payload: {
     file: File;
@@ -104,6 +104,17 @@ export async function uploadEvidence(
   const request = axios.post<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences`,
     formData
+  );
+
+  return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
+}
+
+export async function deleteTicketEvidence(
+  ticketIdentifier: string,
+  type: "after" | "onProgress" | "before"
+) {
+  const request = axios.delete<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences/${type}`
   );
 
   return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
