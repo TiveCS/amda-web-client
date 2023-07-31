@@ -46,5 +46,7 @@ export async function editLop(payload: { name: string; lopId: number }) {
 export async function removeLop(payload: { lopId: number }) {
   const request = axios.delete<never>(`${LOPS_URL}/${payload.lopId}`);
 
-  return apiRequest<NestResponse<unknown>>(request);
+  const result = await apiRequest<NestResponse<unknown>>(request);
+
+  return result;
 }

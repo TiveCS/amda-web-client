@@ -1,6 +1,6 @@
 import axios from "axios";
-import { LOPS_ACTIVITIES_URL } from "./routes";
 import { apiRequest } from "./helpers";
+import { LOPS_ACTIVITIES_URL } from "./routes";
 import { NestResponse } from "./types/common";
 
 export async function removeActivity(activityId: number) {
@@ -13,7 +13,7 @@ export async function addActivity(payload: {
   lopId: number;
   stoId: number;
   ticketIdentifier: string;
-  ticketLocation?: string;
+  ticketLocation: string | null;
   inputAt: Date;
   isForMitra: boolean;
   workType: string;
@@ -33,7 +33,7 @@ export async function editActivity(
     lopId: number;
     stoId: number;
     ticketIdentifier: string;
-    ticketLocation?: string;
+    ticketLocation: string | null;
     inputAt: Date;
     isForMitra: boolean;
     workType: string;
@@ -42,7 +42,10 @@ export async function editActivity(
 ) {
   const request = axios.put<never>(`${LOPS_ACTIVITIES_URL}/${activityId}`, {
     ...payload,
-    ticketLocation: payload.ticketLocation ? payload.ticketLocation : undefined,
+    ticketLocation:
+      payload.ticketLocation || payload.ticketIdentifier.trim().length > 0
+        ? payload.ticketLocation?.trim()
+        : undefined,
   });
 
   return apiRequest<NestResponse<unknown>>(request);

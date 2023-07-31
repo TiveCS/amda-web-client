@@ -47,16 +47,20 @@ export default function Sidebar() {
           <Accordion
             items={[
               {
+                title: "Designator",
+                to: "/designator",
+              },
+              {
                 title: "Kegiatan Mitra",
                 to: "/boq/kegiatan-mitra",
               },
               {
-                title: "Info Volume",
-                to: "/boq/kegiatan-mitra/volume",
+                title: "Daftar BOQ",
+                to: "/boq",
               },
               {
-                title: "Laporan BOQ",
-                to: "/boq",
+                title: "Status BOQ",
+                to: "/boq/status",
               },
             ]}
             text="BOQ"

@@ -1,10 +1,13 @@
 import { getLops } from "@api/lops";
+import { Lop, LopActivity } from "@api/types/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
 import AddKegiatanModal from "@components/pages/DaftarKegiatan/AddKegiatanModal";
 import AddLopModal from "@components/pages/DaftarKegiatan/AddLopModal";
+import EditKegiatanModal from "@components/pages/DaftarKegiatan/EditKegiatanModal";
 import LopTableItem from "@components/pages/DaftarKegiatan/LopTableItem";
 import RemoveActivityModal from "@components/pages/DaftarKegiatan/RemoveActivityModal";
 import RemoveLopModal from "@components/pages/DaftarKegiatan/RemoveLopModal";
+import useActivityForm from "@hooks/useActivityForm";
 import { Container, Flex, Grid, Table } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
@@ -16,10 +19,9 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { Lop, LopActivity } from "@api/types/lops";
-import EditKegiatanModal from "@components/pages/DaftarKegiatan/EditKegiatanModal";
+import FilterKegiatanModal from "@components/pages/DaftarKegiatan/FilterKegiatanModal";
 
 const DaftarKegiatan: React.FC = () => {
   const searchForm = useForm({
@@ -29,15 +31,17 @@ const DaftarKegiatan: React.FC = () => {
   });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
-  const [listRemoveActivity, setListRemoveActivity] = React.useState<number[]>(
-    []
-  );
+  const [selectedActivities, setSelectedActivities] = React.useState<
+    LopActivity[]
+  >([]);
 
   const [removeLop, setRemoveLop] = React.useState<Lop | null>(null);
 
   const [editActivity, setEditActivity] = React.useState<LopActivity | null>(
     null
   );
+
+  const { form: editForm, updateForm: updateEditForm } = useActivityForm({});
 
   const [
     openedAddKegiatan,
@@ -51,42 +55,58 @@ const DaftarKegiatan: React.FC = () => {
   ] = useDisclosure(false);
   const [openedRemoveLop, { open: openRemoveLop, close: closeRemoveLop }] =
     useDisclosure(false);
+  const [
+    openedFilterActivity,
+    { open: openFilterActivity, close: closeFilterActivity },
+  ] = useDisclosure(false);
 
   const [
     openedEditActivity,
     { open: openEditActivity, close: closeEditActivity },
   ] = useDisclosure(false);
 
-  const getListLopQuery = useInfiniteQuery({
-    queryKey: ["lops"],
-    queryFn: async ({ pageParam = 0 }) => {
-      const lops = await getLops({
-        search: searchDebounced,
-        cursor: pageParam as number,
-        take: 5,
-      });
+  const { refetch: refetchListLopQuery, ...getListLopQuery } = useInfiniteQuery(
+    {
+      queryKey: ["lops"],
+      queryFn: async ({ pageParam = 0 }) => {
+        const lops = await getLops({
+          search: searchDebounced,
+          cursor: pageParam as number,
+          take: 5,
+        });
 
-      return { nextCursor: lops.nextCursor, lops: lops.data };
-    },
+        return { nextCursor: lops.nextCursor, lops: lops.data };
+      },
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  );
 
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-  });
+  useEffect(() => {
+    void refetchListLopQuery();
+  }, [refetchListLopQuery, searchDebounced]);
 
   return (
     <>
-      {/* TODO: Implement edit kegiatan */}
+      <FilterKegiatanModal
+        isOpen={openedFilterActivity}
+        closeModal={closeFilterActivity}
+      />
+
       <EditKegiatanModal
         isOpen={openedEditActivity}
         closeModal={closeEditActivity}
-        editActivity={editActivity}
+        currentActivity={editActivity}
         setEditActivity={setEditActivity}
+        setSelectedActivities={setSelectedActivities}
+        editForm={editForm}
+        updateEditForm={updateEditForm}
       />
 
       <RemoveActivityModal
         isOpen={openedRemoveActivity}
         closeModal={closeRemoveActivity}
-        listRemoveActivity={listRemoveActivity}
-        setListRemoveActivity={setListRemoveActivity}
+        listRemoveActivity={selectedActivities}
+        setSelectedActivities={setSelectedActivities}
       />
 
       <RemoveLopModal
@@ -111,19 +131,25 @@ const DaftarKegiatan: React.FC = () => {
           </Grid.Col>
           <Grid.Col span={6}>
             <Flex justify={"flex-end"} gap={"md"}>
-              <ButtonAMDA variant="outline">
+              <ButtonAMDA variant="outline" onClick={openFilterActivity}>
                 <IconFilter></IconFilter>
               </ButtonAMDA>{" "}
               <ButtonAMDA
                 variant="outline"
-                disabled={listRemoveActivity.length !== 1}
+                onClick={() => {
+                  if (selectedActivities.length !== 1) return;
+                  setEditActivity(selectedActivities[0]);
+                  updateEditForm(selectedActivities[0]);
+                  openEditActivity();
+                }}
+                disabled={selectedActivities.length !== 1}
               >
                 <IconEdit></IconEdit>
               </ButtonAMDA>
               <ButtonAMDA
                 variant="outline"
                 onClick={openRemoveActivity}
-                disabled={listRemoveActivity.length === 0}
+                disabled={selectedActivities.length === 0}
               >
                 <IconTrash></IconTrash>
               </ButtonAMDA>{" "}
@@ -165,8 +191,9 @@ const DaftarKegiatan: React.FC = () => {
                   <LopTableItem
                     key={lop.id}
                     lop={lop}
+                    selectedActivities={selectedActivities}
                     openRemoveLop={openRemoveLop}
-                    setListRemoveActivity={setListRemoveActivity}
+                    setSelectedActivities={setSelectedActivities}
                     setRemoveLop={setRemoveLop}
                   />
                 ))}

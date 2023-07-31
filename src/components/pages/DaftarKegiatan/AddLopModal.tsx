@@ -3,7 +3,7 @@ import ButtonAMDA from "@components/ButtonAMDA";
 import { Flex, Modal, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AddLopModalProps {
   openedAddLOP: boolean;
@@ -14,6 +14,7 @@ export default function AddLopModal({
   closeAddLOP,
   openedAddLOP,
 }: AddLopModalProps) {
+  const queryClient = useQueryClient();
   const addLopForm = useForm({
     initialValues: {
       name: "",
@@ -38,7 +39,8 @@ export default function AddLopModal({
         color: "blue",
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["lops"]);
       showNotification({
         title: "Success",
         message: "Berhasil menambahkan LOP",
