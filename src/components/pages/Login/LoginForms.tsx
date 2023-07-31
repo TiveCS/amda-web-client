@@ -1,11 +1,19 @@
 import { getProfile, login } from "@api/auth";
 import ButtonAMDA from "@components/ButtonAMDA";
-import { Box, Flex, Group, PasswordInput, TextInput } from "@mantine/core";
+import {
+  Image,
+  Card,
+  Flex,
+  Group,
+  PasswordInput,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useMutation } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
 import { useNavigate } from "react-router-dom";
+import Logo from "/assets/img/amda-hitam.png";
 
 export default function LoginForms() {
   const navigate = useNavigate();
@@ -75,7 +83,8 @@ export default function LoginForms() {
   };
 
   return (
-    <Box className="bg-gray-50 px-8 max-w-sm py-8 w-full">
+    <Card className="bg-gray-50 px-8 max-w-sm py-8 w-full" radius="md">
+      <Image maw={200} mx="auto" src={Logo} alt="logo amda" className="mb-8" />
       <form onSubmit={form.onSubmit((values) => void handleLogin(values))}>
         <Flex gap={"md"} direction={"column"}>
           <TextInput
@@ -99,6 +108,6 @@ export default function LoginForms() {
           </Group>
         </Flex>
       </form>
-    </Box>
+    </Card>
   );
 }
