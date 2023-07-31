@@ -5,7 +5,7 @@ import { Flex } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import moment from "moment";
+import dayjs from "dayjs";
 
 interface AgendaItemTableProps {
   agenda: AgendaResponsePayload;
@@ -52,7 +52,6 @@ export default function UserItemTable({
   openRemoveAgendaModal: openRemoveAgendaModal,
   openEditAgendaModal: openEditAgendaModal,
 }: AgendaItemTableProps) {
-  const waktuMoment = agenda.time.toString();
   const waktu = new Date(agenda.time);
 
   const getListUserQuery = useQuery({
@@ -75,7 +74,7 @@ export default function UserItemTable({
 
   return (
     <tr>
-      <td>{moment(waktuMoment).format("DD-MM-YYYY HH:mm A")}</td>
+      <td>{dayjs(waktu).format("DD-MM-YYYY HH:mm A")}</td>
       <td>{agenda.title}</td>
       <td>{user !== undefined ? user[0].label : "??"}</td>
       <td className="w-40">
