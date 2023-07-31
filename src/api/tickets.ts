@@ -5,6 +5,8 @@ import {
   GetAllTicketLocationsResponse,
   GetAllTicketsResponse,
   GetTicketEvidencesResponse,
+  LopTicketAcceptanceStatus,
+  LopTicketEvidenceStatus,
 } from "./types/tickets";
 import { NestResponse } from "./types/common";
 
@@ -14,7 +16,7 @@ export async function getListTickets({
   take,
   location,
   identifier,
-  statusAcc,
+  acceptStatus,
   evidenceStatus,
 }: {
   take?: number;
@@ -22,8 +24,8 @@ export async function getListTickets({
   search?: string;
   location?: string[];
   identifier?: string[];
-  statusAcc?: boolean | null;
-  evidenceStatus?: boolean | null;
+  acceptStatus?: LopTicketAcceptanceStatus | null;
+  evidenceStatus?: LopTicketEvidenceStatus | null;
 }) {
   const request = axios.get<never>(`${LOPS_TICKETS_URL}`, {
     params: {
@@ -34,12 +36,8 @@ export async function getListTickets({
       identifier: identifier && identifier.length > 0 ? identifier : undefined,
 
       location: location && location.length > 0 ? location : undefined,
-      isAccepted:
-        statusAcc !== undefined && statusAcc !== null ? statusAcc : undefined,
-      isEvidenceComplete:
-        evidenceStatus !== undefined && evidenceStatus !== null
-          ? evidenceStatus
-          : undefined,
+      acceptStatus: acceptStatus ? acceptStatus : undefined,
+      evidenceStatus: evidenceStatus ? evidenceStatus : undefined,
     },
   });
 
@@ -115,6 +113,48 @@ export async function deleteTicketEvidence(
 ) {
   const request = axios.delete<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences/${type}`
+  );
+
+  return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
+}
+
+export async function acceptTicket(
+  ticketIdentifier: string,
+  {
+    force = false,
+    note,
+  }: {
+    force?: boolean;
+    note?: string;
+  }
+) {
+  const request = axios.put<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
+    {
+      force,
+      note,
+      status: "ACCEPTED",
+    }
+  );
+
+  return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
+}
+
+export async function rejectTicket(
+  ticketIdentifier: string,
+  {
+    note,
+  }: {
+    note?: string;
+  }
+) {
+  const request = axios.put<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
+    {
+      force: false,
+      note,
+      status: "REJECTED",
+    }
   );
 
   return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);

@@ -52,7 +52,7 @@ const DaftarBOQ: React.FC = () => {
         search: searchDebounced,
         identifier: filterForm.form.values.identifier,
         location: filterForm.form.values.location,
-        statusAcc: filterForm.form.values.accStatus,
+        acceptStatus: filterForm.form.values.acceptStatus,
         evidenceStatus: filterForm.form.values.evidenceStatus,
       }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,

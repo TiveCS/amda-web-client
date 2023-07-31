@@ -12,7 +12,7 @@ export default function StatusVolumeTiket({ ticket }: StatusVolumeTiketProps) {
 
   return (
     <Badge fullWidth color={isCompleted ? "green" : "red"} variant="outline">
-      {isCompleted ? "Lengkap" : "Belum Dilengkapi"}
+      {isCompleted ? "Lengkap" : "Belum Lengkap"}
     </Badge>
   );
 }

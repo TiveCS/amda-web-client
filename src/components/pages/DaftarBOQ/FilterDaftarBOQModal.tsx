@@ -1,4 +1,8 @@
 import { getListTicketLocations, getListTickets } from "@api/tickets";
+import {
+  LopTicketAcceptanceStatus,
+  LopTicketEvidenceStatus,
+} from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useFilterForm from "@hooks/useFilterForm";
 import {
@@ -65,7 +69,10 @@ export default function FilterDaftarBOQModal({
           take: 10,
         });
 
-        return result.data.map((found) => found.identifier);
+        return result.data.map((found) => ({
+          value: found.identifier,
+          label: `${found.identifier} (${found.location})`,
+        }));
       },
     });
 
@@ -81,7 +88,7 @@ export default function FilterDaftarBOQModal({
     <Modal
       opened={isOpen}
       onClose={onClose}
-      title="Filter Laporan"
+      title="Filter BOQ"
       scrollAreaComponent={ScrollArea.Autosize}
       padding={"xl"}
     >
@@ -123,18 +130,18 @@ export default function FilterDaftarBOQModal({
           multiple
           label="Status Evidence"
           data={[
-            { value: "true", label: "Lengkap" },
-            { value: "false", label: "Belum Lengkap" },
+            { value: "COMPLETE", label: "Lengkap" },
+            { value: "INCOMPLETE", label: "Belum Lengkap" },
           ]}
           placeholder="Pilih status evidence"
-          value={String(filterForm.values.evidenceStatus) ?? null}
-          onChange={(value) => {
+          value={filterForm.values.evidenceStatus ?? null}
+          onChange={(value: LopTicketEvidenceStatus | null) => {
             if (value === null) {
               filterForm.setFieldValue("evidenceStatus", null);
               return;
             }
 
-            filterForm.setFieldValue("evidenceStatus", value === "true");
+            filterForm.setFieldValue("evidenceStatus", value);
           }}
         />
 
@@ -143,18 +150,19 @@ export default function FilterDaftarBOQModal({
           multiple
           label="Status ACC"
           data={[
-            { value: "true", label: "Diterima" },
-            { value: "false", label: "Belum Diterima" },
+            { value: "ACCEPTED", label: "Diterima" },
+            { value: "REJECTED", label: "Ditolak" },
+            { value: "PENDING", label: "Menunggu" },
           ]}
           placeholder="Pilih status acc"
-          value={String(filterForm.values.accStatus) ?? null}
-          onChange={(value) => {
+          value={filterForm.values.acceptStatus ?? null}
+          onChange={(value: LopTicketAcceptanceStatus | null) => {
             if (value === null) {
-              filterForm.setFieldValue("accStatus", null);
+              filterForm.setFieldValue("acceptStatus", null);
               return;
             }
 
-            filterForm.setFieldValue("accStatus", value === "true");
+            filterForm.setFieldValue("acceptStatus", value);
           }}
         />
 

@@ -1,10 +1,16 @@
 import { LopVolume } from "./volumes";
 
+export type LopTicketAcceptanceStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+
+export type LopTicketEvidenceStatus = "COMPLETE" | "INCOMPLETE";
+
 export type LopTicket = {
   id: number;
   identifier: string;
   location: string;
+  note: string | null;
   acceptedAt: Date | null;
+  acceptStatus: LopTicketAcceptanceStatus;
   volumes: LopVolume[];
   evidence: LopTicketEvidence;
 };

@@ -1,64 +1,177 @@
-import { Card, Container, Grid, Table } from "@mantine/core";
-import { IconFilter } from "@tabler/icons-react";
-import SearchBar from "../components/SearchBar/SearchBar";
+import { getListTickets } from "@api/tickets";
+import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
-import TableStatusBOQ from "@components/TableStatusBOQ";
+import EvidenceDrawer from "@components/pages/DaftarBOQ/EvidenceDrawer";
+import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQModal";
+import TableStatusBoqItem from "@components/pages/StatusBOQ/TableStatusBoqItem";
+import TicketVolumeDetailsReadOnlyModal from "@components/pages/StatusBOQ/TicketVolumeDetailsReadOnlyModal";
+import useFilterForm from "@hooks/useFilterForm";
+import { Group, ScrollArea, Skeleton, Table } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
+import { IconFilter } from "@tabler/icons-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import React, { useEffect, useMemo, useState } from "react";
+import SearchBar from "../components/SearchBar/SearchBar";
 
 const StatusBOQ: React.FC = () => {
   const searchForm = useForm({
     initialValues: { search: "" },
   });
+  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const filterForm = useFilterForm();
+
+  const [selectedTicket, setSelectedTicket] = useState<LopTicket | null>(null);
+
+  const {
+    refetch: refetchListTicketQuery,
+    isFetching: isFetchingListTicketQuery,
+    isLoading: isLoadingListTicketQuery,
+    data: listTicketQueryData,
+    ...getListTicketQuery
+  } = useInfiniteQuery({
+    queryKey: ["tickets"],
+    queryFn: async ({ pageParam = 0 }) =>
+      getListTickets({
+        cursor: pageParam as number,
+        take: 20,
+        search: searchDebounced,
+        identifier: filterForm.form.values.identifier,
+        location: filterForm.form.values.location,
+        acceptStatus: filterForm.form.values.acceptStatus,
+        evidenceStatus: filterForm.form.values.evidenceStatus,
+      }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
+
+  const [
+    isOpenFilterModal,
+    { open: openFilterModal, close: closeFilterModal },
+  ] = useDisclosure(false);
+
+  const [
+    isOpenEvidenceDrawer,
+    { open: openEvidenceDrawer, close: closeEvidenceDrawer },
+  ] = useDisclosure(false);
+
+  const [
+    isOpenVolumeDetailsModal,
+    { open: openVolumeDetailsModal, close: closeVolumeDetailsModal },
+  ] = useDisclosure(false);
+
+  useEffect(() => {
+    const refetch = async () => {
+      await refetchListTicketQuery();
+    };
+
+    void refetch();
+  }, [refetchListTicketQuery, searchDebounced]);
+
+  const ticketsTotal = useMemo(() => {
+    return listTicketQueryData?.pages.reduce(
+      (acc, page) => acc + page.data.length,
+      0
+    );
+  }, [listTicketQueryData?.pages]);
+
+  const filter = () => {
+    void refetchListTicketQuery();
+    closeFilterModal();
+  };
 
   return (
     <>
-      <Container className="mt-8 font-['Poppins']">
-        <p className="font-semibold text-xl text-black">Status BOQ</p>
-      </Container>
-      <Container className="mt-5">
-        <Grid>
-          <Grid.Col span={10}>
-            <SearchBar searchForm={searchForm} />
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <ButtonAMDA variant="outline">
-              <IconFilter></IconFilter>
-            </ButtonAMDA>{" "}
-          </Grid.Col>
-        </Grid>
-      </Container>
-      <Container>
-        <Card
-          withBorder
-          className="mt-4 overflow-y-scroll"
-          style={{ width: 870, height: 380 }}
+      <FilterDaftarBOQModal
+        isOpen={isOpenFilterModal}
+        onClose={closeFilterModal}
+        filterForm={filterForm.form}
+        filter={filter}
+      />
+
+      <EvidenceDrawer
+        opened={isOpenEvidenceDrawer}
+        onClose={() => {
+          setSelectedTicket(null);
+          closeEvidenceDrawer();
+        }}
+        ticket={selectedTicket}
+      />
+
+      <TicketVolumeDetailsReadOnlyModal
+        isOpen={isOpenVolumeDetailsModal}
+        onClose={closeVolumeDetailsModal}
+        setSelectedTicket={setSelectedTicket}
+        ticket={selectedTicket}
+      />
+
+      <p className="font-semibold text-xl mt-8 mx-4 text-black">Status BOQ</p>
+
+      <Group grow className="my-2 mx-4">
+        <SearchBar searchForm={searchForm} />
+
+        <Group>
+          <ButtonAMDA variant="outline" onClick={openFilterModal}>
+            <IconFilter></IconFilter>
+          </ButtonAMDA>
+        </Group>
+      </Group>
+
+      <ScrollArea.Autosize className="max-h-1/2 mt-4 mx-4">
+        <Skeleton
+          visible={isFetchingListTicketQuery || isLoadingListTicketQuery}
         >
           <Table striped withBorder withColumnBorders>
             <thead>
               <tr>
-                <th>Tiket Insident</th>
-                <th>Work Desc</th>
-                <th>Detail Volume</th>
-                <th>Evidence</th>
+                <th className="w-24">ID Tiket</th>
+                <th className="w-36">Lokasi Tiket</th>
+                <th className="w-12">Detail Volume</th>
+                <th className="w-12">Evidence</th>
                 <th>Catatan Uji Terima</th>
-                <th>Status</th>
-                <th>Button Acc</th>
+                <th className="w-28">Status</th>
+                <th className="w-[10%]">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <TableStatusBOQ
-                noTiket="IN12345678"
-                workDesc="Jl. Kelud"
-              ></TableStatusBOQ>
-              <TableStatusBOQ
-                noTiket="IN12345678"
-                workDesc="Jl. Kelud"
-                statusAcc="sudah acc"
-              ></TableStatusBOQ>
+              {ticketsTotal === 0 && (
+                <tr>
+                  <td colSpan={7}>
+                    <p className="text-center">Tidak ada data</p>
+                  </td>
+                </tr>
+              )}
+
+              {listTicketQueryData?.pages.map((page, i) => (
+                <React.Fragment key={i}>
+                  {page.data.map((ticket, index) => (
+                    <TableStatusBoqItem
+                      key={index}
+                      ticket={ticket}
+                      openDetailModal={() => {
+                        setSelectedTicket(ticket);
+                        openVolumeDetailsModal();
+                      }}
+                      openEvidenceDrawer={() => {
+                        setSelectedTicket(ticket);
+                        openEvidenceDrawer();
+                      }}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
             </tbody>
           </Table>
-        </Card>
-      </Container>
+        </Skeleton>
+      </ScrollArea.Autosize>
+
+      <ButtonAMDA
+        disabled={getListTicketQuery.hasNextPage}
+        loading={isFetchingListTicketQuery || isLoadingListTicketQuery}
+        className="ml-4 mt-4"
+      >
+        Load More
+      </ButtonAMDA>
     </>
   );
 };

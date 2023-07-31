@@ -1,21 +1,25 @@
+import {
+  LopTicketAcceptanceStatus,
+  LopTicketEvidenceStatus,
+} from "@api/types/tickets";
 import { useForm } from "@mantine/form";
 
 export default function useFilterForm() {
-  const filterForm = useForm<{
+  const form = useForm<{
     location: string[];
     identifier: string[];
     volumeStatus: boolean | null;
-    evidenceStatus: boolean | null;
-    accStatus: boolean | null;
+    evidenceStatus: LopTicketEvidenceStatus | null;
+    acceptStatus: LopTicketAcceptanceStatus | null;
   }>({
     initialValues: {
       location: [],
       identifier: [],
       volumeStatus: null,
       evidenceStatus: null,
-      accStatus: null,
+      acceptStatus: null,
     },
   });
 
-  return { form: filterForm };
+  return { form };
 }

@@ -59,6 +59,7 @@ export default function EvidenceImageItem({
       });
     },
     onSuccess: async () => {
+      await queryClient.invalidateQueries(["tickets"]);
       await queryClient.invalidateQueries([
         "evidence_drawer_evidence",
         identifier,
