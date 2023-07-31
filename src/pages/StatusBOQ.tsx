@@ -1,4 +1,3 @@
-import { getListTickets } from "@api/tickets";
 import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import EvidenceDrawer from "@components/pages/DaftarBOQ/EvidenceDrawer";
@@ -6,13 +5,16 @@ import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQMod
 import TableStatusBoqItem from "@components/pages/StatusBOQ/TableStatusBoqItem";
 import TicketVolumeDetailsReadOnlyModal from "@components/pages/StatusBOQ/TicketVolumeDetailsReadOnlyModal";
 import useFilterForm from "@hooks/useFilterForm";
-import { Group, ScrollArea, Skeleton, Table } from "@mantine/core";
+import useGetListTicketsQuery from "@hooks/useGetListTicketsQuery";
+import { Flex, Group, ScrollArea, Skeleton, Table, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconFilter } from "@tabler/icons-react";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import TicketStatusConfirmModal from "@components/pages/StatusBOQ/TicketStatusConfirmModal";
+import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
+import useTicketStatusMutation from "@hooks/useTicketStatusMutation";
 
 const StatusBOQ: React.FC = () => {
   const searchForm = useForm({
@@ -25,24 +27,14 @@ const StatusBOQ: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<LopTicket | null>(null);
 
   const {
-    refetch: refetchListTicketQuery,
-    isFetching: isFetchingListTicketQuery,
-    isLoading: isLoadingListTicketQuery,
-    data: listTicketQueryData,
-    ...getListTicketQuery
-  } = useInfiniteQuery({
-    queryKey: ["tickets"],
-    queryFn: async ({ pageParam = 0 }) =>
-      getListTickets({
-        cursor: pageParam as number,
-        take: 20,
-        search: searchDebounced,
-        identifier: filterForm.form.values.identifier,
-        location: filterForm.form.values.location,
-        acceptStatus: filterForm.form.values.acceptStatus,
-        evidenceStatus: filterForm.form.values.evidenceStatus,
-      }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    refetchListTicketQuery,
+    isFetchingListTicketQuery,
+    isLoadingListTicketQuery,
+    listTicketQueryData,
+    getListTicketQuery,
+  } = useGetListTicketsQuery({
+    filterForm,
+    searchDebounced,
   });
 
   const [
@@ -58,6 +50,11 @@ const StatusBOQ: React.FC = () => {
   const [
     isOpenVolumeDetailsModal,
     { open: openVolumeDetailsModal, close: closeVolumeDetailsModal },
+  ] = useDisclosure(false);
+
+  const [
+    isOpenUpdateConfirm,
+    { open: openUpdateConfirm, close: closeUpdateConfirm },
   ] = useDisclosure(false);
 
   useEffect(() => {
@@ -80,6 +77,13 @@ const StatusBOQ: React.FC = () => {
     closeFilterModal();
   };
 
+  const updateStatusForm = useTicketStatusUpdateForm();
+  const ticketStatusMutation = useTicketStatusMutation({
+    form: updateStatusForm,
+    identifier: selectedTicket?.identifier,
+    closeConfirmModal: closeUpdateConfirm,
+  });
+
   return (
     <>
       <FilterDaftarBOQModal
@@ -87,6 +91,17 @@ const StatusBOQ: React.FC = () => {
         onClose={closeFilterModal}
         filterForm={filterForm.form}
         filter={filter}
+      />
+
+      <TicketStatusConfirmModal
+        isOpen={isOpenUpdateConfirm}
+        form={updateStatusForm}
+        ticketStatusMutation={ticketStatusMutation}
+        onClose={() => {
+          setSelectedTicket(null);
+          closeUpdateConfirm();
+        }}
+        ticket={selectedTicket}
       />
 
       <EvidenceDrawer
@@ -130,7 +145,7 @@ const StatusBOQ: React.FC = () => {
                 <th className="w-12">Evidence</th>
                 <th>Catatan Uji Terima</th>
                 <th className="w-28">Status</th>
-                <th className="w-[10%]">Actions</th>
+                <th className="w-28">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -148,6 +163,11 @@ const StatusBOQ: React.FC = () => {
                     <TableStatusBoqItem
                       key={index}
                       ticket={ticket}
+                      updateStatusForm={updateStatusForm}
+                      openConfirmModal={() => {
+                        setSelectedTicket(ticket);
+                        openUpdateConfirm();
+                      }}
                       openDetailModal={() => {
                         setSelectedTicket(ticket);
                         openVolumeDetailsModal();
@@ -165,13 +185,19 @@ const StatusBOQ: React.FC = () => {
         </Skeleton>
       </ScrollArea.Autosize>
 
-      <ButtonAMDA
-        disabled={getListTicketQuery.hasNextPage}
-        loading={isFetchingListTicketQuery || isLoadingListTicketQuery}
-        className="ml-4 mt-4"
-      >
-        Load More
-      </ButtonAMDA>
+      <Flex direction={"row"} gap={"xl"} align={"center"} className="mt-6 ml-4">
+        <ButtonAMDA
+          disabled={!getListTicketQuery.hasNextPage}
+          loading={isFetchingListTicketQuery || isLoadingListTicketQuery}
+          onClick={getListTicketQuery.fetchNextPage}
+        >
+          Load More
+        </ButtonAMDA>
+
+        <Text>
+          Menampilkan <strong>{ticketsTotal}</strong> tiket
+        </Text>
+      </Flex>
     </>
   );
 };

@@ -1,5 +1,5 @@
 import { LopTicket } from "@api/types/tickets";
-import { Flex, Tooltip } from "@mantine/core";
+import { Flex, Text, Tooltip } from "@mantine/core";
 import { IconEdit, IconEye } from "@tabler/icons-react";
 import StatusAccTiket from "./StatusAccTiket";
 import StatusEvidenceTiket from "./StatusEvidenceTiket";
@@ -46,7 +46,17 @@ export default function TicketTableItem({
           </Tooltip>
         </Flex>
       </td>
-      <td>Catatan UT</td>
+      <td>
+        {ticket.note ? (
+          <Text color="dark" truncate>
+            {ticket.note}
+          </Text>
+        ) : (
+          <Text color="gray" truncate>
+            Tidak ada catatan.
+          </Text>
+        )}
+      </td>
       <td>
         <StatusAccTiket ticket={ticket} />
       </td>

@@ -1,10 +1,12 @@
-import { getListTickets } from "@api/tickets";
 import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
+import EvidenceDrawer from "@components/pages/DaftarBOQ/EvidenceDrawer";
+import ExportConfirmModal from "@components/pages/DaftarBOQ/ExportConfirmModal";
 import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQModal";
 import TicketTableItem from "@components/pages/DaftarBOQ/TicketTableItem";
 import TicketVolumeDetailsModal from "@components/pages/DaftarBOQ/TicketVolumeDetailsModal";
 import useFilterForm from "@hooks/useFilterForm";
+import useGetListTicketsQuery from "@hooks/useGetListTicketsQuery";
 import useVolumeDetailsForm from "@hooks/useVolumeDetailsForm";
 import {
   Container,
@@ -18,11 +20,8 @@ import {
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconDownload, IconFilter } from "@tabler/icons-react";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import ExportConfirmModal from "@components/pages/DaftarBOQ/ExportConfirmModal";
-import EvidenceDrawer from "@components/pages/DaftarBOQ/EvidenceDrawer";
 
 const DaftarBOQ: React.FC = () => {
   const searchForm = useForm({
@@ -38,24 +37,14 @@ const DaftarBOQ: React.FC = () => {
   const filterForm = useFilterForm();
 
   const {
-    refetch: refetchListTicketQuery,
-    isFetching: isFetchingListTicketQuery,
-    isLoading: isLoadingListTicketQuery,
-    data: listTicketQueryData,
-    ...getListTicketQuery
-  } = useInfiniteQuery({
-    queryKey: ["tickets"],
-    queryFn: async ({ pageParam = 0 }) =>
-      getListTickets({
-        cursor: pageParam as number,
-        take: 20,
-        search: searchDebounced,
-        identifier: filterForm.form.values.identifier,
-        location: filterForm.form.values.location,
-        acceptStatus: filterForm.form.values.acceptStatus,
-        evidenceStatus: filterForm.form.values.evidenceStatus,
-      }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    refetchListTicketQuery,
+    isFetchingListTicketQuery,
+    isLoadingListTicketQuery,
+    listTicketQueryData,
+    getListTicketQuery,
+  } = useGetListTicketsQuery({
+    filterForm,
+    searchDebounced,
   });
 
   useEffect(() => {

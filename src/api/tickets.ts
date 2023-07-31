@@ -122,17 +122,17 @@ export async function acceptTicket(
   ticketIdentifier: string,
   {
     force = false,
-    note,
+    note = null,
   }: {
     force?: boolean;
-    note?: string;
+    note: string | null;
   }
 ) {
   const request = axios.put<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
     {
       force,
-      note,
+      note: note ? note : undefined,
       status: "ACCEPTED",
     }
   );
@@ -143,16 +143,16 @@ export async function acceptTicket(
 export async function rejectTicket(
   ticketIdentifier: string,
   {
-    note,
+    note = null,
   }: {
-    note?: string;
+    note?: string | null;
   }
 ) {
   const request = axios.put<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
     {
       force: false,
-      note,
+      note: note ? note : undefined,
       status: "REJECTED",
     }
   );

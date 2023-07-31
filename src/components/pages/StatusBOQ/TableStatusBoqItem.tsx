@@ -1,19 +1,36 @@
 import { LopTicket } from "@api/types/tickets";
+import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
 import { ActionIcon, Flex, Text, Tooltip } from "@mantine/core";
 import { IconCheck, IconEye, IconPhoto, IconX } from "@tabler/icons-react";
 import StatusAccTiket from "../DaftarBOQ/StatusAccTiket";
 
 interface TableStatusBoqItemProps {
   ticket: LopTicket;
+  updateStatusForm: ReturnType<typeof useTicketStatusUpdateForm>;
   openEvidenceDrawer: () => void;
   openDetailModal: () => void;
+  openConfirmModal: () => void;
 }
 
 export default function TableStatusBoqItem({
   ticket,
+  updateStatusForm,
   openEvidenceDrawer,
   openDetailModal,
+  openConfirmModal,
 }: TableStatusBoqItemProps) {
+  const handleAccept = () => {
+    updateStatusForm.setFieldValue("status", "ACCEPTED");
+    updateStatusForm.setFieldValue("note", ticket.note ?? null);
+    openConfirmModal();
+  };
+
+  const handleReject = () => {
+    updateStatusForm.setFieldValue("status", "REJECTED");
+    updateStatusForm.setFieldValue("note", ticket.note ?? null);
+    openConfirmModal();
+  };
+
   return (
     <tr>
       <td>{ticket.identifier}</td>
@@ -40,9 +57,13 @@ export default function TableStatusBoqItem({
       </td>
       <td>
         {ticket.note ? (
-          <Text color="dark">{ticket.note}</Text>
+          <Text color="dark" truncate>
+            {ticket.note}
+          </Text>
         ) : (
-          <Text color="gray">Tidak ada catatan.</Text>
+          <Text color="gray" truncate>
+            Tidak ada catatan.
+          </Text>
         )}
       </td>
       <td>
@@ -60,6 +81,7 @@ export default function TableStatusBoqItem({
               color="blue"
               variant="light"
               disabled={ticket.acceptStatus === "ACCEPTED"}
+              onClick={handleAccept}
             >
               <IconCheck size={"1.25rem"} />
             </ActionIcon>
@@ -70,6 +92,7 @@ export default function TableStatusBoqItem({
               color="pink"
               variant="light"
               disabled={ticket.acceptStatus === "REJECTED"}
+              onClick={handleReject}
             >
               <IconX size={"1.25rem"} />
             </ActionIcon>
