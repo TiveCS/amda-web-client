@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Container, Card, Table, Flex } from "@mantine/core";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Container,
+  Card,
+  Table,
+  Flex,
+  Skeleton,
+  ScrollArea,
+} from "@mantine/core";
 import { Calendar } from "@mantine/dates";
 import ButtonAMDA from "@components/ButtonAMDA";
 import AddAgendaModal from "@components/pages/AgendaTim/AddAgendaModal";
@@ -71,10 +78,13 @@ const AgendaTim: React.FC = () => {
   };
 
   useEffect(() => {
-    refetchListAgenda();
-  }, [selected]);
+    void refetchListAgenda();
+  }, [refetchListAgenda, selected]);
 
-  if (getListAgendaQuery.isLoading) return <p>Loading...</p>;
+  const agendaTotal = useMemo(() => {
+    if (!getListAgendaQuery.data?.data) return 0;
+    return getListAgendaQuery.data?.data.length;
+  }, [getListAgendaQuery.data?.data]);
 
   return (
     <>
@@ -105,11 +115,12 @@ const AgendaTim: React.FC = () => {
         <p className="font-semibold text-left text-xl text-black">Agenda Tim</p>
       </Container>
 
-      <Container mt={24}>
-        <Flex>
-          <Container>
+      <Container mt={24} fluid>
+        <Flex justify={"space-between"}>
+          <Flex direction={"column"}>
             <Card withBorder>
               <Calendar
+                locale="id-ID"
                 getDayProps={(date) => ({
                   selected: selected?.toDateString() === date.toDateString(),
                   onClick: () => handleSelect(date),
@@ -117,38 +128,53 @@ const AgendaTim: React.FC = () => {
               />
             </Card>
             <ButtonAMDA
-              className="mt-4"
+              className="mt-4 w-fit"
               onClick={openAddAgenda}
               leftIcon={<IconCirclePlus />}
             >
               Add Agenda
             </ButtonAMDA>
-          </Container>
-          <Container fluid className="overflow-y-scroll">
-            <Table striped withBorder withColumnBorders>
-              <thead>
-                <tr>
-                  <th className="w-32">Waktu</th>
-                  <th className="w-40">Agenda</th>
-                  <th className="w-40">PIC</th>
-                  <th className="w-40">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {getListAgendaQuery.data?.data.map((agenda) => (
-                  <AgendaItemTable
-                    key={agenda.id}
-                    agenda={agenda}
-                    editAgendaForm={editAgendaForm}
-                    setRemoveAgenda={setRemoveAgenda}
-                    setEditAgenda={setEditAgenda}
-                    openRemoveAgendaModal={openRemoveAgenda}
-                    openEditAgendaModal={openEditAgenda}
-                  />
-                ))}
-              </tbody>
-            </Table>
-          </Container>
+          </Flex>
+
+          <ScrollArea.Autosize className="max-h-[50%]">
+            <Skeleton
+              visible={
+                getListAgendaQuery.isLoading || getListAgendaQuery.isFetching
+              }
+            >
+              <Table striped withBorder withColumnBorders>
+                <thead>
+                  <tr>
+                    <th className="w-32">Waktu</th>
+                    <th className="w-40">Agenda</th>
+                    <th className="w-40">PIC</th>
+                    <th className="w-40">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {agendaTotal === 0 && (
+                    <tr>
+                      <td colSpan={4} className="text-center">
+                        <p>Tidak ada agenda</p>
+                      </td>
+                    </tr>
+                  )}
+
+                  {getListAgendaQuery.data?.data.map((agenda) => (
+                    <AgendaItemTable
+                      key={agenda.id}
+                      agenda={agenda}
+                      editAgendaForm={editAgendaForm}
+                      setRemoveAgenda={setRemoveAgenda}
+                      setEditAgenda={setEditAgenda}
+                      openRemoveAgendaModal={openRemoveAgenda}
+                      openEditAgendaModal={openEditAgenda}
+                    />
+                  ))}
+                </tbody>
+              </Table>
+            </Skeleton>
+          </ScrollArea.Autosize>
         </Flex>
       </Container>
     </>

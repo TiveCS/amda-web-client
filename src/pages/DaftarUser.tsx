@@ -5,12 +5,20 @@ import AddUserModal from "@components/pages/DaftarUser/AddUserModal";
 import EditUserModal from "@components/pages/DaftarUser/EditUserModal";
 import UserItemTable from "@components/pages/DaftarUser/UserItemTable";
 import RemoveUserModal from "@components/pages/DaftarUser/RemoveUserModal";
-import { Container, Flex, Grid, Table } from "@mantine/core";
+import {
+  Container,
+  Flex,
+  Grid,
+  ScrollArea,
+  Skeleton,
+  Table,
+  Text,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconCirclePlus } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
 
 const DaftarUser: React.FC = () => {
@@ -48,7 +56,7 @@ const DaftarUser: React.FC = () => {
     },
   });
 
-  const getListUserQuery = useInfiniteQuery({
+  const { refetch: refetchListUsers, ...getListUserQuery } = useInfiniteQuery({
     queryKey: ["user"],
     queryFn: async ({ pageParam = 0 }) =>
       getListUser({
@@ -60,10 +68,15 @@ const DaftarUser: React.FC = () => {
   });
 
   useEffect(() => {
-    void getListUserQuery.refetch();
-  }, [searchDebounced, getListUserQuery]);
+    void refetchListUsers();
+  }, [searchDebounced, refetchListUsers]);
 
-  if (getListUserQuery.isLoading) return <p>Loading...</p>;
+  const usersTotal = useMemo(() => {
+    return getListUserQuery.data?.pages.reduce(
+      (acc, page) => acc + page.data.length,
+      0
+    );
+  }, [getListUserQuery.data]);
 
   return (
     <>
@@ -110,44 +123,61 @@ const DaftarUser: React.FC = () => {
         </Flex>
       </Container>
 
-      <Container fluid mt={24} className="max-h-[60%] overflow-y-scroll">
-        <Table striped withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>Role</th>
-              <th>Username</th>
-              <th>Nama</th>
-              <th>Mitra</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getListUserQuery.data?.pages.map((group, i) => (
-              <React.Fragment key={i}>
-                {group.data.map((user) => (
-                  <UserItemTable
-                    key={user.id}
-                    user={user}
-                    editUserForm={editUserForm}
-                    setRemoveUser={setRemoveUser}
-                    setEditUser={setEditUser}
-                    openRemoveUserModal={openRemoveUser}
-                    openEditUserModal={openEditUser}
-                  />
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </Table>
-      </Container>
+      <ScrollArea.Autosize mt={24} className="max-h-[60%] mx-4">
+        <Skeleton
+          visible={getListUserQuery.isFetching || getListUserQuery.isLoading}
+        >
+          <Table striped withBorder withColumnBorders>
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Nama</th>
+                <th>Mitra</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usersTotal === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    Tidak ada data
+                  </td>
+                </tr>
+              )}
 
-      <ButtonAMDA
-        className="mt-4 ml-4"
-        disabled={!getListUserQuery.hasNextPage}
-        onClick={() => getListUserQuery.fetchNextPage()}
-      >
-        Load More
-      </ButtonAMDA>
+              {getListUserQuery.data?.pages.map((group, i) => (
+                <React.Fragment key={i}>
+                  {group.data.map((user) => (
+                    <UserItemTable
+                      key={user.id}
+                      user={user}
+                      editUserForm={editUserForm}
+                      setRemoveUser={setRemoveUser}
+                      setEditUser={setEditUser}
+                      openRemoveUserModal={openRemoveUser}
+                      openEditUserModal={openEditUser}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </Table>
+        </Skeleton>
+      </ScrollArea.Autosize>
+
+      <Flex className="mt-4 ml-4" align={"center"} gap={"lg"}>
+        <ButtonAMDA
+          disabled={!getListUserQuery.hasNextPage}
+          onClick={() => getListUserQuery.fetchNextPage()}
+        >
+          Load More
+        </ButtonAMDA>
+
+        <Text>
+          Menampilkan <strong>{usersTotal}</strong> user
+        </Text>
+      </Flex>
     </>
   );
 };

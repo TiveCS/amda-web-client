@@ -5,7 +5,8 @@ export interface NestErrorResponse {
 }
 
 export interface NestResponse<T> {
-  message: string | string[];
+  message?: string | string[];
   nextCursor?: number | string;
+  meta?: { [key: string]: unknown };
   data: T;
 }
