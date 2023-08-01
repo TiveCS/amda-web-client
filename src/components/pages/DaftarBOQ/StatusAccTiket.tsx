@@ -17,7 +17,7 @@ export default function StatusAccTiket({ ticket }: StatusAccTiketProps) {
     : "red";
 
   return (
-    <Badge variant="outline" color={color}>
+    <Badge fullWidth variant="outline" color={color}>
       {isPending && "Menunggu"}
       {isAccepted && "Diterima"}
       {isRejected && "Ditolak"}
