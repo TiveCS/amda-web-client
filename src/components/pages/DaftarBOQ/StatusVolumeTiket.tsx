@@ -11,8 +11,8 @@ export default function StatusVolumeTiket({ ticket }: StatusVolumeTiketProps) {
     ticket.volumes.every((volume) => volume.value > 0);
 
   return (
-    <Badge color={isCompleted ? "green" : "red"} variant="outline">
-      {isCompleted ? "Lengkap" : "Belum Dilengkapi"}
+    <Badge fullWidth color={isCompleted ? "green" : "red"} variant="outline">
+      {isCompleted ? "Lengkap" : "Belum Lengkap"}
     </Badge>
   );
 }

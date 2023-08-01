@@ -1,7 +1,7 @@
 import { LopTicket } from "@api/types/tickets";
 import { deleteVolume } from "@api/volumes";
 import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconCross } from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import useVolumeDetailsForm from "./useVolumeDetailsForm";
@@ -65,7 +65,7 @@ export default function useRemoveVolumeMutation({
           title: "Error",
           message: error.message ?? "Gagal menghapus volume",
           color: "red",
-          icon: <IconCross />,
+          icon: <IconX />,
         });
         return;
       }
@@ -73,7 +73,7 @@ export default function useRemoveVolumeMutation({
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
-        icon: <IconCross />,
+        icon: <IconX />,
       });
     },
   });

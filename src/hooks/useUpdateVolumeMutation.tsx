@@ -1,10 +1,10 @@
 import { LopTicket } from "@api/types/tickets";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useVolumeDetailsForm from "./useVolumeDetailsForm";
 import { updateVolume } from "@api/volumes";
 import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconCross } from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import useVolumeDetailsForm from "./useVolumeDetailsForm";
 
 interface UpdateVolumeMutationHooksProps {
   ticket: LopTicket | null;
@@ -65,7 +65,7 @@ export default function useUpdateVolumeMutation({
           title: "Error",
           message: error.message ?? "Gagal mengubah volume",
           color: "red",
-          icon: <IconCross />,
+          icon: <IconX />,
         });
         return;
       }
@@ -73,7 +73,7 @@ export default function useUpdateVolumeMutation({
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
-        icon: <IconCross />,
+        icon: <IconX />,
       });
     },
   });

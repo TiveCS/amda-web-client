@@ -1,6 +1,6 @@
 import { getListRole } from "@api/role";
 import RoleItemTable from "@components/pages/DaftarRole/RoleItemTable";
-import { Container, Flex, Table } from "@mantine/core";
+import { Container, Flex, ScrollArea, Table } from "@mantine/core";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
 
@@ -23,7 +23,7 @@ const DaftarRole: React.FC = () => {
         </Flex>
       </Container>
 
-      <Container fluid mt={24} className="max-h-3/4 overflow-y-scroll">
+      <ScrollArea.Autosize mt={24} className="max-h-1/2 ml-4">
         <Table striped withBorder withColumnBorders>
           <thead>
             <tr>
@@ -40,7 +40,7 @@ const DaftarRole: React.FC = () => {
             ))}
           </tbody>
         </Table>
-      </Container>
+      </ScrollArea.Autosize>
     </>
   );
 };

@@ -1,64 +1,203 @@
-import { Card, Container, Grid, Table } from "@mantine/core";
-import { IconFilter } from "@tabler/icons-react";
-import SearchBar from "../components/SearchBar/SearchBar";
+import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
-import TableStatusBOQ from "@components/TableStatusBOQ";
+import EvidenceDrawer from "@components/pages/DaftarBOQ/EvidenceDrawer";
+import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQModal";
+import TableStatusBoqItem from "@components/pages/StatusBOQ/TableStatusBoqItem";
+import TicketVolumeDetailsReadOnlyModal from "@components/pages/StatusBOQ/TicketVolumeDetailsReadOnlyModal";
+import useFilterForm from "@hooks/useFilterForm";
+import useGetListTicketsQuery from "@hooks/useGetListTicketsQuery";
+import { Flex, Group, ScrollArea, Skeleton, Table, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
+import { IconFilter } from "@tabler/icons-react";
+import React, { useEffect, useMemo, useState } from "react";
+import SearchBar from "../components/SearchBar/SearchBar";
+import TicketStatusConfirmModal from "@components/pages/StatusBOQ/TicketStatusConfirmModal";
+import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
+import useTicketStatusMutation from "@hooks/useTicketStatusMutation";
 
 const StatusBOQ: React.FC = () => {
   const searchForm = useForm({
     initialValues: { search: "" },
   });
+  const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const filterForm = useFilterForm();
+
+  const [selectedTicket, setSelectedTicket] = useState<LopTicket | null>(null);
+
+  const {
+    refetchListTicketQuery,
+    isFetchingListTicketQuery,
+    isLoadingListTicketQuery,
+    listTicketQueryData,
+    getListTicketQuery,
+  } = useGetListTicketsQuery({
+    filterForm,
+    searchDebounced,
+  });
+
+  const [
+    isOpenFilterModal,
+    { open: openFilterModal, close: closeFilterModal },
+  ] = useDisclosure(false);
+
+  const [
+    isOpenEvidenceDrawer,
+    { open: openEvidenceDrawer, close: closeEvidenceDrawer },
+  ] = useDisclosure(false);
+
+  const [
+    isOpenVolumeDetailsModal,
+    { open: openVolumeDetailsModal, close: closeVolumeDetailsModal },
+  ] = useDisclosure(false);
+
+  const [
+    isOpenUpdateConfirm,
+    { open: openUpdateConfirm, close: closeUpdateConfirm },
+  ] = useDisclosure(false);
+
+  useEffect(() => {
+    const refetch = async () => {
+      await refetchListTicketQuery();
+    };
+
+    void refetch();
+  }, [refetchListTicketQuery, searchDebounced]);
+
+  const ticketsTotal = useMemo(() => {
+    return listTicketQueryData?.pages.reduce(
+      (acc, page) => acc + page.data.length,
+      0
+    );
+  }, [listTicketQueryData?.pages]);
+
+  const filter = () => {
+    void refetchListTicketQuery();
+    closeFilterModal();
+  };
+
+  const updateStatusForm = useTicketStatusUpdateForm();
+  const ticketStatusMutation = useTicketStatusMutation({
+    form: updateStatusForm,
+    identifier: selectedTicket?.identifier,
+    closeConfirmModal: closeUpdateConfirm,
+  });
 
   return (
     <>
-      <Container className="mt-8 font-['Poppins']">
-        <p className="font-semibold text-xl text-black">Status BOQ</p>
-      </Container>
-      <Container className="mt-5">
-        <Grid>
-          <Grid.Col span={10}>
-            <SearchBar searchForm={searchForm} />
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <ButtonAMDA variant="outline">
-              <IconFilter></IconFilter>
-            </ButtonAMDA>{" "}
-          </Grid.Col>
-        </Grid>
-      </Container>
-      <Container>
-        <Card
-          withBorder
-          className="mt-4 overflow-y-scroll"
-          style={{ width: 870, height: 380 }}
+      <FilterDaftarBOQModal
+        isOpen={isOpenFilterModal}
+        onClose={closeFilterModal}
+        filterForm={filterForm.form}
+        filter={filter}
+      />
+
+      <TicketStatusConfirmModal
+        isOpen={isOpenUpdateConfirm}
+        form={updateStatusForm}
+        ticketStatusMutation={ticketStatusMutation}
+        onClose={() => {
+          setSelectedTicket(null);
+          closeUpdateConfirm();
+        }}
+        ticket={selectedTicket}
+      />
+
+      <EvidenceDrawer
+        opened={isOpenEvidenceDrawer}
+        onClose={() => {
+          setSelectedTicket(null);
+          closeEvidenceDrawer();
+        }}
+        ticket={selectedTicket}
+      />
+
+      <TicketVolumeDetailsReadOnlyModal
+        isOpen={isOpenVolumeDetailsModal}
+        onClose={closeVolumeDetailsModal}
+        setSelectedTicket={setSelectedTicket}
+        ticket={selectedTicket}
+      />
+
+      <p className="font-semibold text-xl mt-8 mx-4 text-black">Status BOQ</p>
+
+      <Group grow className="my-2 mx-4">
+        <SearchBar searchForm={searchForm} />
+
+        <Group>
+          <ButtonAMDA variant="outline" onClick={openFilterModal}>
+            <IconFilter></IconFilter>
+          </ButtonAMDA>
+        </Group>
+      </Group>
+
+      <ScrollArea.Autosize className="max-h-1/2 mt-4 mx-4">
+        <Skeleton
+          visible={isFetchingListTicketQuery || isLoadingListTicketQuery}
         >
           <Table striped withBorder withColumnBorders>
             <thead>
               <tr>
-                <th>Tiket Insident</th>
-                <th>Work Desc</th>
-                <th>Detail Volume</th>
-                <th>Evidence</th>
+                <th className="w-24">ID Tiket</th>
+                <th className="w-36">Lokasi Tiket</th>
+                <th className="w-12">Detail Volume</th>
+                <th className="w-12">Evidence</th>
                 <th>Catatan Uji Terima</th>
-                <th>Status</th>
-                <th>Button Acc</th>
+                <th className="w-28">Status</th>
+                <th className="w-28">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <TableStatusBOQ
-                noTiket="IN12345678"
-                workDesc="Jl. Kelud"
-              ></TableStatusBOQ>
-              <TableStatusBOQ
-                noTiket="IN12345678"
-                workDesc="Jl. Kelud"
-                statusAcc="sudah acc"
-              ></TableStatusBOQ>
+              {ticketsTotal === 0 && (
+                <tr>
+                  <td colSpan={7}>
+                    <p className="text-center">Tidak ada data</p>
+                  </td>
+                </tr>
+              )}
+
+              {listTicketQueryData?.pages.map((page, i) => (
+                <React.Fragment key={i}>
+                  {page.data.map((ticket, index) => (
+                    <TableStatusBoqItem
+                      key={index}
+                      ticket={ticket}
+                      updateStatusForm={updateStatusForm}
+                      openConfirmModal={() => {
+                        setSelectedTicket(ticket);
+                        openUpdateConfirm();
+                      }}
+                      openDetailModal={() => {
+                        setSelectedTicket(ticket);
+                        openVolumeDetailsModal();
+                      }}
+                      openEvidenceDrawer={() => {
+                        setSelectedTicket(ticket);
+                        openEvidenceDrawer();
+                      }}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
             </tbody>
           </Table>
-        </Card>
-      </Container>
+        </Skeleton>
+      </ScrollArea.Autosize>
+
+      <Flex direction={"row"} gap={"xl"} align={"center"} className="mt-6 ml-4">
+        <ButtonAMDA
+          disabled={!getListTicketQuery.hasNextPage}
+          loading={isFetchingListTicketQuery || isLoadingListTicketQuery}
+          onClick={getListTicketQuery.fetchNextPage}
+        >
+          Load More
+        </ButtonAMDA>
+
+        <Text>
+          Menampilkan <strong>{ticketsTotal}</strong> tiket
+        </Text>
+      </Flex>
     </>
   );
 };

@@ -193,7 +193,7 @@ export default function TicketVolumeDetailsModal({
 
                 <NumberInput
                   min={1}
-                  value={volumeDetailsForm.form.values.volumes[index].value}
+                  value={volumeDetailsForm.form.values.volumes[index]?.value}
                   onChange={(value) => {
                     if (value === "") return;
 
