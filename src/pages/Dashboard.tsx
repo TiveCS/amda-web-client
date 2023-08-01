@@ -3,6 +3,7 @@ import { getListUser } from "@api/users";
 import { Badge, Card, Flex, Group, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { getListTickets } from "@api/tickets";
+import { useMemo } from "react";
 
 function Dashboard() {
   // List User
@@ -18,25 +19,36 @@ function Dashboard() {
   });
 
   // List Tiket
-  // const getListTicketQuery = useQuery({
-  //   queryKey: ["list_tiket_dashboard"],
-  //   queryFn: async ({}) => {
-  //     const result = await getListTickets({});
+  const getListTicketQuery = useQuery({
+    queryKey: ["list_tiket_dashboard"],
+    queryFn: async ({}) => {
+      const result = await getListTickets({});
 
-  //     return result.data.map((tickets) => ({
-  //       value: tickets.
-  //       label: tickets.name,
-  //     }));
-  //   },
-  // });
+      return result;
+    },
+  });
 
-  // const tiketAccepted = getListTicketQuery.data?.filter(
-  //   (r) => parseInt(r.value) === user.mitraId
-  // );
+  const ticketAccepted = useMemo(() => {
+    return getListTicketQuery.data?.data.filter(
+      (r) => r.acceptStatus === "ACCEPTED"
+    );
+  }, [getListTicketQuery.data]);
+
+  const ticketRejected = useMemo(() => {
+    return getListTicketQuery.data?.data.filter(
+      (r) => r.acceptStatus === "REJECTED"
+    );
+  }, [getListTicketQuery.data]);
+
+  const ticketPending = useMemo(() => {
+    return getListTicketQuery.data?.data.filter(
+      (r) => r.acceptStatus === "PENDING"
+    );
+  }, [getListTicketQuery.data]);
 
   if (getListUserQuery.isLoading) return <p>Loading...</p>;
   if (getListMitraQuery.isLoading) return <p>Loading...</p>;
-  // if (getListTicketQuery.isLoading) return <p>Loading...</p>;
+  if (getListTicketQuery.isLoading) return <p>Loading...</p>;
 
   return (
     <div>
@@ -100,7 +112,7 @@ function Dashboard() {
               variant="light"
               className="font-poppins text-sm"
             >
-              {getListTicketQuery.data?.data.length}
+              {ticketAccepted !== undefined ? ticketAccepted.length : "??"}
             </Badge>
           </Group>
           <Group position="apart" mt="bs" mb="bs">
@@ -112,7 +124,15 @@ function Dashboard() {
               variant="light"
               className="font-poppins text-sm"
             >
-              {getListTicketQuery.data?.data.length}
+              {ticketRejected !== undefined ? ticketRejected.length : "??"}
+            </Badge>
+          </Group>
+          <Group position="apart" mt="bs" mb="bs">
+            <Text size="sm" className="font-poppins">
+              Belum Lengkap
+            </Text>
+            <Badge color="red" variant="light" className="font-poppins text-sm">
+              {ticketPending !== undefined ? ticketPending.length : "??"}
             </Badge>
           </Group>
         </Card>
