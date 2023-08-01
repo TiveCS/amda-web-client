@@ -1,6 +1,6 @@
 import { LopTicket } from "@api/types/tickets";
 import { Flex, Text, Tooltip } from "@mantine/core";
-import { IconEdit, IconEye } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react";
 import StatusAccTiket from "./StatusAccTiket";
 import StatusEvidenceTiket from "./StatusEvidenceTiket";
 import StatusVolumeTiket from "./StatusVolumeTiket";
@@ -39,7 +39,7 @@ export default function TicketTableItem({
       <td>
         <Flex justify={"center"} className="group">
           <Tooltip label={"Lihat Evidence"}>
-            <IconEye
+            <IconEdit
               onClick={() => openEvidenceDrawer(ticket)}
               className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
             />
