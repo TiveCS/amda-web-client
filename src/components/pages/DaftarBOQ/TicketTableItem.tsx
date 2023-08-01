@@ -38,7 +38,7 @@ export default function TicketTableItem({
       </td>
       <td>
         <Flex justify={"center"} className="group">
-          <Tooltip label={"Lihat Evidence"}>
+          <Tooltip label={"Edit Evidence"}>
             <IconEdit
               onClick={() => openEvidenceDrawer(ticket)}
               className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"

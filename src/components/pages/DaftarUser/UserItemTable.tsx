@@ -1,8 +1,7 @@
 import { getListMitra } from "@api/mitra";
 import { getListRole } from "@api/role";
 import { UserResponsePayload } from "@api/types/users";
-import ButtonAMDA from "@components/ButtonAMDA";
-import { Flex } from "@mantine/core";
+import { Flex, Tooltip } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -78,30 +77,30 @@ export default function UserItemTable({
       <td>{user.name}</td>
       <td>{mitra !== undefined ? mitra[0].label : "??"}</td>
       <td className="w-40">
-        <Flex direction={"row"} justify={"space-between"}>
-          <ButtonAMDA
-            variant="white"
-            onClick={() => {
-              setEditUser(user);
-              editUserForm.setValues({
-                name: user.name,
-                mitraId: user.mitraId,
-                roleId: user.roleId,
-              });
-              openEditUserModal();
-            }}
-          >
-            <IconEdit></IconEdit>
-          </ButtonAMDA>
-          <ButtonAMDA
-            variant="white"
-            onClick={() => {
-              setRemoveUser(user);
-              openRemoveUserModal();
-            }}
-          >
-            <IconTrash></IconTrash>
-          </ButtonAMDA>
+        <Flex gap="xl" justify="center" align="center" direction="row">
+          <Tooltip label={"Edit User"}>
+            <IconEdit
+              onClick={() => {
+                setEditUser(user);
+                editUserForm.setValues({
+                  name: user.name,
+                  mitraId: user.mitraId,
+                  roleId: user.roleId,
+                });
+                openEditUserModal();
+              }}
+              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+            />
+          </Tooltip>
+          <Tooltip label={"Remove User"}>
+            <IconTrash
+              onClick={() => {
+                setRemoveUser(user);
+                openRemoveUserModal();
+              }}
+              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+            />
+          </Tooltip>
         </Flex>
       </td>
     </tr>

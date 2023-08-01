@@ -1,6 +1,5 @@
 import { MitraResponsePayload } from "@api/types/mitra";
-import ButtonAMDA from "@components/ButtonAMDA";
-import { Flex } from "@mantine/core";
+import { Flex, Tooltip } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 
@@ -36,26 +35,26 @@ export default function MitraItemTable({
     <tr>
       <td>{mitra.name}</td>
       <td>
-        <Flex direction={"row"} justify={"space-between"}>
-          <ButtonAMDA
-            variant="white"
-            onClick={() => {
-              setEditMitra(mitra);
-              editMitraForm.setValues({ nama: mitra.name });
-              openEditMitraModal();
-            }}
-          >
-            <IconEdit></IconEdit>
-          </ButtonAMDA>
-          <ButtonAMDA
-            variant="white"
-            onClick={() => {
-              setRemoveMitra(mitra);
-              openRemoveMitraModal();
-            }}
-          >
-            <IconTrash></IconTrash>
-          </ButtonAMDA>
+        <Flex gap="xl" justify="center" align="center" direction="row">
+          <Tooltip label={"Edit Mitra"}>
+            <IconEdit
+              onClick={() => {
+                setEditMitra(mitra);
+                editMitraForm.setValues({ nama: mitra.name });
+                openEditMitraModal();
+              }}
+              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+            />
+          </Tooltip>
+          <Tooltip label={"Remove Mitra"}>
+            <IconTrash
+              onClick={() => {
+                setRemoveMitra(mitra);
+                openRemoveMitraModal();
+              }}
+              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+            />
+          </Tooltip>
         </Flex>
       </td>
     </tr>
