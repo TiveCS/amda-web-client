@@ -3,17 +3,24 @@ import { LOPS_URL } from "./routes";
 import { apiRequest } from "./helpers";
 import { ListLopsResponse } from "./types/lops";
 import { NestResponse } from "./types/common";
+import { ActivitiesWorkType } from "./types/activities";
 
 export async function getLops({
   cursor,
   take,
   search,
   lopOnly = false,
+  filter,
 }: {
   cursor?: number;
   take?: number;
   search?: string;
   lopOnly?: boolean;
+  filter?: {
+    stoIds?: number[],
+    mitraIds?: number[],
+    workType?: ActivitiesWorkType,
+  }
 }) {
   const request = axios.get<never>(LOPS_URL, {
     params: {
@@ -21,6 +28,9 @@ export async function getLops({
       take: take ? take : undefined,
       search: search ? search : undefined,
       lopOnly,
+      stoIds: filter?.stoIds?  filter.stoIds: undefined,
+      mitraIds: filter?.mitraIds?  filter.mitraIds: undefined,
+      workType: filter?.workType?  filter.workType:undefined,
     },
   });
 
