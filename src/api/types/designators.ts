@@ -26,4 +26,23 @@ export type DesignatorFormData = {
   unit: string;
 };
 
+export type DesignatorPreviewImportData = {
+  designator: string;
+  workDescription: string;
+  unit: string;
+  isMaterial: boolean;
+  pricePerUnit: number;
+};
+
 export type GetListDesignatorResponse = DesignatorWithCount[];
+
+export type PostImportDesignatorPreviewResponse = DesignatorPreviewImportData[];
+
+export type PostImportDesignatorFullImportResponse = { jobId: string };
+
+export type GetImportDesignatorFullImportStatusResponse = {
+  processedOn?: number;
+  finishedOn?: number;
+  failedReason?: string;
+  attemptsMade?: number;
+};

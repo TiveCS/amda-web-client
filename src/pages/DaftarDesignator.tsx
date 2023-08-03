@@ -4,6 +4,7 @@ import ButtonAMDA from "@components/ButtonAMDA";
 import SearchBar from "@components/SearchBar/SearchBar";
 import AddDesignatorModal from "@components/pages/DaftarDesignator/AddDesignatorModal";
 import EditDesignatorModal from "@components/pages/DaftarDesignator/EditDesignatorModal";
+import ImportDesignatorModal from "@components/pages/DaftarDesignator/ImportDesignatorModal";
 import TableDesignatorItem from "@components/pages/DaftarDesignator/TableDesignatorItem";
 import useDesignatorForm from "@hooks/useDesignatorForm";
 import useRemoveDesignatorMutation from "@hooks/useRemoveDesignatorMutation";
@@ -49,6 +50,11 @@ const DaftarDesignator = () => {
     { open: openEditDesignator, close: closeEditDesignator },
   ] = useDisclosure(false);
 
+  const [
+    openedImportModal,
+    { open: openImportModal, close: closeImportModal },
+  ] = useDisclosure(false);
+
   const {
     data: designatorList,
     refetch: refetchDesignatorList,
@@ -77,6 +83,11 @@ const DaftarDesignator = () => {
 
   return (
     <>
+      <ImportDesignatorModal
+        onClose={closeImportModal}
+        opened={openedImportModal}
+      />
+
       <AddDesignatorModal
         onClose={closeAddDesignator}
         opened={openedAddDesignator}
@@ -182,19 +193,29 @@ const DaftarDesignator = () => {
         </Skeleton>
       </ScrollArea.Autosize>
 
-      <Flex align={"center"}>
-        <ButtonAMDA
-          className="ml-4 mt-4"
-          disabled={!getListDesingatorQuery.hasNextPage}
-          onClick={getListDesingatorQuery.fetchNextPage}
-          loading={getListDesingatorQuery.isFetching}
-        >
-          Load More
-        </ButtonAMDA>
+      <Flex
+        className="mx-4 mt-6"
+        align={"center"}
+        direction={"row"}
+        justify={"space-between"}
+      >
+        <Flex align={"center"} gap={"lg"}>
+          <ButtonAMDA
+            disabled={!getListDesingatorQuery.hasNextPage}
+            onClick={getListDesingatorQuery.fetchNextPage}
+            loading={getListDesingatorQuery.isFetching}
+          >
+            Load More
+          </ButtonAMDA>
 
-        <Text className="ml-4 mt-4">
-          Menampilkan <strong>{designatorTotal}</strong> designator
-        </Text>
+          <Text>
+            Menampilkan <strong>{designatorTotal}</strong> designator
+          </Text>
+        </Flex>
+
+        <ButtonAMDA variant="outline" onClick={openImportModal}>
+          Import Designator
+        </ButtonAMDA>
       </Flex>
     </>
   );

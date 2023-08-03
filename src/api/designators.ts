@@ -5,8 +5,12 @@ import { NestResponse } from "./types/common";
 import {
   Designator,
   DesignatorFormData,
+  GetImportDesignatorFullImportStatusResponse,
   GetListDesignatorResponse,
+  PostImportDesignatorFullImportResponse,
+  PostImportDesignatorPreviewResponse,
 } from "./types/designators";
+import useImportDesignatorForm from "@hooks/useImportDesignatorForm";
 
 export async function getListDesignator({
   cursor,
@@ -62,4 +66,66 @@ export async function editDesignator(
   );
 
   return apiRequest<NestResponse<unknown>>(request);
+}
+
+export async function importDesignator(
+  payload: ReturnType<typeof useImportDesignatorForm>["values"]
+): Promise<
+  | NestResponse<PostImportDesignatorPreviewResponse>
+  | NestResponse<PostImportDesignatorFullImportResponse>
+  | undefined
+> {
+  const {
+    designatorHeaderAddress,
+    file,
+    firstValueRow,
+    materialPriceHeaderAddress,
+    mode,
+    servicePriceHeaderAddress,
+    unitHeaderAddress,
+    workDescriptionHeaderAddress,
+  } = payload;
+
+  const request = axios.post<never>(
+    `${DESIGNATOR_URL}/import`,
+    {
+      file,
+      mode,
+      firstValueRow,
+      designatorHeaderAddress,
+      unitHeaderAddress,
+      workDescriptionHeaderAddress,
+      materialPriceHeaderAddress,
+      servicePriceHeaderAddress,
+    },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  if (mode === "preview") {
+    return apiRequest<NestResponse<PostImportDesignatorPreviewResponse>>(
+      request
+    );
+  } else if (mode === "full_import") {
+    return apiRequest<NestResponse<PostImportDesignatorFullImportResponse>>(
+      request
+    );
+  }
+
+  return undefined;
+}
+
+export async function getDesignatorImportStatus(jobId: string) {
+  const request = axios.get<never>(`${DESIGNATOR_URL}/import/status`, {
+    params: {
+      jobId,
+    },
+  });
+
+  return apiRequest<NestResponse<GetImportDesignatorFullImportStatusResponse>>(
+    request
+  );
 }
