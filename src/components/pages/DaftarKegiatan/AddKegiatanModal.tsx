@@ -1,6 +1,6 @@
 import { getLops } from "@api/lops";
 import { getListMitra } from "@api/mitra";
-import { getListSto } from "@api/sto";
+import { addSto, getListSto } from "@api/sto";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useActivityForm from "@hooks/useActivityForm";
 import useAddActivityMutation from "@hooks/useAddActivityMutation";
@@ -12,11 +12,13 @@ import {
   Select,
   TextInput,
   Text,
+  LoadingOverlay,
 } from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
+import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 interface AddKegiatanModalProps {
@@ -100,6 +102,77 @@ export default function AddKegiatanModal({
     void getListMitraQuery.refetch();
   }, [getListMitraQuery, searchMitraDebounced]);
 
+  const addStoForm = useForm({
+    initialValues: {
+      name: "",
+    },
+  });
+  const queryClient = useQueryClient();
+  const addStoMutation = useMutation({
+    mutationFn: async () => addSto(addStoForm.values),
+    onSuccess: async () => {
+      addStoForm.reset();
+      await queryClient.invalidateQueries(["sto"]);
+
+      showNotification({
+        title: "Success",
+        message: "STO berhasil ditambahkan",
+        color: "green",
+      });
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        showNotification({
+          title: "Error",
+          message: error.message ?? "Gagal menambahkan STO",
+          color: "red",
+        });
+
+        return;
+      }
+
+      showNotification({
+        title: "Error",
+        message: "Terjadi kesalahan internal",
+        color: "red",
+      });
+    },
+    onMutate: () => {
+      showNotification({
+        title: "Loading",
+        message: "Sedang menambahkan STO...",
+        color: "blue",
+      });
+    },
+  });
+
+  const handleAddSto = (query: string) => {
+    addStoForm.setFieldValue("name", query);
+    if (addStoForm.validate().hasErrors) return;
+    addStoMutation.mutate();
+  };
+
+  // const [dataSto, setDataSto] = useState(getListStoQuery.data ?? []);
+
+  const onCreateSTO = (query: string) => {
+    handleAddSto(query);
+
+    getListStoQuery.refetch();
+
+    if (!addStoMutation.data) {
+      return null;
+    }
+
+    const item = addStoMutation.data.data;
+
+    addKegiatanForm.setFieldValue("stoId", item.id);
+
+    return {
+      value: item.id.toString(),
+      label: item.name,
+    };
+  };
+
   return (
     <Modal
       opened={openedAddKegiatan}
@@ -108,6 +181,7 @@ export default function AddKegiatanModal({
       size={"lg"}
       padding={"xl"}
     >
+      <LoadingOverlay visible={addStoMutation.isLoading} />
       <Flex direction={"column"} gap={"sm"}>
         <Select
           id="select-lop"
@@ -134,6 +208,7 @@ export default function AddKegiatanModal({
           data={getListStoQuery.data ?? []}
           searchable
           creatable
+          clearable
           nothingFound="STO tidak ditemukan"
           getCreateLabel={(query) => (
             <Text color="blue">
@@ -144,6 +219,7 @@ export default function AddKegiatanModal({
           placeholder="Pilih STO"
           withAsterisk
           error={addKegiatanForm.errors.stoId}
+          onCreate={onCreateSTO}
           onChange={(value) => {
             addKegiatanForm.setFieldValue(
               "stoId",
@@ -229,7 +305,6 @@ export default function AddKegiatanModal({
           {...addKegiatanForm.getInputProps("isForMitra", { type: "checkbox" })}
         />
       </Flex>
-
       <Flex justify={"space-between"} mt={"xl"}>
         <Flex>
           <ButtonAMDA variant="white" onClick={addKegiatanForm.reset}>

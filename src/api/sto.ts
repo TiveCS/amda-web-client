@@ -20,7 +20,7 @@ export async function addSto(payload: { name: string }) {
     name: payload.name,
   });
 
-  return apiRequest<NestResponse<unknown>>(request);
+  return apiRequest<NestResponse<{id: number, name: string}>>(request);
 }
 
 export async function editSto(
