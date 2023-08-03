@@ -13,7 +13,7 @@ export default function StatusEvidenceTiket({
   const isComplete = afterKey && beforeKey && onProgressKey;
 
   return (
-    <Badge color={isComplete ? "green" : "red"} variant="outline">
+    <Badge fullWidth color={isComplete ? "green" : "red"} variant="outline">
       {isComplete ? "Lengkap" : "Belum Lengkap"}
     </Badge>
   );

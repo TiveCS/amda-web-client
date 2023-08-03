@@ -29,6 +29,7 @@ import {
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import useFilterKegiatan from "@hooks/useFilterKegiatan";
 
 const DaftarKegiatan: React.FC = () => {
   const searchForm = useForm({
@@ -60,12 +61,9 @@ const DaftarKegiatan: React.FC = () => {
     openedRemoveActivity,
     { open: openRemoveActivity, close: closeRemoveActivity },
   ] = useDisclosure(false);
+
   const [openedRemoveLop, { open: openRemoveLop, close: closeRemoveLop }] =
     useDisclosure(false);
-  const [
-    openedFilterActivity,
-    { open: openFilterActivity, close: closeFilterActivity },
-  ] = useDisclosure(false);
 
   const [
     openedEditActivity,
@@ -76,10 +74,20 @@ const DaftarKegiatan: React.FC = () => {
     {
       queryKey: ["lops"],
       queryFn: async ({ pageParam = 0 }) => {
+        const { mitra, sto, workType } = filterForm.form.values;
+
+        const mitraIds = mitra.map((m) => parseInt(m));
+        const stoIds = sto.map((s) => parseInt(s));
+
         const lops = await getLops({
           search: searchDebounced,
           cursor: pageParam as number,
           take: 5,
+          filter: {
+            mitraIds,
+            stoIds,
+            workType: workType ? workType : undefined,
+          },
         });
 
         return { nextCursor: lops.nextCursor, lops: lops.data };
@@ -99,6 +107,18 @@ const DaftarKegiatan: React.FC = () => {
     );
   }, [getListLopQuery.data?.pages]);
 
+  const filterForm = useFilterKegiatan();
+
+  const [
+    isFilterModalOpen,
+    { open: openFilterModal, close: closeFilterModal },
+  ] = useDisclosure(false);
+
+  const filter = () => {
+    void refetchListLopQuery();
+    closeFilterModal();
+  };
+
   const activityTotal = useMemo(() => {
     return getListLopQuery.data?.pages.reduce(
       (acc, curr) =>
@@ -114,8 +134,10 @@ const DaftarKegiatan: React.FC = () => {
   return (
     <>
       <FilterKegiatanModal
-        isOpen={openedFilterActivity}
-        closeModal={closeFilterActivity}
+        isOpen={isFilterModalOpen}
+        closeModal={closeFilterModal}
+        filter={filter}
+        filterForm={filterForm.form}
       />
 
       <EditKegiatanModal
@@ -157,7 +179,7 @@ const DaftarKegiatan: React.FC = () => {
           </Grid.Col>
           <Grid.Col span={6}>
             <Flex justify={"flex-end"} gap={"md"}>
-              <ButtonAMDA variant="outline" onClick={openFilterActivity}>
+              <ButtonAMDA variant="outline" onClick={openFilterModal}>
                 <IconFilter></IconFilter>
               </ButtonAMDA>{" "}
               <ButtonAMDA
@@ -198,7 +220,9 @@ const DaftarKegiatan: React.FC = () => {
       </Container>
 
       <ScrollArea.Autosize className="max-h-1/2 mt-8 ml-4" offsetScrollbars>
-        <Skeleton visible={getListLopQuery.isFetching}>
+        <Skeleton
+          visible={getListLopQuery.isFetching || getListLopQuery.isLoading}
+        >
           <Table striped withBorder withColumnBorders>
             <thead>
               <tr>
@@ -242,8 +266,9 @@ const DaftarKegiatan: React.FC = () => {
       <Flex justify={"space-between"} className="mt-4 mx-3">
         <Flex gap={16} align={"center"}>
           <ButtonAMDA
-            onClick={getListLopQuery.fetchNextPage}
             disabled={!getListLopQuery.hasNextPage}
+            loading={getListLopQuery.isFetching || getListLopQuery.isLoading}
+            onClick={getListLopQuery.fetchNextPage}
           >
             Load More
           </ButtonAMDA>

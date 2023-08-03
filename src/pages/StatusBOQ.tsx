@@ -1,6 +1,6 @@
 import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
-import EvidenceDrawer from "@components/pages/DaftarBOQ/EvidenceDrawer";
+import EvidenceReadOnly from "@components/pages/StatusBOQ/EvidenceReadOnly";
 import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQModal";
 import TableStatusBoqItem from "@components/pages/StatusBOQ/TableStatusBoqItem";
 import TicketVolumeDetailsReadOnlyModal from "@components/pages/StatusBOQ/TicketVolumeDetailsReadOnlyModal";
@@ -104,7 +104,7 @@ const StatusBOQ: React.FC = () => {
         ticket={selectedTicket}
       />
 
-      <EvidenceDrawer
+      <EvidenceReadOnly
         opened={isOpenEvidenceDrawer}
         onClose={() => {
           setSelectedTicket(null);

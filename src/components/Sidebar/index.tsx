@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import SidebarNav from "./SidebarNav";
 import { useProfileStore } from "@zustand/profileStore";
 import Accordion from "./Accordion";
+import Logo from "/assets/img/amda-putih.png";
+import { Image } from "@mantine/core";
 
 export default function Sidebar() {
   const { profile } = useProfileStore();
@@ -9,15 +11,28 @@ export default function Sidebar() {
   if (!profile) {
     return <p>Loading...</p>;
   }
-
   return (
-    <nav className="bg-red-800 h-full text-gray-50 grid grid-row-span-6">
+    <nav
+      style={{
+        backgroundColor: "#000000",
+        backgroundImage: "linear-gradient(147deg, #000000 0%, #9e0c0c 74%)",
+        height: "100%",
+        color: "#505050",
+        display: "grid",
+      }}
+    >
       <div className="flex justify-center items-center py-8 flex-col gap-y-4 row-span-1">
-        <Link to={"/"} className="text-white no-underline font-medium text-2xl">
-          AMDA
+        <Link to={"/"}>
+          <Image
+            maw={150}
+            mx="auto"
+            src={Logo}
+            alt="logo amda"
+            className="mb-8"
+          />
         </Link>
 
-        <div className="font-normal text-center leading-loose text-sm">
+        <div className="font-normal text-center leading-loose text-sm text-white">
           <p>{profile.name}</p>
           <p>{profile.role.name}</p>
         </div>

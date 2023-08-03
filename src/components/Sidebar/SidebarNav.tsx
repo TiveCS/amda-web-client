@@ -11,8 +11,8 @@ export default function SidebarNav(props: SidebarNavProps) {
   return (
     <Link
       to={props.to}
-      className={`text-gray-50 w-full h-fit no-underline px-4 py-2 group hover:bg-red-900 rounded-md ${
-        isMatch ? "bg-red-900" : ""
+      className={`text-gray-50 w-full h-fit no-underline px-4 py-2 group hover:bg-black rounded-md ${
+        isMatch ? "bg-black" : ""
       }`}
     >
       {props.children}
