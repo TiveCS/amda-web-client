@@ -23,6 +23,7 @@ const DaftarRole = lazy(() => import("@pages/DaftarRole"));
 const DaftarUser = lazy(() => import("@pages/DaftarUser"));
 const LoginPage = lazy(() => import("@pages/Login"));
 const StatusBOQ = lazy(() => import("@pages/StatusBOQ"));
+const DaftarSTO = lazy(() => import("@pages/DaftarSTO"));
 
 export const router = createBrowserRouter([
   {
@@ -83,6 +84,10 @@ export const router = createBrowserRouter([
           {
             path: "designator",
             element: <DaftarDesignator />,
+          },
+          {
+            path: "sto",
+            element: <DaftarSTO />,
           },
           {
             path: "boq",
