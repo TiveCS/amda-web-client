@@ -2,38 +2,51 @@ import axios from "axios";
 import { STO_URL } from "./routes";
 import { apiRequest } from "./helpers";
 import { NestResponse } from "./types/common";
-import { GetListStoResponse } from "./types/sto";
+import {
+  AddStoPayload,
+  AddStoResponse,
+  GetStoResponse,
+} from "./types/sto";
 
-export async function getListSto(payload: { take?: number; search?: string }) {
-  const request = axios.get<never>(STO_URL, {
-    params: {
-      take: payload.take ?? undefined,
-      search: payload.search ?? undefined,
-    },
-  });
-
-  return apiRequest<NestResponse<GetListStoResponse>>(request);
-}
-
-export async function addSto(payload: { name: string }) {
+export async function addSto(payload:AddStoPayload) {
   const request = axios.post<never>(STO_URL, {
     name: payload.name,
   });
 
-  return apiRequest<NestResponse<{id: number, name: string}>>(request);
+  return apiRequest<NestResponse<AddStoResponse>>(request);
 }
 
-export async function editSto(
-  stoId: number,
+export async function getListSto(
+  payload: {
+    take?: number;
+    search?: string;
+    cursor?: number;
+  }) {
+  const request = axios.get<never>(STO_URL, {
+    params: {
+      take: payload.take ?? undefined,
+      search: payload.search ?? undefined,
+      cursor: payload.cursor ?? undefined,
+    },
+  });
+
+  return apiRequest<NestResponse<GetStoResponse>>(request);
+}
+
+export async function editSto({
+  stoId,
+  payload,
+}: {
+  stoId: number;
   payload: {
     name: string;
-  }
-) {
+  };
+}) {
   const request = axios.put<never>(`${STO_URL}/${stoId}`, {
     name: payload.name,
   });
 
-  return apiRequest<NestResponse<unknown>>(request);
+  return apiRequest<NestResponse<never>>(request);
 }
 
 export async function removeSto(stoId: number) {
