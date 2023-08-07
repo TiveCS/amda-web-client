@@ -21,6 +21,7 @@ interface EvidenceImageItemProps {
   label?: string;
   identifier: string | undefined;
   type: "before" | "after" | "onProgress";
+  isAccepted?: boolean;
 }
 
 export default function EvidenceImageItem({
@@ -28,6 +29,7 @@ export default function EvidenceImageItem({
   label,
   identifier,
   type,
+  isAccepted,
 }: EvidenceImageItemProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -122,15 +124,17 @@ export default function EvidenceImageItem({
           >
             {(styles) => (
               <Overlay style={styles} center blur={5}>
-                <Tooltip label="Delete" position="top">
-                  <button
-                    onClick={() => void handleDeleteImage()}
-                    className="group absolute top-0 right-0 bg-transparent border-none hover:cursor-pointer mt-4 mr-4"
-                  >
-                    <IconTrash className="text-gray-300 group-hover:text-red-400 transition-colors duration-500" />
-                    {""}
-                  </button>
-                </Tooltip>
+                {!isAccepted && (
+                  <Tooltip label="Delete" position="top">
+                    <button
+                      onClick={() => void handleDeleteImage()}
+                      className="group absolute top-0 right-0 bg-transparent border-none hover:cursor-pointer mt-4 mr-4"
+                    >
+                      <IconTrash className="text-gray-300 group-hover:text-red-400 transition-colors duration-500" />
+                      {""}
+                    </button>
+                  </Tooltip>
+                )}
 
                 <ButtonAMDA color="red" onClick={handleOpenImage}>
                   Lihat Foto

@@ -11,7 +11,6 @@ export default function useTicketStatusUpdateForm() {
       status: null,
     },
     validate: {
-      note: isNotEmpty("Catatan tidak boleh kosong"),
       status: isNotEmpty("Status tidak boleh kosong"),
     },
   });

@@ -22,11 +22,20 @@ import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useProfileStore } from "@zustand/profileStore";
 import React, { useEffect, useMemo, useState } from "react";
+import { checkRoleAllowed } from "../utils";
+import { RoleType } from "../types";
 
 const DaftarDesignator = () => {
   const searchForm = useForm({ initialValues: { search: "" } });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const { profile } = useProfileStore();
+  const role = profile?.role.slug as unknown as RoleType;
+  const isAllowCRUD = checkRoleAllowed(role, {
+    whiteListedRoles: ["ta-maintenance"],
+  });
 
   const [selectedDesignators, setSelectedDesignators] = useState<Designator[]>(
     []
@@ -65,6 +74,7 @@ const DaftarDesignator = () => {
       getListDesignator({
         search: searchDebounced,
         cursor: pageParam as number,
+        take: 30,
       }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -113,41 +123,49 @@ const DaftarDesignator = () => {
 
           <Grid.Col span={4}>
             <Flex justify={"space-between"} gap={32}>
-              <ButtonAMDA
-                variant="outline"
-                disabled={selectedDesignators.length !== 1}
-                onClick={openEditDesignator}
-              >
-                <IconEdit />
-              </ButtonAMDA>
-              <ButtonAMDA
-                variant="outline"
-                disabled={selectedDesignators.length === 0}
-                onClick={() =>
-                  modals.openConfirmModal({
-                    title: "Hapus Designator?",
-                    labels: { confirm: "Hapus", cancel: "Batal" },
-                    confirmProps: { color: "red" },
-                    cancelProps: { variant: "white", color: "dark" },
-                    centered: true,
-                    children: (
-                      <>
-                        <Text>
-                          Apakah anda yakin ingin menghapus{" "}
-                          <strong>{selectedDesignators.length}</strong>{" "}
-                          Designator?
-                        </Text>
-                      </>
-                    ),
-                    onConfirm: () => removeDesignatorMutation.mutate(),
-                  })
-                }
-              >
-                <IconTrash />
-              </ButtonAMDA>
-              <ButtonAMDA leftIcon={<IconPlus />} onClick={openAddDesignator}>
-                Add Designator
-              </ButtonAMDA>
+              {isAllowCRUD && (
+                <>
+                  <ButtonAMDA
+                    variant="outline"
+                    disabled={selectedDesignators.length !== 1 || !isAllowCRUD}
+                    onClick={openEditDesignator}
+                  >
+                    <IconEdit />
+                  </ButtonAMDA>
+                  <ButtonAMDA
+                    variant="outline"
+                    disabled={selectedDesignators.length === 0 || !isAllowCRUD}
+                    onClick={() =>
+                      modals.openConfirmModal({
+                        title: "Hapus Designator?",
+                        labels: { confirm: "Hapus", cancel: "Batal" },
+                        confirmProps: { color: "red" },
+                        cancelProps: { variant: "white", color: "dark" },
+                        centered: true,
+                        children: (
+                          <>
+                            <Text>
+                              Apakah anda yakin ingin menghapus{" "}
+                              <strong>{selectedDesignators.length}</strong>{" "}
+                              Designator?
+                            </Text>
+                          </>
+                        ),
+                        onConfirm: () => removeDesignatorMutation.mutate(),
+                      })
+                    }
+                  >
+                    <IconTrash />
+                  </ButtonAMDA>
+                  <ButtonAMDA
+                    leftIcon={<IconPlus />}
+                    onClick={openAddDesignator}
+                    disabled={!isAllowCRUD}
+                  >
+                    Add Designator
+                  </ButtonAMDA>
+                </>
+              )}
             </Flex>
           </Grid.Col>
         </Grid>
@@ -159,7 +177,7 @@ const DaftarDesignator = () => {
             <thead>
               <tr>
                 <th>Designator</th>
-                <th className="w-8">#</th>
+                {isAllowCRUD && <th className="w-8">#</th>}
                 <th>Jenis Pekerjaan</th>
                 <th>Tipe</th>
                 <th>Satuan</th>
@@ -184,6 +202,7 @@ const DaftarDesignator = () => {
                       updateEditDesignatorForm={updateEditDesignatorForm}
                       setSelectedDesignators={setSelectedDesignators}
                       isSelected={selectedDesignators.includes(designator)}
+                      hasCRUDAccess={isAllowCRUD}
                     />
                   ))}
                 </React.Fragment>
@@ -213,9 +232,15 @@ const DaftarDesignator = () => {
           </Text>
         </Flex>
 
-        <ButtonAMDA variant="outline" onClick={openImportModal}>
-          Import Designator
-        </ButtonAMDA>
+        {isAllowCRUD && (
+          <ButtonAMDA
+            variant="outline"
+            onClick={openImportModal}
+            disabled={!isAllowCRUD}
+          >
+            Import Designator
+          </ButtonAMDA>
+        )}
       </Flex>
     </>
   );

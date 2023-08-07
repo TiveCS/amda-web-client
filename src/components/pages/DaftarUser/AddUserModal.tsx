@@ -7,9 +7,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebouncedValue } from "@mantine/hooks";
 import { getListRole } from "@api/role";
 import { getListMitra } from "@api/mitra";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RoleSelectOption } from "@api/types/role";
 import { MitraSelectOption } from "@api/types/mitra";
+import { useProfileStore } from "@zustand/profileStore";
+import { RoleType } from "../../../types";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -20,7 +22,11 @@ export default function AddUserModal({
   closeModal,
   isOpen,
 }: AddUserModalProps) {
-  //   const [isOpen, { open: openModal, close: closeModal }] = useDisclosure(false);
+  const { profile } = useProfileStore();
+  const role: RoleType = profile?.role.slug as unknown as RoleType;
+  const isAdminMitra = useMemo(() => {
+    return role === "admin-mitra";
+  }, [role]);
 
   const [searchMitra] = useState("");
   const [searchMitraDebounced] = useDebouncedValue(searchMitra, 500);
@@ -30,8 +36,8 @@ export default function AddUserModal({
       username: "",
       password: "",
       name: "",
-      mitraId: -1,
-      roleId: -1,
+      mitraId: profile?.mitra.id ?? -1,
+      roleId: profile?.role.id ?? -1,
     },
     validate: {
       username: matches(
@@ -120,10 +126,6 @@ export default function AddUserModal({
     void getListMitraQuery.refetch();
   }, [getListMitraQuery, searchMitraDebounced]);
 
-  // // Option
-  // const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
-  // const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
-
   if (getListRoleQuery.isLoading) return <p>Loading...</p>;
 
   if (getListMitraQuery.isLoading) return <p>Loading...</p>;
@@ -146,52 +148,79 @@ export default function AddUserModal({
   return (
     <Modal opened={isOpen} onClose={closeModal} title="Add User" padding={"xl"}>
       <Flex direction={"column"} gap={24}>
-        <Select
-          withAsterisk
-          label="Role"
-          placeholder="Select one"
-          searchable
-          nothingFound="No options"
-          data={selectOptionsRole}
-          onChange={(value) => {
-            addUserForm.setFieldValue(
-              "roleId",
-              value !== null ? parseInt(value) : -1
-            );
-          }}
-        />
+        {!isAdminMitra && (
+          <Select
+            withAsterisk
+            label="Role"
+            placeholder="Select one"
+            searchable
+            nothingFound="No options"
+            data={selectOptionsRole}
+            readOnly={isAdminMitra}
+            autoComplete="off"
+            value={
+              addUserForm.values.roleId !== -1
+                ? addUserForm.values.roleId.toString()
+                : undefined
+            }
+            onChange={(value) => {
+              addUserForm.setFieldValue(
+                "roleId",
+                value !== null ? parseInt(value) : -1
+              );
+            }}
+          />
+        )}
+
         <TextInput
           withAsterisk
           label="Username"
+          autoComplete="off"
           placeholder="Contoh: telkom atau telkom123"
           {...addUserForm.getInputProps("username")}
         />
+
         <TextInput
           withAsterisk
           label="Nama"
-          placeholder=""
+          placeholder="contoh: Ahmad Adi"
+          autoComplete="off"
           {...addUserForm.getInputProps("name")}
         />
-        <Select
-          withAsterisk
-          label="Mitra"
-          placeholder="Select one"
-          searchable
-          nothingFound="No options"
-          data={selectOptionsMitra}
-          onChange={(value) => {
-            addUserForm.setFieldValue(
-              "mitraId",
-              value !== null ? parseInt(value) : -1
-            );
-          }}
-        />
+
+        {!isAdminMitra && (
+          <Select
+            withAsterisk
+            label="Mitra"
+            placeholder="Select one"
+            searchable
+            nothingFound="No options"
+            autoComplete="off"
+            data={selectOptionsMitra}
+            readOnly={isAdminMitra}
+            value={
+              addUserForm.values.mitraId != -1
+                ? addUserForm.values.mitraId.toString()
+                : undefined
+            }
+            onChange={(value) => {
+              addUserForm.setFieldValue(
+                "mitraId",
+                value !== null ? parseInt(value) : -1
+              );
+            }}
+          />
+        )}
+
         <PasswordInput
           withAsterisk
           label="Password"
-          placeholder=""
+          placeholder="Password akun ini"
+          autoComplete="off"
+          autoSave="off"
           {...addUserForm.getInputProps("password")}
         />
+
         <ButtonAMDA
           type="button"
           loading={addUserMutation.isLoading}

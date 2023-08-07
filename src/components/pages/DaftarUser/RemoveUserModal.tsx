@@ -50,7 +50,7 @@ export default function RemoveUserModal({
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries(["mitra"]);
+      await queryClient.invalidateQueries(["user"]);
       showNotification({
         title: "Success",
         message: "User berhasil dihapus",

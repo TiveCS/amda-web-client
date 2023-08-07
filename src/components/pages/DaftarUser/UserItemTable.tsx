@@ -5,6 +5,7 @@ import { Flex, Tooltip } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { useProfileStore } from "@zustand/profileStore";
 
 interface UserItemTableProps {
   user: UserResponsePayload;
@@ -36,6 +37,7 @@ export default function UserItemTable({
   openRemoveUserModal,
   openEditUserModal,
 }: UserItemTableProps) {
+  const profile = useProfileStore();
   const getListRoleQuery = useQuery({
     queryKey: ["user_item_table_role"],
     queryFn: async () => {
@@ -70,6 +72,8 @@ export default function UserItemTable({
     (r) => parseInt(r.value) === user.mitraId
   );
 
+  const isSameUser = profile.profile?.id === user.id;
+
   return (
     <tr>
       <td>{role !== undefined ? role[0].label : "??"}</td>
@@ -89,16 +93,21 @@ export default function UserItemTable({
                 });
                 openEditUserModal();
               }}
-              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+              className="w-5 h-5 group-hover:text-sky-800 hover:cursor-pointer"
             />
           </Tooltip>
           <Tooltip label={"Remove User"}>
             <IconTrash
+              color={isSameUser ? "gray" : "black"}
               onClick={() => {
+                if (isSameUser) return;
+
                 setRemoveUser(user);
                 openRemoveUserModal();
               }}
-              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
+              className={`w-5 h-5 group-hover:text-sky-800 ${
+                isSameUser ? "hover:cursor-not-allowed" : "hover:cursor-pointer"
+              }`}
             />
           </Tooltip>
         </Flex>

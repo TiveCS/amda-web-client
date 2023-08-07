@@ -20,16 +20,19 @@ export async function getListMitra({
   cursor,
   limit,
   search,
+  mitraId,
 }: {
   limit?: number;
   cursor?: number;
   search?: string;
+  mitraId?: number;
 }) {
   const request = axios.get<never>(MANAGEMENT_MITRA_URL, {
     params: {
       limit,
       cursor,
       search: search && search?.trim().length > 0 ? search?.trim() : undefined,
+      mitraId: mitraId ?? undefined,
     },
   });
 

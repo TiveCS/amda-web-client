@@ -14,10 +14,8 @@ export async function addUser(payload: AddUserPayload) {
     username: payload.username,
     name: payload.name,
     mitraId: payload.mitraId,
-    password: payload.password, 
+    password: payload.password,
   });
-
-  console.log(payload);
 
   return await apiRequest<NestResponse<AddUserResponse>>(request);
 }
@@ -27,18 +25,21 @@ export async function getListUser({
   limit,
   page,
   search,
+  mitraId,
 }: {
   page?: number;
   limit?: number;
   cursor?: number;
   search?: string;
+  mitraId?: number;
 }) {
   const request = axios.get<never>(MANAGEMENT_USERS_URL, {
     params: {
       page: page || 1,
-      limit: limit? limit:undefined,
-      cursor: cursor? cursor:undefined,
+      limit: limit ? limit : undefined,
+      cursor: cursor ? cursor : undefined,
       search: search && search?.trim().length > 0 ? search?.trim() : undefined,
+      mitraId: mitraId ? mitraId : undefined,
     },
   });
 

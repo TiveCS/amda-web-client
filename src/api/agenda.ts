@@ -28,7 +28,7 @@ export async function getListAgenda({
   cursor?: number;
   search?: string;
   time: Date;
-}) {console.log(time)
+}) {
   const request = axios.get<never>(AGENDAS_URL, {
     params: {
       search: search && search?.trim().length > 0 ? search?.trim() : undefined,
@@ -52,7 +52,6 @@ export async function editAgenda({
     picId: number;
   };
 }) {
-  console.log("apa aja",payload.time)
   const request = axios.put<never>(`${AGENDAS_URL}/${agendaId}`, {
     title: payload.title,
     basisOfAgenda: payload.basisOfAgenda,

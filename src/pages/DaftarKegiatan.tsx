@@ -30,6 +30,9 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import useFilterKegiatan from "@hooks/useFilterKegiatan";
+import { checkRoleAllowed } from "src/utils";
+import { useProfileStore } from "@zustand/profileStore";
+import { RoleType } from "../types";
 
 const DaftarKegiatan: React.FC = () => {
   const searchForm = useForm({
@@ -38,6 +41,17 @@ const DaftarKegiatan: React.FC = () => {
     },
   });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const { profile } = useProfileStore();
+  const role = profile?.role.slug as unknown as RoleType;
+  const isAllowCRUD = useMemo(() => {
+    return checkRoleAllowed(role, {
+      whiteListedRoles: ["ta-maintenance"],
+    });
+  }, [role]);
+  const isAdminMitra = useMemo(() => {
+    return role === "admin-mitra";
+  }, [role]);
 
   const [selectedActivities, setSelectedActivities] = React.useState<
     LopActivity[]
@@ -76,8 +90,12 @@ const DaftarKegiatan: React.FC = () => {
       queryFn: async ({ pageParam = 0 }) => {
         const { mitra, sto, workType } = filterForm.form.values;
 
-        const mitraIds = mitra.map((m) => parseInt(m));
+        let mitraIds = mitra.map((m) => parseInt(m));
         const stoIds = sto.map((s) => parseInt(s));
+
+        if (isAdminMitra) {
+          mitraIds = [profile?.mitra.id ?? 0];
+        }
 
         const lops = await getLops({
           search: searchDebounced,
@@ -107,7 +125,12 @@ const DaftarKegiatan: React.FC = () => {
     );
   }, [getListLopQuery.data?.pages]);
 
-  const filterForm = useFilterKegiatan();
+  const filterForm = useFilterKegiatan({
+    mitraIds:
+      isAdminMitra && profile?.mitra.id
+        ? [profile.mitra.id.toString()]
+        : undefined,
+  });
 
   const [
     isFilterModalOpen,
@@ -134,6 +157,7 @@ const DaftarKegiatan: React.FC = () => {
   return (
     <>
       <FilterKegiatanModal
+        isAdminMitra={isAdminMitra}
         isOpen={isFilterModalOpen}
         closeModal={closeFilterModal}
         filter={filter}
@@ -182,38 +206,44 @@ const DaftarKegiatan: React.FC = () => {
               <ButtonAMDA variant="outline" onClick={openFilterModal}>
                 <IconFilter></IconFilter>
               </ButtonAMDA>{" "}
-              <ButtonAMDA
-                variant="outline"
-                onClick={() => {
-                  if (selectedActivities.length !== 1) return;
-                  setEditActivity(selectedActivities[0]);
-                  updateEditForm(selectedActivities[0]);
-                  openEditActivity();
-                }}
-                disabled={selectedActivities.length !== 1}
-              >
-                <IconEdit></IconEdit>
-              </ButtonAMDA>
-              <ButtonAMDA
-                variant="outline"
-                onClick={openRemoveActivity}
-                disabled={selectedActivities.length === 0}
-              >
-                <IconTrash></IconTrash>
-              </ButtonAMDA>{" "}
-              <ButtonAMDA
-                variant="outline"
-                onClick={openAddLOP}
-                leftIcon={<IconCirclePlus />}
-              >
-                Add LOP
-              </ButtonAMDA>
-              <ButtonAMDA
-                onClick={openAddKegiatan}
-                leftIcon={<IconCirclePlus />}
-              >
-                Add Kegiatan
-              </ButtonAMDA>
+              {isAllowCRUD && (
+                <>
+                  <ButtonAMDA
+                    variant="outline"
+                    onClick={() => {
+                      if (selectedActivities.length !== 1) return;
+                      setEditActivity(selectedActivities[0]);
+                      updateEditForm(selectedActivities[0]);
+                      openEditActivity();
+                    }}
+                    disabled={selectedActivities.length !== 1 || !isAllowCRUD}
+                  >
+                    <IconEdit></IconEdit>
+                  </ButtonAMDA>
+                  <ButtonAMDA
+                    variant="outline"
+                    onClick={openRemoveActivity}
+                    disabled={selectedActivities.length === 0 || !isAllowCRUD}
+                  >
+                    <IconTrash></IconTrash>
+                  </ButtonAMDA>{" "}
+                  <ButtonAMDA
+                    variant="outline"
+                    onClick={openAddLOP}
+                    leftIcon={<IconCirclePlus />}
+                    disabled={!isAllowCRUD}
+                  >
+                    Add LOP
+                  </ButtonAMDA>
+                  <ButtonAMDA
+                    onClick={openAddKegiatan}
+                    leftIcon={<IconCirclePlus />}
+                    disabled={!isAllowCRUD}
+                  >
+                    Add Kegiatan
+                  </ButtonAMDA>
+                </>
+              )}
             </Flex>
           </Grid.Col>
         </Grid>
@@ -254,6 +284,7 @@ const DaftarKegiatan: React.FC = () => {
                       openRemoveLop={openRemoveLop}
                       setSelectedActivities={setSelectedActivities}
                       setRemoveLop={setRemoveLop}
+                      hasCRUDAccess={isAllowCRUD}
                     />
                   ))}
                 </React.Fragment>

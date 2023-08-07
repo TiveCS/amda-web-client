@@ -16,7 +16,9 @@ import {
 import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useProfileStore } from "@zustand/profileStore";
+import { useEffect, useMemo } from "react";
+import { RoleType } from "../../../types";
 
 interface PrepareExportBoqModalProps {
   isOpen: boolean;
@@ -37,6 +39,12 @@ export default function FilterDaftarBOQModal({
       identifier: "",
     },
   });
+
+  const { profile } = useProfileStore();
+  const role = profile?.role.slug as unknown as RoleType;
+  const isAdminMitra = useMemo(() => {
+    return role === "admin-mitra";
+  }, [role]);
 
   const [locationDebounced] = useDebouncedValue(
     searchForm.values.location,
@@ -67,6 +75,8 @@ export default function FilterDaftarBOQModal({
       queryFn: async () => {
         const result = await getListTickets({
           take: 10,
+          mitraIds:
+            isAdminMitra && profile?.mitra.id ? [profile?.mitra.id] : undefined,
         });
 
         return result.data.map((found) => ({

@@ -22,7 +22,7 @@ const StatusBOQ: React.FC = () => {
   });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
-  const filterForm = useFilterForm();
+  const filterForm = useFilterForm({});
 
   const [selectedTicket, setSelectedTicket] = useState<LopTicket | null>(null);
 

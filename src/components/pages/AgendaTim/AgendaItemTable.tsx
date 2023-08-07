@@ -53,6 +53,8 @@ export default function UserItemTable({
 }: AgendaItemTableProps) {
   const waktu = new Date(agenda.time);
 
+  // TODO: Harusnya tabel ini di refetch setiap kali ada perubahan di tabel user
+
   const getListUserQuery = useQuery({
     queryKey: ["agenda_item_table_user"],
     queryFn: async () => {
@@ -75,7 +77,7 @@ export default function UserItemTable({
     <tr>
       <td>{dayjs(waktu).format("DD-MM-YYYY HH:mm A")}</td>
       <td>{agenda.title}</td>
-      <td>{user !== undefined ? user[0].label : "??"}</td>
+      <td>{user !== undefined && user.length > 0 ? user[0].label : "??"}</td>
       <td className="w-40">
         <Flex gap="xl" justify="center" align="center" direction="row">
           <Tooltip label={"Edit Agenda"}>
