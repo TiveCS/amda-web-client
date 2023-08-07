@@ -134,6 +134,8 @@ export default function AddUserModal({
     getListRoleQuery.data?.map((role) => ({
       value: String(role.value),
       label: role.label,
+      disabled:
+        profile?.role.slug !== "super-admin" && role.label === "Super Admin",
     }));
 
   const selectOptionsMitra: MitraSelectOption[] | undefined =
