@@ -10,12 +10,16 @@ interface EvidenceDrawerProps {
   opened: boolean;
   onClose: () => void;
   ticket: LopTicket | null;
+  hasCRUDAccess: boolean;
+  isAdminMitra: boolean;
 }
 
 export default function EvidenceDrawer({
   onClose,
   opened,
   ticket,
+  hasCRUDAccess,
+  isAdminMitra,
 }: EvidenceDrawerProps) {
   const { refetch: refetchEvidence, data: evidences } = useQuery({
     queryKey: ["evidence_drawer_evidence", ticket?.identifier],
@@ -30,6 +34,24 @@ export default function EvidenceDrawer({
       return result;
     },
   });
+
+  const isAccepted = useMemo(() => {
+    return ticket?.acceptStatus === "ACCEPTED";
+  }, [ticket?.acceptStatus]);
+
+  const isCanEdit = useMemo(() => {
+    return !isAccepted && hasCRUDAccess;
+  }, [hasCRUDAccess, isAccepted]);
+
+  const isMitraCanEdit = useMemo(() => {
+    return isAdminMitra && ticket?.activity.isForMitra;
+  }, [isAdminMitra, ticket?.activity.isForMitra]);
+
+  const isAllowEdit = useMemo(() => {
+    if (isAdminMitra) return isCanEdit && isMitraCanEdit;
+
+    return isCanEdit;
+  }, [isAdminMitra, isCanEdit, isMitraCanEdit]);
 
   useEffect(() => {
     const refetch = async () => {
@@ -76,6 +98,7 @@ export default function EvidenceDrawer({
               ticketIdentifier={ticket?.identifier}
               text={hasBefore ? "Replace Before" : "Upload Before"}
               type="before"
+              disabled={!isAllowEdit}
             />
             <EvidenceUploadButton
               ticketIdentifier={ticket?.identifier}
@@ -83,11 +106,13 @@ export default function EvidenceDrawer({
                 hasOnProgress ? "Replace On Progress" : "Upload On Progress"
               }
               type="onProgress"
+              disabled={!isAllowEdit}
             />
             <EvidenceUploadButton
               ticketIdentifier={ticket?.identifier}
               text={hasAfter ? "Replace After" : "Upload After"}
               type="after"
+              disabled={!isAllowEdit}
             />
           </Flex>
         </Flex>
@@ -100,6 +125,7 @@ export default function EvidenceDrawer({
             src={evidences?.beforeUrl}
             identifier={ticket?.identifier}
             type="before"
+            isAccepted={!isAllowEdit}
           />
         </Grid.Col>
         <Grid.Col span={4}>
@@ -108,6 +134,7 @@ export default function EvidenceDrawer({
             src={evidences?.onProgressUrl}
             identifier={ticket?.identifier}
             type="onProgress"
+            isAccepted={!isAllowEdit}
           />
         </Grid.Col>
         <Grid.Col span={4}>
@@ -116,6 +143,7 @@ export default function EvidenceDrawer({
             src={evidences?.afterUrl}
             identifier={ticket?.identifier}
             type="after"
+            isAccepted={!isAllowEdit}
           />
         </Grid.Col>
       </Grid>

@@ -22,6 +22,9 @@ import { IconCirclePlus } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import { useProfileStore } from "@zustand/profileStore";
+import { RoleType } from "../types";
+import { checkRoleAllowed } from "src/utils";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -61,6 +64,12 @@ const DaftarSto: React.FC = () => {
   });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
+  const { profile } = useProfileStore();
+  const role = profile?.role.slug as unknown as RoleType;
+  const isAllowCRUD = checkRoleAllowed(role, {
+    whiteListedRoles: ["ta-maintenance"],
+  });
+
   const [isOpenAddStoModal, { open: openAddSto, close: closeAddSto }] =
     useDisclosure(false);
 
@@ -90,7 +99,7 @@ const DaftarSto: React.FC = () => {
         getListSto({
           search: searchDebounced,
           cursor: pageParam as number,
-          take: 5,
+          take: 15,
         }),
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
@@ -143,9 +152,15 @@ const DaftarSto: React.FC = () => {
                 align={"center"}
                 justify={"flex-end"}
               >
-                <ButtonAMDA onClick={openAddSto} leftIcon={<IconCirclePlus />}>
-                  Add STO
-                </ButtonAMDA>
+                {isAllowCRUD && (
+                  <ButtonAMDA
+                    onClick={openAddSto}
+                    leftIcon={<IconCirclePlus />}
+                    disabled={!isAllowCRUD}
+                  >
+                    Add STO
+                  </ButtonAMDA>
+                )}
               </Flex>
             </Grid.Col>
           </Grid>
@@ -166,7 +181,7 @@ const DaftarSto: React.FC = () => {
             >
               <tr>
                 <th className="max-w-lg">Nama STO</th>
-                <th className="w-40">Action</th>
+                {isAllowCRUD && <th className="w-40">Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -189,6 +204,7 @@ const DaftarSto: React.FC = () => {
                       setEditSto={setEditSto}
                       openRemoveStoModal={openRemoveSto}
                       openEditStoModal={openEditSto}
+                      hasCRUDAccess={isAllowCRUD}
                     />
                   ))}
                 </React.Fragment>

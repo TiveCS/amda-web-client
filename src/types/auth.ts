@@ -14,4 +14,9 @@ export type ProfileType = {
   };
 };
 
-export type RoleType = "super-admin" | "admin" | "user";
+export type RoleType =
+  | "super-admin"
+  | "admin-ta"
+  | "ta-uji-terima"
+  | "ta-maintenance"
+  | "admin-mitra";

@@ -22,7 +22,7 @@ import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface TicketVolumeDetailsModalProps {
   selectedTicket: LopTicket | null;
@@ -30,17 +30,39 @@ interface TicketVolumeDetailsModalProps {
   onClose: () => void;
   setSelectedTicket: React.Dispatch<React.SetStateAction<LopTicket | null>>;
   volumeDetailsForm: ReturnType<typeof useVolumeDetailsForm>;
+  hasCRUDAccess: boolean;
+  isAdminMitra: boolean;
 }
 
 export default function TicketVolumeDetailsModal({
   selectedTicket: ticket,
+  isAdminMitra,
   isOpen,
   onClose,
   setSelectedTicket,
   volumeDetailsForm,
+  hasCRUDAccess,
 }: TicketVolumeDetailsModalProps) {
   const searchForm = useForm({ initialValues: { search: "" } });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const isAccepted = useMemo(() => {
+    return ticket?.acceptStatus === "ACCEPTED";
+  }, [ticket?.acceptStatus]);
+
+  const isCanEdit = useMemo(() => {
+    return !isAccepted && hasCRUDAccess;
+  }, [hasCRUDAccess, isAccepted]);
+
+  const isMitraCanEdit = useMemo(() => {
+    return isAdminMitra && ticket?.activity.isForMitra;
+  }, [isAdminMitra, ticket?.activity.isForMitra]);
+
+  const isAllowEdit = useMemo(() => {
+    if (isAdminMitra) return isCanEdit && isMitraCanEdit;
+
+    return isCanEdit;
+  }, [isAdminMitra, isCanEdit, isMitraCanEdit]);
 
   const [selectedDesignator, setSelectedDesignator] = useState<string | null>(
     null
@@ -116,38 +138,40 @@ export default function TicketVolumeDetailsModal({
           <TextInput
             label="ID Tiket"
             defaultValue={ticket?.identifier}
-            disabled
+            readOnly
           />
           <TextInput
             label="Lokasi Tiket"
             defaultValue={ticket?.location}
-            disabled
+            readOnly
           />
         </Flex>
 
-        <Flex direction={"column"}>
-          <Select
-            label="Designator"
-            searchable
-            clearable
-            placeholder="Cari designator"
-            data={getListDesignatorsQuery.data ?? []}
-            maxDropdownHeight={192}
-            dropdownPosition="bottom"
-            value={selectedDesignator}
-            disabled={addVolumeMutation.isLoading}
-            nothingFound="Designator tidak ditemukan"
-            onSearchChange={(value) =>
-              searchForm.setFieldValue("search", value)
-            }
-            onChange={(value) => {
-              if (value === null) return;
-              const designatorId = parseInt(value);
-              setSelectedDesignator(value);
-              addVolumeMutation.mutate(designatorId);
-            }}
-          />
-        </Flex>
+        {isAllowEdit && (
+          <Flex direction={"column"}>
+            <Select
+              label="Designator"
+              searchable
+              clearable
+              placeholder="Cari designator"
+              data={getListDesignatorsQuery.data ?? []}
+              maxDropdownHeight={192}
+              dropdownPosition="bottom"
+              value={selectedDesignator}
+              disabled={addVolumeMutation.isLoading}
+              nothingFound="Designator tidak ditemukan"
+              onSearchChange={(value) =>
+                searchForm.setFieldValue("search", value)
+              }
+              onChange={(value) => {
+                if (value === null) return;
+                const designatorId = parseInt(value);
+                setSelectedDesignator(value);
+                addVolumeMutation.mutate(designatorId);
+              }}
+            />
+          </Flex>
+        )}
 
         <ScrollArea.Autosize
           offsetScrollbars
@@ -181,12 +205,14 @@ export default function TicketVolumeDetailsModal({
                   gap={"lg"}
                   direction={"row"}
                 >
-                  <ActionIcon
-                    color="red"
-                    onClick={() => removeVolumeMutation.mutate(volume.id)}
-                  >
-                    <IconTrash size={16} />
-                  </ActionIcon>
+                  {isAllowEdit && (
+                    <ActionIcon
+                      color="red"
+                      onClick={() => removeVolumeMutation.mutate(volume.id)}
+                    >
+                      <IconTrash size={16} />
+                    </ActionIcon>
+                  )}
 
                   <Text className="font-medium">{volume.designator.name}</Text>
                 </Flex>
@@ -194,6 +220,7 @@ export default function TicketVolumeDetailsModal({
                 <NumberInput
                   min={1}
                   value={volumeDetailsForm.form.values.volumes[index]?.value}
+                  readOnly={!isAllowEdit}
                   onChange={(value) => {
                     if (value === "") return;
 

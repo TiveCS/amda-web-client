@@ -9,6 +9,7 @@ interface StoItemTableProps {
   setEditSto: React.Dispatch<React.SetStateAction<StoResponsePayload | null>>;
   openRemoveStoModal: () => void;
   openEditStoModal: () => void;
+  hasCRUDAccess: boolean;
   editStoForm: UseFormReturnType<
     {
       nama: string;
@@ -26,33 +27,36 @@ export default function StoItemTable({
   editStoForm,
   openRemoveStoModal,
   openEditStoModal,
+  hasCRUDAccess,
 }: StoItemTableProps) {
   return (
     <tr>
       <td>{sto.name}</td>
-      <td>
-        <Flex gap="xl" justify="center" align="center" direction="row">
-          <Tooltip label={"Edit Mitra"}>
-            <IconEdit
-              onClick={() => {
-                setEditSto(sto);
-                editStoForm.setValues({ nama: sto.name });
-                openEditStoModal();
-              }}
-              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
-            />
-          </Tooltip>
-          <Tooltip label={"Remove STO"}>
-            <IconTrash
-              onClick={() => {
-                setRemoveSto(sto);
-                openRemoveStoModal();
-              }}
-              className="w-5 h-5 group-hover:text-sky-800 group-hover:cursor-pointer"
-            />
-          </Tooltip>
-        </Flex>
-      </td>
+      {hasCRUDAccess && (
+        <td>
+          <Flex gap="xl" justify="center" align="center" direction="row">
+            <Tooltip label={"Edit Mitra"}>
+              <IconEdit
+                onClick={() => {
+                  setEditSto(sto);
+                  editStoForm.setValues({ nama: sto.name });
+                  openEditStoModal();
+                }}
+                className="w-5 h-5 group-hover:text-sky-800 hover:cursor-pointer"
+              />
+            </Tooltip>
+            <Tooltip label={"Remove STO"}>
+              <IconTrash
+                onClick={() => {
+                  setRemoveSto(sto);
+                  openRemoveStoModal();
+                }}
+                className="w-5 h-5 group-hover:text-sky-800 hover:cursor-pointer"
+              />
+            </Tooltip>
+          </Flex>
+        </td>
+      )}
     </tr>
   );
 }

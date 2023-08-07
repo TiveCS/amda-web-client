@@ -2,19 +2,23 @@ import { Lop, LopActivity } from "@api/types/lops";
 import { Checkbox } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 
+interface LopTableItemProps {
+  lop: Lop;
+  selectedActivities: LopActivity[];
+  setSelectedActivities: React.Dispatch<React.SetStateAction<LopActivity[]>>;
+  setRemoveLop: React.Dispatch<React.SetStateAction<Lop | null>>;
+  openRemoveLop: () => void;
+  hasCRUDAccess: boolean;
+}
+
 export default function LopTableItem({
   lop,
   selectedActivities,
   setSelectedActivities,
   setRemoveLop,
   openRemoveLop,
-}: {
-  lop: Lop;
-  selectedActivities: LopActivity[];
-  setSelectedActivities: React.Dispatch<React.SetStateAction<LopActivity[]>>;
-  setRemoveLop: React.Dispatch<React.SetStateAction<Lop | null>>;
-  openRemoveLop: () => void;
-}) {
+  hasCRUDAccess,
+}: LopTableItemProps) {
   const { activities } = lop;
 
   return (
@@ -31,6 +35,7 @@ export default function LopTableItem({
             lop={lop}
             setRemoveLop={setRemoveLop}
             openRemoveLop={openRemoveLop}
+            hasCRUDAccess={hasCRUDAccess}
           />
         )}
 
@@ -65,20 +70,25 @@ const LopTableEmptyContent: React.FC<{
   lop: Lop;
   setRemoveLop: React.Dispatch<React.SetStateAction<Lop | null>>;
   openRemoveLop: () => void;
-}> = ({ setRemoveLop, lop, openRemoveLop }) => {
+  hasCRUDAccess: boolean;
+}> = ({ setRemoveLop, lop, openRemoveLop, hasCRUDAccess }) => {
   return (
     <>
       <td>
-        <button
-          onClick={() => {
-            setRemoveLop(lop);
-            openRemoveLop();
-          }}
-          className="p-0 m-0 border-none bg-transparent flex items-start cursor-pointer group"
-        >
-          <IconTrash size={20} />
-          {""}
-        </button>
+        {hasCRUDAccess && (
+          <button
+            onClick={() => {
+              setRemoveLop(lop);
+              openRemoveLop();
+            }}
+            className={`p-0 m-0 border-none bg-transparent flex items-start group ${
+              hasCRUDAccess ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
+          >
+            <IconTrash size={20} color={hasCRUDAccess ? "dark" : "gray"} />
+            {""}
+          </button>
+        )}
       </td>
       <td>-</td>
       <td>-</td>

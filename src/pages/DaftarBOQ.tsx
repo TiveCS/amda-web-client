@@ -24,6 +24,9 @@ import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconDownload, IconFilter } from "@tabler/icons-react";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import { useProfileStore } from "@zustand/profileStore";
+import { RoleType } from "../types";
+import { checkRoleAllowed } from "../utils";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -60,13 +63,29 @@ const DaftarBOQ: React.FC = () => {
     initialValues: { search: "" },
   });
 
+  const { profile } = useProfileStore();
+  const role = profile?.role.slug as unknown as RoleType;
+  const hasCRUDAccess = useMemo(() => {
+    return checkRoleAllowed(role, {
+      whiteListedRoles: ["ta-maintenance", "admin-mitra"],
+    });
+  }, [role]);
+
+  const isAdminMitra = useMemo(() => {
+    return role === "admin-mitra";
+  }, [role]);
+
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
   const [selectedTicket, setSelectedTicket] = React.useState<LopTicket | null>(
     null
   );
 
-  const filterForm = useFilterForm();
+  const filterForm = useFilterForm({
+    values: {
+      mitraIds: isAdminMitra && profile?.mitra.id ? [profile?.mitra.id] : null,
+    },
+  });
 
   const {
     refetchListTicketQuery,
@@ -131,6 +150,8 @@ const DaftarBOQ: React.FC = () => {
   return (
     <>
       <EvidenceDrawer
+        isAdminMitra={isAdminMitra}
+        hasCRUDAccess={hasCRUDAccess}
         opened={isEvidenceDrawerOpen}
         onClose={() => {
           setSelectedTicket(null);
@@ -150,6 +171,8 @@ const DaftarBOQ: React.FC = () => {
       />
 
       <TicketVolumeDetailsModal
+        isAdminMitra={isAdminMitra}
+        hasCRUDAccess={hasCRUDAccess}
         selectedTicket={selectedTicket}
         setSelectedTicket={setSelectedTicket}
         isOpen={isVolumeDetailsModalOpen}
@@ -226,6 +249,8 @@ const DaftarBOQ: React.FC = () => {
                     <TicketTableItem
                       key={ticket.id}
                       ticket={ticket}
+                      isAdminMitra={isAdminMitra}
+                      hasCRUDAccess={hasCRUDAccess}
                       openEvidenceDrawer={(ticket: LopTicket) => {
                         setSelectedTicket(ticket);
                         openEvidenceDrawer();
@@ -271,13 +296,15 @@ const DaftarBOQ: React.FC = () => {
           </Text>
         </Flex>
 
-        <ButtonAMDA
-          disabled={totalTickets === 0}
-          leftIcon={<IconDownload />}
-          onClick={handleExportTicket}
-        >
-          Export XLSX
-        </ButtonAMDA>
+        {!isAdminMitra && (
+          <ButtonAMDA
+            disabled={isAdminMitra || totalTickets === 0}
+            leftIcon={<IconDownload />}
+            onClick={handleExportTicket}
+          >
+            Export XLSX
+          </ButtonAMDA>
+        )}
       </Flex>
     </>
   );

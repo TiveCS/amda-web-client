@@ -2,7 +2,7 @@ import { uploadTicketEvidence } from "@api/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { FileButton } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconPlus } from "@tabler/icons-react";
+import { IconCheck, IconPlus, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -10,12 +10,14 @@ interface EvidenceUploadButtonProps {
   text: string;
   type: "before" | "after" | "onProgress";
   ticketIdentifier: string | undefined;
+  disabled?: boolean;
 }
 
 export default function EvidenceUploadButton({
   text,
   type,
   ticketIdentifier,
+  disabled,
 }: EvidenceUploadButtonProps) {
   const [file, setFile] = useState<File | null>(null);
 
@@ -82,8 +84,44 @@ export default function EvidenceUploadButton({
     },
   });
 
+  const validateFile = (file: File) => {
+    const maxInMB = 1;
+    const maxSize = maxInMB * 1024 * 1024; // act as MB
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+
+    const { size, type } = file;
+
+    if (size > maxSize) {
+      notifications.show({
+        title: "Error",
+        message: `Ukuran file terlalu besar, maksimal ${maxInMB}MB`,
+        color: "red",
+        autoClose: 3000,
+        icon: <IconX />,
+      });
+      setFile(null);
+      return false;
+    }
+
+    if (!allowedTypes.includes(type)) {
+      notifications.show({
+        title: "Error",
+        message: "Tipe file tidak didukung, hanya png, jpg, jpeg",
+        color: "red",
+        autoClose: 3000,
+        icon: <IconX />,
+      });
+      setFile(null);
+      return false;
+    }
+
+    return true;
+  };
+
   useEffect(() => {
     if (!file) return;
+
+    if (!validateFile(file)) return;
 
     void uploadAsync();
   }, [file, uploadAsync]);
@@ -94,6 +132,7 @@ export default function EvidenceUploadButton({
         setFile(payload);
       }}
       accept="image/png, image/jpeg, image/jpg"
+      disabled={disabled}
     >
       {(props) => (
         <ButtonAMDA
@@ -101,6 +140,7 @@ export default function EvidenceUploadButton({
           variant="outline"
           loading={isLoading}
           leftIcon={<IconPlus size={"1.25rem"} />}
+          disabled={disabled}
         >
           {text}
         </ButtonAMDA>

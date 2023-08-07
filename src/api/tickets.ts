@@ -18,6 +18,7 @@ export async function getListTickets({
   identifier,
   acceptStatus,
   evidenceStatus,
+  mitraIds,
 }: {
   take?: number;
   cursor?: number;
@@ -26,6 +27,7 @@ export async function getListTickets({
   identifier?: string[];
   acceptStatus?: LopTicketAcceptanceStatus | null;
   evidenceStatus?: LopTicketEvidenceStatus | null;
+  mitraIds?: number[];
 }) {
   const request = axios.get<never>(`${LOPS_TICKETS_URL}`, {
     params: {
@@ -38,6 +40,8 @@ export async function getListTickets({
       location: location && location.length > 0 ? location : undefined,
       acceptStatus: acceptStatus ? acceptStatus : undefined,
       evidenceStatus: evidenceStatus ? evidenceStatus : undefined,
+
+      mitraIds: mitraIds ? mitraIds : undefined,
     },
   });
 

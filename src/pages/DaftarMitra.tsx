@@ -22,6 +22,8 @@ import { IconCirclePlus } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import { useProfileStore } from "@zustand/profileStore";
+import { RoleType } from "../types";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -61,6 +63,12 @@ const DaftarMitra: React.FC = () => {
   });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
 
+  const { profile } = useProfileStore();
+  const role = profile?.role.slug as unknown as RoleType;
+  const isAdminMitra = useMemo(() => {
+    return role === "admin-mitra";
+  }, [role]);
+
   const [isOpenAddMitraModal, { open: openAddMitra, close: closeAddMitra }] =
     useDisclosure(false);
 
@@ -90,12 +98,16 @@ const DaftarMitra: React.FC = () => {
   const { refetch: refetchListMitraQuery, ...getListMitraQuery } =
     useInfiniteQuery({
       queryKey: ["mitra"],
-      queryFn: async ({ pageParam = 0 }) =>
-        getListMitra({
+      queryFn: async ({ pageParam = 0 }) => {
+        const result = await getListMitra({
           search: searchDebounced,
           cursor: pageParam as number,
-          limit: 5,
-        }),
+          limit: 10,
+          mitraId: isAdminMitra ? profile?.mitra.id : undefined,
+        });
+
+        return result;
+      },
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     });
 
@@ -140,19 +152,21 @@ const DaftarMitra: React.FC = () => {
               <SearchBar searchForm={searchForm} />
             </Grid.Col>
             <Grid.Col span={4}>
-              <Flex
-                gap={"md"}
-                direction={"row"}
-                align={"center"}
-                justify={"flex-end"}
-              >
-                <ButtonAMDA
-                  onClick={openAddMitra}
-                  leftIcon={<IconCirclePlus />}
+              {!isAdminMitra && (
+                <Flex
+                  gap={"md"}
+                  direction={"row"}
+                  align={"center"}
+                  justify={"flex-end"}
                 >
-                  Add Mitra
-                </ButtonAMDA>
-              </Flex>
+                  <ButtonAMDA
+                    onClick={openAddMitra}
+                    leftIcon={<IconCirclePlus />}
+                  >
+                    Add Mitra
+                  </ButtonAMDA>
+                </Flex>
+              )}
             </Grid.Col>
           </Grid>
         </Flex>
@@ -172,7 +186,7 @@ const DaftarMitra: React.FC = () => {
             >
               <tr>
                 <th className="max-w-lg">Nama Mitra</th>
-                <th className="w-40">Action</th>
+                {!isAdminMitra && <th className="w-36">Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -190,6 +204,7 @@ const DaftarMitra: React.FC = () => {
                     <MitraItemTable
                       key={mitra.id}
                       mitra={mitra}
+                      isAdminMitra={isAdminMitra}
                       editMitraForm={editMitraForm}
                       setRemoveMitra={setRemoveMitra}
                       setEditMitra={setEditMitra}

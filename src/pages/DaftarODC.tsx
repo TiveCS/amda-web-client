@@ -1,3 +1,5 @@
+import ButtonAMDA from "@components/ButtonAMDA";
+import SearchBar from "@components/SearchBar/SearchBar";
 import {
   Card,
   Container,
@@ -7,22 +9,21 @@ import {
   Table,
   TextInput,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconCirclePlus,
-  IconTrash,
   IconEdit,
   IconFilter,
+  IconTrash,
 } from "@tabler/icons-react";
-import SearchBar from "../components/SearchBar/SearchBar";
-import { useDisclosure } from "@mantine/hooks";
-import ButtonAMDA from "@components/ButtonAMDA";
-import TableDaftarODC from "@components/TableDaftaroDC";
 
 const App: React.FC = () => {
-  const handleSearch = (searchTerm: string) => {
-    // Perform search logic using the search term
-    console.log("Searching for:", searchTerm);
-  };
+  const searchForm = useForm({
+    initialValues: {
+      search: "",
+    },
+  });
 
   const [openedAddODC, { open: openAddODC, close: closeAddODC }] =
     useDisclosure(false);
@@ -54,7 +55,7 @@ const App: React.FC = () => {
       <Container className="mt-5">
         <Grid>
           <Grid.Col span={7}>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar searchForm={searchForm} />
           </Grid.Col>
           <Grid.Col span={5}>
             <ButtonAMDA variant="outline">
@@ -92,28 +93,7 @@ const App: React.FC = () => {
                 <th>Mini OLT</th>
               </tr>
             </thead>
-            <tbody>
-              <TableDaftarODC
-                datel="KLATEN"
-                sto="BYL"
-                location="ODC-BYL-FA"
-                latitude="-7517"
-                longitude="1105936"
-                inventoryStatus="Active"
-                kapODC="288"
-                miniOLT="SIMO"
-              ></TableDaftarODC>
-              <TableDaftarODC
-                datel="KLATEN"
-                sto="BYL"
-                location="ODC-BYL-FA"
-                latitude="-7517"
-                longitude="1105936"
-                inventoryStatus="Active"
-                kapODC="288"
-                miniOLT="SIMO"
-              ></TableDaftarODC>
-            </tbody>
+            <tbody></tbody>
           </Table>
         </Card>
       </Container>

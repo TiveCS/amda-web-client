@@ -1,13 +1,7 @@
 import axios from "axios";
 import { apiRequest } from "./helpers";
-import { LOPS_ACTIVITIES_URL, STO_URL } from "./routes";
+import { LOPS_ACTIVITIES_URL } from "./routes";
 import { NestResponse } from "./types/common";
-import {
-  ActivitiesWorkType,
-  GetAllActivitiesResponse,
-  GetAllActivitiesStoResponse,
-  GetAllActivitiesMitraResponse
-} from  "./types/activities"
 
 export async function removeActivity(activityId: number) {
   const request = axios.delete<never>(`${LOPS_ACTIVITIES_URL}/${activityId}`);
