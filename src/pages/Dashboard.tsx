@@ -9,20 +9,20 @@ function Dashboard() {
   // List User
   const getListUserQuery = useQuery({
     queryKey: ["list_user_dashboard"],
-    queryFn: async ({}) => getListUser({}),
+    queryFn: async ({}) => getListUser({ limit: 300 }),
   });
 
   // List Mitra
   const getListMitraQuery = useQuery({
     queryKey: ["list_mitra_dashboard"],
-    queryFn: async ({}) => getListMitra({}),
+    queryFn: async ({}) => getListMitra({ limit: 100 }),
   });
 
   // List Tiket
   const getListTicketQuery = useQuery({
     queryKey: ["list_tiket_dashboard"],
     queryFn: async ({}) => {
-      const result = await getListTickets({});
+      const result = await getListTickets({ take: 500 });
 
       return result;
     },
