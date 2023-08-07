@@ -6,6 +6,9 @@ import {
   Flex,
   Skeleton,
   ScrollArea,
+  Indicator,
+  createStyles,
+  rem,
 } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
 import ButtonAMDA from "@components/ButtonAMDA";
@@ -20,7 +23,37 @@ import { AgendaResponsePayload } from "@api/types/agenda";
 import RemoveAgendaModal from "@components/pages/AgendaTim/RemoveAgendaModal";
 import EditAgendaModal from "@components/pages/AgendaTim/EditAgendaModal";
 
+const useStyles = createStyles((theme) => ({
+  header: {
+    position: "sticky",
+    top: 0,
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+    transition: "box-shadow 150ms ease",
+
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderBottom: `${rem(1)} solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[3]
+          : theme.colors.gray[2]
+      }`,
+    },
+  },
+
+  scrolled: {
+    boxShadow: theme.shadows.sm,
+  },
+}));
+
 const AgendaTim: React.FC = () => {
+  const { classes, cx } = useStyles();
+  const [scrolled, setScrolled] = useState(false);
+
   const [isOpenAddAgendaModal, { open: openAddAgenda, close: closeAddAgenda }] =
     useDisclosure(false);
 
@@ -86,6 +119,18 @@ const AgendaTim: React.FC = () => {
     return getListAgendaQuery.data?.data.length;
   }, [getListAgendaQuery.data?.data]);
 
+  const agendaDates = useMemo(() => {
+    return (
+      getListAgendaQuery.data?.data.map((agenda) => new Date(agenda.time)) || []
+    );
+  }, [getListAgendaQuery.data?.data]);
+
+  const hasAgenda = (date: Date) => {
+    return agendaDates.some(
+      (agendaDate) => agendaDate.toDateString() === date.toDateString()
+    );
+  };
+
   return (
     <>
       {selected && (
@@ -125,6 +170,21 @@ const AgendaTim: React.FC = () => {
                   selected: selected?.toDateString() === date.toDateString(),
                   onClick: () => handleSelect(date),
                 })}
+                static
+                renderDay={(date) => {
+                  const day = date.getDate();
+                  const isActive = hasAgenda(date);
+                  return (
+                    <Indicator
+                      size={6}
+                      color="red"
+                      offset={-2}
+                      disabled={!isActive}
+                    >
+                      <div>{day}</div>
+                    </Indicator>
+                  );
+                }}
               />
             </Card>
             <ButtonAMDA
@@ -136,14 +196,22 @@ const AgendaTim: React.FC = () => {
             </ButtonAMDA>
           </Flex>
 
-          <ScrollArea.Autosize className="max-h-[50%]">
+          <ScrollArea.Autosize
+            className="max-h-[50%]"
+            h={400}
+            onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
+          >
             <Skeleton
               visible={
                 getListAgendaQuery.isLoading || getListAgendaQuery.isFetching
               }
             >
               <Table striped withBorder withColumnBorders>
-                <thead>
+                <thead
+                  className={cx(classes.header, {
+                    [classes.scrolled]: scrolled,
+                  })}
+                >
                   <tr>
                     <th className="w-32">Waktu</th>
                     <th className="w-40">Agenda</th>
