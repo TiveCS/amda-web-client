@@ -1,9 +1,8 @@
 import { useProfileStore } from "@zustand/profileStore";
 import { PropsWithChildren } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { RoleType } from "../types";
-import useRoleAccess from "@hooks/useRoleAccess";
 import { checkRoleAllowed } from "src/utils";
+import { RoleType } from "../types";
 
 interface AuthGuardProps {
   redirectUnauthenticated?: string;

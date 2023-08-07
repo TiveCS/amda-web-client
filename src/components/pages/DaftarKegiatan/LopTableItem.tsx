@@ -56,7 +56,6 @@ export default function LopTableItem({
             <tr key={i}>
               <LopTableContent
                 activity={activity}
-                hasCRUDAccess={hasCRUDAccess}
                 isSelected={selectedActivities.includes(activity)}
                 setSelectedActivities={setSelectedActivities}
               />
@@ -104,13 +103,7 @@ const LopTableContent: React.FC<{
   activity: LopActivity;
   isSelected?: boolean;
   setSelectedActivities: React.Dispatch<React.SetStateAction<LopActivity[]>>;
-  hasCRUDAccess?: boolean;
-}> = ({
-  activity,
-  setSelectedActivities,
-  isSelected = false,
-  hasCRUDAccess,
-}) => {
+}> = ({ activity, setSelectedActivities, isSelected = false }) => {
   return (
     <>
       <td>

@@ -1,7 +1,5 @@
-import { useProfileStore } from "@zustand/profileStore";
 import { RoleType } from "../types";
 import { checkRoleAllowed } from "../utils";
-import { Navigate } from "react-router-dom";
 
 interface RoleAccessProps {
   blacklistRoles?: RoleType[];
