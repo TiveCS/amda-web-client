@@ -5,12 +5,14 @@ import { Flex, Modal, Select, TextInput } from "@mantine/core";
 import { UseFormReturnType, useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
 import { RoleSelectOption } from "@api/types/role";
 import { MitraSelectOption } from "@api/types/mitra";
 import { getListMitra } from "@api/mitra";
 import { getListRole } from "@api/role";
+import { useProfileStore } from "@zustand/profileStore";
+import { RoleType } from "../../../types";
 
 interface EditUserModalProps {
   user: UserResponsePayload | null;
@@ -38,6 +40,12 @@ export default function EditUserModal({
   isOpen,
   closeModal,
 }: EditUserModalProps) {
+  const { profile } = useProfileStore();
+  const role = profile?.role.slug as unknown as RoleType;
+  const isAdminMitra = useMemo(() => {
+    return role === "admin-mitra";
+  }, [role]);
+
   const queryClient = useQueryClient();
   const editUserMutation = useMutation({
     mutationFn: async () => {
@@ -137,9 +145,6 @@ export default function EditUserModal({
     void getListMitraQuery.refetch();
   }, [searchMitraDebounced, getListMitraQuery]);
 
-  // const [selectedOptionRole] = useState<RoleSelectOption | null>(null);
-  // const [selectedOptionMitra] = useState<MitraSelectOption | null>(null);
-
   if (getListRoleQuery.isLoading) return <p>Loading...</p>;
 
   if (getListMitraQuery.isLoading) return <p>Loading...</p>;
@@ -163,6 +168,7 @@ export default function EditUserModal({
   return (
     <Modal
       onClose={() => {
+        editForm.reset();
         setUser(null);
         closeModal();
       }}
@@ -171,32 +177,45 @@ export default function EditUserModal({
       padding={"xl"}
     >
       <Flex direction={"column"} gap={"md"}>
-        <Select
-          label="Role"
-          searchable
-          nothingFound="No options"
-          data={selectOptionsRole}
-          value={editForm.values.roleId.toString()}
-          onChange={(value: string) =>
-            editForm.setFieldValue("roleId", parseInt(value))
-          }
-          // {...editForm.getInputProps("roleId")}
-          // defaultValue={user?.roleId.toString()}
-        />
+        {!isAdminMitra && (
+          <Select
+            label="Role"
+            searchable
+            nothingFound="No options"
+            data={selectOptionsRole}
+            disabled={isAdminMitra}
+            value={
+              editForm.values.roleId !== -1
+                ? editForm.values.roleId.toString()
+                : undefined
+            }
+            onChange={(value: string) =>
+              editForm.setFieldValue("roleId", parseInt(value))
+            }
+          />
+        )}
+
         <TextInput readOnly label="Username" value={user?.username} />
+
         <TextInput label="Nama" {...editForm.getInputProps("name")} />
-        <Select
-          label="Mitra"
-          searchable
-          nothingFound="No options"
-          data={selectOptionsMitra}
-          value={editForm.values.mitraId.toString()}
-          onChange={(value: string) =>
-            editForm.setFieldValue("mitraId", parseInt(value))
-          }
-          // {...editForm.getInputProps("mitraId")}
-          // defaultValue={user?.mitraId.toString()}
-        />
+
+        {!isAdminMitra && (
+          <Select
+            label="Mitra"
+            searchable
+            nothingFound="No options"
+            data={selectOptionsMitra}
+            disabled={isAdminMitra}
+            value={
+              editForm.values.mitraId
+                ? editForm.values.mitraId.toString()
+                : undefined
+            }
+            onChange={(value: string) =>
+              editForm.setFieldValue("mitraId", parseInt(value))
+            }
+          />
+        )}
 
         <ButtonAMDA onClick={handleEditUser}>Simpan</ButtonAMDA>
       </Flex>

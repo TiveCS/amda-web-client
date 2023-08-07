@@ -14,6 +14,7 @@ interface FilterModalProps {
   closeModal: () => void;
   filter: () => void;
   filterForm: ReturnType<typeof useFilterKegiatan>["form"];
+  isAdminMitra: boolean;
 }
 
 export default function FilterModal({
@@ -21,6 +22,7 @@ export default function FilterModal({
   closeModal,
   filter,
   filterForm,
+  isAdminMitra,
 }: FilterModalProps) {
   const searchForm = useForm({
     initialValues: {
@@ -97,19 +99,21 @@ export default function FilterModal({
           onChange={(value) => filterForm.setFieldValue("sto", value)}
         />
 
-        <MultiSelect
-          id="filter-mitra"
-          clearable
-          searchable
-          multiple
-          label="Mitra"
-          nothingFound="Mitra tidak ditemukan"
-          data={getListMitraQuery.data ?? []}
-          placeholder="Pilih mitra"
-          onSearchChange={(value) => searchForm.setFieldValue("mitra", value)}
-          value={filterForm?.values?.mitra}
-          onChange={(value) => filterForm.setFieldValue("mitra", value)}
-        />
+        {!isAdminMitra && (
+          <MultiSelect
+            id="filter-mitra"
+            clearable
+            searchable
+            multiple
+            label="Mitra"
+            nothingFound="Mitra tidak ditemukan"
+            data={getListMitraQuery.data ?? []}
+            placeholder="Pilih mitra"
+            onSearchChange={(value) => searchForm.setFieldValue("mitra", value)}
+            value={filterForm?.values?.mitra}
+            onChange={(value) => filterForm.setFieldValue("mitra", value)}
+          />
+        )}
 
         <Select
           id="filter-work-type"

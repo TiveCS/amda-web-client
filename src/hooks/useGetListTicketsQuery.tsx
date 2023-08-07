@@ -28,6 +28,7 @@ export default function useGetListTicketsQuery({
         location: filterForm.form.values.location,
         acceptStatus: filterForm.form.values.acceptStatus,
         evidenceStatus: filterForm.form.values.evidenceStatus,
+        mitraIds: filterForm.form.values.mitraIds ?? undefined,
       }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });

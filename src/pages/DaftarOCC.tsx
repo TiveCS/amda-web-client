@@ -13,16 +13,18 @@ import {
   IconEdit,
   IconFilter,
 } from "@tabler/icons-react";
-import SearchBar from "../components/SearchBar/SearchBar";
 import { useDisclosure } from "@mantine/hooks";
 import ButtonAMDA from "@components/ButtonAMDA";
 import TableDaftarOCC from "@components/TableDaftarOCC";
+import { useForm } from "@mantine/form";
+import SearchBar from "@components/SearchBar/SearchBar";
 
 const App: React.FC = () => {
-  const handleSearch = (searchTerm: string) => {
-    // Perform search logic using the search term
-    console.log("Searching for:", searchTerm);
-  };
+  const searchForm = useForm({
+    initialValues: {
+      search: "",
+    },
+  });
 
   const [openedAddOCC, { open: openAddOCC, close: closeAddOCC }] =
     useDisclosure(false);
@@ -60,7 +62,7 @@ const App: React.FC = () => {
       <Container className="mt-5">
         <Grid>
           <Grid.Col span={7}>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar searchForm={searchForm} />
           </Grid.Col>
           <Grid.Col span={5}>
             <ButtonAMDA variant="outline">

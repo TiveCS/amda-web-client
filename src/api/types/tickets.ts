@@ -12,7 +12,12 @@ export type LopTicket = {
   acceptedAt: Date | null;
   acceptStatus: LopTicketAcceptanceStatus;
   volumes: LopVolume[];
+  activity: LopTicketActivity;
   evidence: LopTicketEvidence;
+};
+
+export type LopTicketActivity = {
+  isForMitra: boolean;
 };
 
 export type LopTicketEvidence = {

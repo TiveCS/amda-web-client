@@ -11,7 +11,6 @@ import {
   Modal,
   NumberInput,
   ScrollArea,
-  Select,
   Stack,
   Stepper,
   Table,
@@ -50,7 +49,10 @@ export default function ImportDesignatorModal({
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={() => {
+        importForm.reset();
+        onClose();
+      }}
       title="Import Data Designator"
       size={"xl"}
       padding={"xl"}
@@ -82,16 +84,6 @@ export default function ImportDesignatorModal({
                 label="Baris Awal Data"
                 placeholder="contoh: 9"
                 {...importForm.getInputProps("firstValueRow")}
-              />
-
-              <Select
-                withAsterisk
-                label="Mode Import"
-                data={[
-                  { value: "preview", label: "Preview" },
-                  { value: "full_import", label: "Full Import" },
-                ]}
-                {...importForm.getInputProps("mode")}
               />
             </Group>
 
@@ -147,7 +139,13 @@ export default function ImportDesignatorModal({
               Lihat Preview
             </ButtonAMDA>
 
-            <ButtonAMDA variant="white" onClick={onClose}>
+            <ButtonAMDA
+              variant="white"
+              onClick={() => {
+                importForm.reset();
+                onClose();
+              }}
+            >
               Batal
             </ButtonAMDA>
           </Flex>

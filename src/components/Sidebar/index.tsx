@@ -4,6 +4,8 @@ import { useProfileStore } from "@zustand/profileStore";
 import Accordion from "./Accordion";
 import Logo from "/assets/img/amda-putih.png";
 import { Image } from "@mantine/core";
+import { RoleType } from "../../types";
+import { checkRoleAllowed } from "../../utils";
 
 export default function Sidebar() {
   const { profile } = useProfileStore();
@@ -11,6 +13,13 @@ export default function Sidebar() {
   if (!profile) {
     return <p>Loading...</p>;
   }
+
+  const role: RoleType = profile.role.slug as unknown as RoleType;
+
+  const isAllowAgendaTim = checkRoleAllowed(role, {
+    blackListedRoles: ["admin-mitra"],
+  });
+
   return (
     <nav
       style={{
@@ -42,36 +51,47 @@ export default function Sidebar() {
         <div className="flex flex-col gap-y-2">
           <SidebarNav to={"/"}>Dashboard</SidebarNav>
           <Accordion
+            text="Management"
             items={[
               {
                 title: "Users",
                 to: "/management/users",
+                allow: ["admin-ta", "admin-mitra"],
               },
               {
                 title: "Roles",
                 to: "/management/roles",
+                allow: ["admin-ta"],
               },
               {
                 title: "Mitra",
                 to: "/management/mitras",
+                allow: ["admin-ta", "admin-mitra"],
               },
             ]}
-            text="Management"
           />
-          <SidebarNav to={"/agenda"}>Agenda Tim</SidebarNav>
+
+          {isAllowAgendaTim && (
+            <SidebarNav to={"/agenda"}>Agenda Tim</SidebarNav>
+          )}
+
           <Accordion
+            text="BOQ"
             items={[
               {
                 title: "Kegiatan Mitra",
                 to: "/boq/kegiatan-mitra",
+                allow: ["admin-ta", "ta-maintenance", "admin-mitra"],
               },
               {
                 title: "Daftar BOQ",
                 to: "/boq",
+                allow: ["ta-maintenance", "ta-uji-terima", "admin-mitra"],
               },
               {
                 title: "Status BOQ",
                 to: "/boq/status",
+                allow: ["ta-uji-terima"],
               },
               {
                 title: "Designator",
@@ -82,24 +102,26 @@ export default function Sidebar() {
                 to: "/sto",
               },
             ]}
-            text="BOQ"
           />
           <Accordion
+            text="Kordinat"
             items={[
               {
                 title: "ODC",
                 to: "/kordinat/odc",
+                allow: ["admin-ta", "ta-maintenance"],
               },
               {
                 title: "ODP",
                 to: "/kordinat/odp",
+                allow: ["admin-ta", "ta-maintenance"],
               },
               {
                 title: "OCC",
                 to: "/kordinat/occ",
+                allow: ["admin-ta", "ta-maintenance"],
               },
             ]}
-            text="Kordinat"
           />
         </div>
       </div>

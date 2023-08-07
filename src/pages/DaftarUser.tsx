@@ -20,6 +20,8 @@ import { IconCirclePlus } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
+import { useProfileStore } from "@zustand/profileStore";
+import { RoleType } from "../types";
 
 const DaftarUser: React.FC = () => {
   const searchForm = useForm({
@@ -28,6 +30,12 @@ const DaftarUser: React.FC = () => {
     },
   });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
+
+  const { profile } = useProfileStore();
+  const role: RoleType = profile?.role.slug as unknown as RoleType;
+  const isAdminMitra = useMemo(() => {
+    return role === "admin-mitra";
+  }, [role]);
 
   const [isOpenAddUserModal, { open: openAddUser, close: closeAddUser }] =
     useDisclosure(false);
@@ -48,8 +56,8 @@ const DaftarUser: React.FC = () => {
   const editUserForm = useForm({
     initialValues: {
       name: "",
-      mitraId: -1,
-      roleId: -1,
+      mitraId: profile?.mitra.id ?? -1,
+      roleId: profile?.role.id ?? -1,
     },
     validate: {
       name: (value) => (value.trim().length > 0 ? null : "Nama wajib diisi"),
@@ -58,12 +66,18 @@ const DaftarUser: React.FC = () => {
 
   const { refetch: refetchListUsers, ...getListUserQuery } = useInfiniteQuery({
     queryKey: ["user"],
-    queryFn: async ({ pageParam = 0 }) =>
-      getListUser({
+    queryFn: async ({ pageParam = 0 }) => {
+      const payload = {
         search: searchDebounced,
         cursor: pageParam as number,
-        limit: 5,
-      }),
+        limit: 10,
+        mitraId: isAdminMitra ? profile?.mitra.id : undefined,
+      };
+
+      const result = await getListUser(payload);
+
+      return result;
+    },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
