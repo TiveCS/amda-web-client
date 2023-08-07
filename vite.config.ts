@@ -9,6 +9,8 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [react(), tsconfigPaths()],
     server: {
+      port: env.PORT || 4173,
+      host: "0.0.0.0",
       proxy: {
         "/api": {
           target: JSON.stringify(env.API_URL) || "http://localhost:3000",
