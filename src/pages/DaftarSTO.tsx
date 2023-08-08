@@ -13,6 +13,8 @@ import {
   Skeleton,
   Table,
   Text,
+  createStyles,
+  rem,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
@@ -24,7 +26,37 @@ import { useProfileStore } from "@zustand/profileStore";
 import { RoleType } from "../types";
 import { checkRoleAllowed } from "src/utils";
 
+const useStyles = createStyles((theme) => ({
+  header: {
+    position: "sticky",
+    top: 0,
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+    transition: "box-shadow 150ms ease",
+
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderBottom: `${rem(1)} solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[3]
+          : theme.colors.gray[2]
+      }`,
+    },
+  },
+
+  scrolled: {
+    boxShadow: theme.shadows.sm,
+  },
+}));
+
 const DaftarSto: React.FC = () => {
+  const { classes, cx } = useStyles();
+  const [scrolled, setScrolled] = useState(false);
+
   const searchForm = useForm({
     initialValues: {
       search: "",
@@ -135,12 +167,18 @@ const DaftarSto: React.FC = () => {
         </Flex>
       </Container>
 
-      <ScrollArea.Autosize mt={24} className="max-h-1/2 ml-4">
+      <ScrollArea.Autosize
+        mt={24}
+        className="max-h-1/2 ml-4"
+        onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
+      >
         <Skeleton
           visible={getListStoQuery.isFetching || getListStoQuery.isLoading}
         >
           <Table striped withBorder withColumnBorders>
-            <thead>
+            <thead
+              className={cx(classes.header, { [classes.scrolled]: scrolled })}
+            >
               <tr>
                 <th className="max-w-lg">Nama STO</th>
                 {isAllowCRUD && <th className="w-40">Action</th>}
