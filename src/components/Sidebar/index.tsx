@@ -86,7 +86,7 @@ export default function Sidebar() {
               {
                 title: "Daftar BOQ",
                 to: "/boq",
-                allow: ["ta-maintenance", "ta-uji-terima", "admin-mitra"],
+                allow: ["ta-uji-terima", "admin-mitra", "admin-ta"],
               },
               {
                 title: "Status BOQ",
