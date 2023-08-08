@@ -16,7 +16,7 @@ export async function login({
   username: string;
   password: string;
 }) {
-  const request = axiosGuestApi.post<LoginResponse>(AUTH_LOGIN_URL, {
+  const request = axiosAuthedApi.post<LoginResponse>(AUTH_LOGIN_URL, {
     username,
     password,
   });
