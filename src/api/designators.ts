@@ -1,6 +1,6 @@
-import axios from "axios";
+import useImportDesignatorForm from "@hooks/useImportDesignatorForm";
+import { apiRequest, axiosAuthedApi } from "./helpers";
 import { DESIGNATOR_URL } from "./routes";
-import { apiRequest } from "./helpers";
 import { NestResponse } from "./types/common";
 import {
   Designator,
@@ -10,7 +10,6 @@ import {
   PostImportDesignatorFullImportResponse,
   PostImportDesignatorPreviewResponse,
 } from "./types/designators";
-import useImportDesignatorForm from "@hooks/useImportDesignatorForm";
 
 export async function getListDesignator({
   cursor,
@@ -21,7 +20,7 @@ export async function getListDesignator({
   cursor?: number;
   search?: string;
 }) {
-  const request = axios.get<never>(`${DESIGNATOR_URL}`, {
+  const request = axiosAuthedApi.get<never>(`${DESIGNATOR_URL}`, {
     params: {
       take: take ? take : undefined,
       cursor: cursor ? cursor : undefined,
@@ -43,7 +42,7 @@ export async function addDesignator(payload: {
   pricePerUnit: number;
   workDescription: string;
 }) {
-  const request = axios.post<never>(`${DESIGNATOR_URL}`, payload);
+  const request = axiosAuthedApi.post<never>(`${DESIGNATOR_URL}`, payload);
 
   const result = await apiRequest<NestResponse<Designator>>(request);
 
@@ -51,7 +50,9 @@ export async function addDesignator(payload: {
 }
 
 export async function removeDesignatorById(designatorId: number) {
-  const request = axios.delete<never>(`${DESIGNATOR_URL}/${designatorId}`);
+  const request = axiosAuthedApi.delete<never>(
+    `${DESIGNATOR_URL}/${designatorId}`
+  );
 
   return apiRequest<NestResponse<unknown>>(request);
 }
@@ -60,7 +61,7 @@ export async function editDesignator(
   designatorId: number,
   payload: DesignatorFormData
 ) {
-  const request = axios.put<never>(
+  const request = axiosAuthedApi.put<never>(
     `${DESIGNATOR_URL}/${designatorId}`,
     payload
   );
@@ -86,7 +87,7 @@ export async function importDesignator(
     workDescriptionHeaderAddress,
   } = payload;
 
-  const request = axios.post<never>(
+  const request = axiosAuthedApi.post<never>(
     `${DESIGNATOR_URL}/import`,
     {
       file,
@@ -119,7 +120,7 @@ export async function importDesignator(
 }
 
 export async function getDesignatorImportStatus(jobId: string) {
-  const request = axios.get<never>(`${DESIGNATOR_URL}/import/status`, {
+  const request = axiosAuthedApi.get<never>(`${DESIGNATOR_URL}/import/status`, {
     params: {
       jobId,
     },

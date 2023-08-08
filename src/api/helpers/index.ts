@@ -1,6 +1,16 @@
 import { NestErrorResponse } from "@api/types/common";
 import axios, { AxiosResponse } from "axios";
 import { ApiResponse } from "..";
+import { API_URL } from "@api/routes";
+
+export const axiosGuestApi = axios.create({
+  baseURL: API_URL,
+});
+
+export const axiosAuthedApi = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 
 export async function apiRequest<T>(
   request: Promise<AxiosResponse<ApiResponse>>

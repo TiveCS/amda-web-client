@@ -1,10 +1,11 @@
-import axios from "axios";
-import { apiRequest } from "./helpers";
+import { apiRequest, axiosAuthedApi } from "./helpers";
 import { LOPS_ACTIVITIES_URL } from "./routes";
 import { NestResponse } from "./types/common";
 
 export async function removeActivity(activityId: number) {
-  const request = axios.delete<never>(`${LOPS_ACTIVITIES_URL}/${activityId}`);
+  const request = axiosAuthedApi.delete<never>(
+    `${LOPS_ACTIVITIES_URL}/${activityId}`
+  );
 
   return apiRequest<NestResponse<unknown>>(request);
 }
@@ -19,7 +20,7 @@ export async function addActivity(payload: {
   workType: string;
   mitraId: number;
 }) {
-  const request = axios.post<never>(`${LOPS_ACTIVITIES_URL}`, {
+  const request = axiosAuthedApi.post<never>(`${LOPS_ACTIVITIES_URL}`, {
     ...payload,
     ticketLocation: payload.ticketLocation ? payload.ticketLocation : undefined,
   });
@@ -40,13 +41,16 @@ export async function editActivity(
     mitraId: number;
   }
 ) {
-  const request = axios.put<never>(`${LOPS_ACTIVITIES_URL}/${activityId}`, {
-    ...payload,
-    ticketLocation:
-      payload.ticketLocation || payload.ticketIdentifier.trim().length > 0
-        ? payload.ticketLocation?.trim()
-        : undefined,
-  });
+  const request = axiosAuthedApi.put<never>(
+    `${LOPS_ACTIVITIES_URL}/${activityId}`,
+    {
+      ...payload,
+      ticketLocation:
+        payload.ticketLocation || payload.ticketIdentifier.trim().length > 0
+          ? payload.ticketLocation?.trim()
+          : undefined,
+    }
+  );
 
   return apiRequest<NestResponse<unknown>>(request);
 }

@@ -1,6 +1,5 @@
-import axios from "axios";
 import { LOPS_TICKETS_URL } from "./routes";
-import { apiRequest } from "./helpers";
+import { apiRequest, axiosAuthedApi } from "./helpers";
 import {
   GetAllTicketLocationsResponse,
   GetAllTicketsResponse,
@@ -29,7 +28,7 @@ export async function getListTickets({
   evidenceStatus?: LopTicketEvidenceStatus | null;
   mitraIds?: number[];
 }) {
-  const request = axios.get<never>(`${LOPS_TICKETS_URL}`, {
+  const request = axiosAuthedApi.get<never>(`${LOPS_TICKETS_URL}`, {
     params: {
       take: take ? take : undefined,
       cursor: cursor ? cursor : undefined,
@@ -59,7 +58,7 @@ export async function getListTicketLocations({
   cursor?: number;
   search?: string;
 }) {
-  const request = axios.get<never>(`${LOPS_TICKETS_URL}/locations`, {
+  const request = axiosAuthedApi.get<never>(`${LOPS_TICKETS_URL}/locations`, {
     params: {
       take: take ? take : undefined,
       cursor: cursor ? cursor : undefined,
@@ -78,7 +77,7 @@ export async function getTicketEvidences(
     onProgress: boolean;
   }
 ) {
-  const request = axios.get<never>(
+  const request = axiosAuthedApi.get<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences`,
     {
       params: {
@@ -103,7 +102,7 @@ export async function uploadTicketEvidence(
   formData.append("file", payload.file);
   formData.append("type", payload.type);
 
-  const request = axios.post<never>(
+  const request = axiosAuthedApi.post<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences`,
     formData
   );
@@ -115,7 +114,7 @@ export async function deleteTicketEvidence(
   ticketIdentifier: string,
   type: "after" | "onProgress" | "before"
 ) {
-  const request = axios.delete<never>(
+  const request = axiosAuthedApi.delete<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/evidences/${type}`
   );
 
@@ -132,7 +131,7 @@ export async function acceptTicket(
     note: string | null;
   }
 ) {
-  const request = axios.put<never>(
+  const request = axiosAuthedApi.put<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
     {
       force,
@@ -152,7 +151,7 @@ export async function rejectTicket(
     note?: string | null;
   }
 ) {
-  const request = axios.put<never>(
+  const request = axiosAuthedApi.put<never>(
     `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
     {
       force: false,

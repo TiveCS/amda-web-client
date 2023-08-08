@@ -1,9 +1,8 @@
-import axios from "axios";
+import { apiRequest, axiosAuthedApi } from "./helpers";
 import { LOPS_URL } from "./routes";
-import { apiRequest } from "./helpers";
-import { ListLopsResponse } from "./types/lops";
-import { NestResponse } from "./types/common";
 import { ActivitiesWorkType } from "./types/activities";
+import { NestResponse } from "./types/common";
+import { ListLopsResponse } from "./types/lops";
 
 export async function getLops({
   cursor,
@@ -17,20 +16,20 @@ export async function getLops({
   search?: string;
   lopOnly?: boolean;
   filter?: {
-    stoIds?: number[],
-    mitraIds?: number[],
-    workType?: ActivitiesWorkType,
-  }
+    stoIds?: number[];
+    mitraIds?: number[];
+    workType?: ActivitiesWorkType;
+  };
 }) {
-  const request = axios.get<never>(LOPS_URL, {
+  const request = axiosAuthedApi.get<never>(LOPS_URL, {
     params: {
       cursor: cursor ? cursor : undefined,
       take: take ? take : undefined,
       search: search ? search : undefined,
       lopOnly,
-      stoIds: filter?.stoIds?  filter.stoIds: undefined,
-      mitraIds: filter?.mitraIds?  filter.mitraIds: undefined,
-      workType: filter?.workType?  filter.workType:undefined,
+      stoIds: filter?.stoIds ? filter.stoIds : undefined,
+      mitraIds: filter?.mitraIds ? filter.mitraIds : undefined,
+      workType: filter?.workType ? filter.workType : undefined,
     },
   });
 
@@ -38,7 +37,7 @@ export async function getLops({
 }
 
 export async function addLop({ name }: { name: string }) {
-  const request = axios.post<never>(LOPS_URL, {
+  const request = axiosAuthedApi.post<never>(LOPS_URL, {
     name,
   });
 
@@ -46,7 +45,7 @@ export async function addLop({ name }: { name: string }) {
 }
 
 export async function editLop(payload: { name: string; lopId: number }) {
-  const request = axios.put<never>(`${LOPS_URL}/${payload.lopId}`, {
+  const request = axiosAuthedApi.put<never>(`${LOPS_URL}/${payload.lopId}`, {
     name: payload.name,
   });
 
@@ -54,7 +53,7 @@ export async function editLop(payload: { name: string; lopId: number }) {
 }
 
 export async function removeLop(payload: { lopId: number }) {
-  const request = axios.delete<never>(`${LOPS_URL}/${payload.lopId}`);
+  const request = axiosAuthedApi.delete<never>(`${LOPS_URL}/${payload.lopId}`);
 
   const result = await apiRequest<NestResponse<unknown>>(request);
 

@@ -1,6 +1,5 @@
-import axios from "axios";
+import { apiRequest, axiosAuthedApi } from "./helpers";
 import { MANAGEMENT_MITRA_URL } from "./routes";
-import { apiRequest } from "./helpers";
 import { NestResponse } from "./types/common";
 import {
   AddMitraPayload,
@@ -9,7 +8,7 @@ import {
 } from "./types/mitra";
 
 export async function addMitra(payload: AddMitraPayload) {
-  const request = axios.post<never>(MANAGEMENT_MITRA_URL, {
+  const request = axiosAuthedApi.post<never>(MANAGEMENT_MITRA_URL, {
     name: payload.name,
   });
 
@@ -27,7 +26,7 @@ export async function getListMitra({
   search?: string;
   mitraId?: number;
 }) {
-  const request = axios.get<never>(MANAGEMENT_MITRA_URL, {
+  const request = axiosAuthedApi.get<never>(MANAGEMENT_MITRA_URL, {
     params: {
       limit,
       cursor,
@@ -48,15 +47,20 @@ export async function editMitra({
     name: string;
   };
 }) {
-  const request = axios.put<never>(`${MANAGEMENT_MITRA_URL}/${mitraId}`, {
-    name: payload.name,
-  });
+  const request = axiosAuthedApi.put<never>(
+    `${MANAGEMENT_MITRA_URL}/${mitraId}`,
+    {
+      name: payload.name,
+    }
+  );
 
   return await apiRequest<NestResponse<never>>(request);
 }
 
 export async function removeMitra(mitraId: number) {
-  const request = axios.delete<never>(`${MANAGEMENT_MITRA_URL}/${mitraId}`);
+  const request = axiosAuthedApi.delete<never>(
+    `${MANAGEMENT_MITRA_URL}/${mitraId}`
+  );
 
   return await apiRequest<NestResponse<never>>(request);
 }

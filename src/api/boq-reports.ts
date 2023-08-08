@@ -1,15 +1,14 @@
-import axios from "axios";
+import { apiRequest, axiosAuthedApi } from "./helpers";
 import { BOQ_REPORTS_URL } from "./routes";
-import { apiRequest } from "./helpers";
-import { NestResponse } from "./types/common";
 import { GetBoqReportsResponse } from "./types/boq-reports";
+import { NestResponse } from "./types/common";
 
 export async function getBoqReport(payload: {
   stoId: number;
   lopId: number;
   ticketIdentifiers: string[];
 }) {
-  const request = axios.post<never>(`${BOQ_REPORTS_URL}`, payload);
+  const request = axiosAuthedApi.post<never>(`${BOQ_REPORTS_URL}`, payload);
 
   const result = await apiRequest<NestResponse<GetBoqReportsResponse>>(request);
 

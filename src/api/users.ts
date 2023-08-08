@@ -1,6 +1,5 @@
-import axios from "axios";
+import { apiRequest, axiosAuthedApi } from "./helpers";
 import { MANAGEMENT_USERS_URL } from "./routes";
-import { apiRequest } from "./helpers";
 import { NestResponse } from "./types/common";
 import {
   AddUserPayload,
@@ -9,7 +8,7 @@ import {
 } from "./types/users";
 
 export async function addUser(payload: AddUserPayload) {
-  const request = axios.post<never>(MANAGEMENT_USERS_URL, {
+  const request = axiosAuthedApi.post<never>(MANAGEMENT_USERS_URL, {
     roleId: payload.roleId,
     username: payload.username,
     name: payload.name,
@@ -33,7 +32,7 @@ export async function getListUser({
   search?: string;
   mitraId?: number;
 }) {
-  const request = axios.get<never>(MANAGEMENT_USERS_URL, {
+  const request = axiosAuthedApi.get<never>(MANAGEMENT_USERS_URL, {
     params: {
       page: page || 1,
       limit: limit ? limit : undefined,
@@ -57,17 +56,22 @@ export async function editUser({
     mitraId: number;
   };
 }) {
-  const request = axios.put<never>(`${MANAGEMENT_USERS_URL}/${userId}`, {
-    name: payload.name,
-    roleId: payload.roleId,
-    mitraId: payload.mitraId,
-  });
+  const request = axiosAuthedApi.put<never>(
+    `${MANAGEMENT_USERS_URL}/${userId}`,
+    {
+      name: payload.name,
+      roleId: payload.roleId,
+      mitraId: payload.mitraId,
+    }
+  );
 
   return await apiRequest<NestResponse<never>>(request);
 }
 
 export async function removeUser(userId: number) {
-  const request = axios.delete<never>(`${MANAGEMENT_USERS_URL}/${userId}`);
+  const request = axiosAuthedApi.delete<never>(
+    `${MANAGEMENT_USERS_URL}/${userId}`
+  );
 
   return await apiRequest<NestResponse<never>>(request);
 }

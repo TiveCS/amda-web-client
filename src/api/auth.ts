@@ -1,6 +1,5 @@
-import axios from "axios";
 import { ProfileType } from "../types";
-import { apiRequest } from "./helpers";
+import { apiRequest, axiosAuthedApi, axiosGuestApi } from "./helpers";
 import {
   AUTH_LOGIN_URL,
   AUTH_LOGOUT_URL,
@@ -17,7 +16,7 @@ export async function login({
   username: string;
   password: string;
 }) {
-  const request = axios.post<LoginResponse>(AUTH_LOGIN_URL, {
+  const request = axiosGuestApi.post<LoginResponse>(AUTH_LOGIN_URL, {
     username,
     password,
   });
@@ -32,7 +31,7 @@ export async function register({
   username: string;
   password: string;
 }) {
-  const request = axios.post<never>(AUTH_REGISTER_URL, {
+  const request = axiosGuestApi.post<never>(AUTH_REGISTER_URL, {
     username,
     password,
   });
@@ -41,17 +40,13 @@ export async function register({
 }
 
 export async function logout() {
-  const request = axios.delete<never>(AUTH_LOGOUT_URL, {
-    withCredentials: true,
-  });
+  const request = axiosAuthedApi.delete<never>(AUTH_LOGOUT_URL);
 
   return apiRequest<NestResponse<never>>(request);
 }
 
 export async function getProfile() {
-  const request = axios.get<never>(AUTH_PROFILE_URL, {
-    withCredentials: true,
-  });
+  const request = axiosAuthedApi.get<never>(AUTH_PROFILE_URL);
 
   return apiRequest<NestResponse<ProfileType>>(request);
 }
