@@ -32,6 +32,7 @@ interface TicketVolumeDetailsModalProps {
   volumeDetailsForm: ReturnType<typeof useVolumeDetailsForm>;
   hasCRUDAccess: boolean;
   isAdminMitra: boolean;
+  isAdminTA: boolean;
 }
 
 export default function TicketVolumeDetailsModal({
@@ -42,6 +43,7 @@ export default function TicketVolumeDetailsModal({
   setSelectedTicket,
   volumeDetailsForm,
   hasCRUDAccess,
+  isAdminTA,
 }: TicketVolumeDetailsModalProps) {
   const searchForm = useForm({ initialValues: { search: "" } });
   const [searchDebounced] = useDebouncedValue(searchForm.values.search, 500);
@@ -58,11 +60,16 @@ export default function TicketVolumeDetailsModal({
     return isAdminMitra && ticket?.activity.isForMitra;
   }, [isAdminMitra, ticket?.activity.isForMitra]);
 
+  const isTACanEdit = useMemo(() => {
+    return isAdminTA && !ticket?.activity.isForMitra;
+  }, [isAdminTA, ticket?.activity.isForMitra]);
+
   const isAllowEdit = useMemo(() => {
     if (isAdminMitra) return isCanEdit && isMitraCanEdit;
+    if (isAdminTA) return isCanEdit && isTACanEdit;
 
     return isCanEdit;
-  }, [isAdminMitra, isCanEdit, isMitraCanEdit]);
+  }, [isAdminMitra, isAdminTA, isCanEdit, isMitraCanEdit, isTACanEdit]);
 
   const [selectedDesignator, setSelectedDesignator] = useState<string | null>(
     null

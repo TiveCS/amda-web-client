@@ -12,6 +12,7 @@ interface TicketTableItemProps {
   openEvidenceDrawer: (ticket: LopTicket) => void;
   hasCRUDAccess: boolean;
   isAdminMitra: boolean;
+  isAdminTA: boolean;
 }
 
 export default function TicketTableItem({
@@ -20,6 +21,7 @@ export default function TicketTableItem({
   openEvidenceDrawer,
   hasCRUDAccess,
   isAdminMitra,
+  isAdminTA,
 }: TicketTableItemProps) {
   const isAccepted = useMemo(() => {
     return ticket?.acceptStatus === "ACCEPTED";
@@ -33,11 +35,16 @@ export default function TicketTableItem({
     return isAdminMitra && ticket?.activity.isForMitra;
   }, [isAdminMitra, ticket?.activity.isForMitra]);
 
+  const isTACanEdit = useMemo(() => {
+    return isAdminTA && !ticket?.activity.isForMitra;
+  }, [isAdminTA, ticket?.activity.isForMitra]);
+
   const isAllowEdit = useMemo(() => {
     if (isAdminMitra) return isCanEdit && isMitraCanEdit;
+    if (isAdminTA) return isCanEdit && isTACanEdit;
 
     return isCanEdit;
-  }, [isAdminMitra, isCanEdit, isMitraCanEdit]);
+  }, [isAdminMitra, isAdminTA, isCanEdit, isMitraCanEdit, isTACanEdit]);
 
   return (
     <tr>

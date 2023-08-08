@@ -85,7 +85,7 @@ const LopTableEmptyContent: React.FC<{
               hasCRUDAccess ? "cursor-pointer" : "cursor-not-allowed"
             }`}
           >
-            <IconTrash size={20} color={hasCRUDAccess ? "dark" : "gray"} />
+            <IconTrash size={20} color={hasCRUDAccess ? "black" : "gray"} />
             {""}
           </button>
         )}

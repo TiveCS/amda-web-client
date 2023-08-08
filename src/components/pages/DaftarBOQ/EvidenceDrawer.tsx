@@ -12,6 +12,7 @@ interface EvidenceDrawerProps {
   ticket: LopTicket | null;
   hasCRUDAccess: boolean;
   isAdminMitra: boolean;
+  isAdminTA: boolean;
 }
 
 export default function EvidenceDrawer({
@@ -20,6 +21,7 @@ export default function EvidenceDrawer({
   ticket,
   hasCRUDAccess,
   isAdminMitra,
+  isAdminTA,
 }: EvidenceDrawerProps) {
   const { refetch: refetchEvidence, data: evidences } = useQuery({
     queryKey: ["evidence_drawer_evidence", ticket?.identifier],
@@ -47,11 +49,16 @@ export default function EvidenceDrawer({
     return isAdminMitra && ticket?.activity.isForMitra;
   }, [isAdminMitra, ticket?.activity.isForMitra]);
 
+  const isTACanEdit = useMemo(() => {
+    return isAdminTA && !ticket?.activity.isForMitra;
+  }, [isAdminTA, ticket?.activity.isForMitra]);
+
   const isAllowEdit = useMemo(() => {
     if (isAdminMitra) return isCanEdit && isMitraCanEdit;
+    if (isAdminTA) return isCanEdit && isTACanEdit;
 
     return isCanEdit;
-  }, [isAdminMitra, isCanEdit, isMitraCanEdit]);
+  }, [isAdminMitra, isAdminTA, isCanEdit, isMitraCanEdit, isTACanEdit]);
 
   useEffect(() => {
     const refetch = async () => {

@@ -67,10 +67,13 @@ const DaftarBOQ: React.FC = () => {
   const role = profile?.role.slug as unknown as RoleType;
   const hasCRUDAccess = useMemo(() => {
     return checkRoleAllowed(role, {
-      whiteListedRoles: ["ta-maintenance", "admin-mitra"],
+      whiteListedRoles: ["admin-mitra", "admin-ta"],
     });
   }, [role]);
 
+  const isAdminTA = useMemo(() => {
+    return role === "admin-ta";
+  }, [role]);
   const isAdminMitra = useMemo(() => {
     return role === "admin-mitra";
   }, [role]);
@@ -151,6 +154,7 @@ const DaftarBOQ: React.FC = () => {
     <>
       <EvidenceDrawer
         isAdminMitra={isAdminMitra}
+        isAdminTA={isAdminTA}
         hasCRUDAccess={hasCRUDAccess}
         opened={isEvidenceDrawerOpen}
         onClose={() => {
@@ -172,6 +176,7 @@ const DaftarBOQ: React.FC = () => {
 
       <TicketVolumeDetailsModal
         isAdminMitra={isAdminMitra}
+        isAdminTA={isAdminTA}
         hasCRUDAccess={hasCRUDAccess}
         selectedTicket={selectedTicket}
         setSelectedTicket={setSelectedTicket}
@@ -249,6 +254,7 @@ const DaftarBOQ: React.FC = () => {
                     <TicketTableItem
                       key={ticket.id}
                       ticket={ticket}
+                      isAdminTA={isAdminTA}
                       isAdminMitra={isAdminMitra}
                       hasCRUDAccess={hasCRUDAccess}
                       openEvidenceDrawer={(ticket: LopTicket) => {
