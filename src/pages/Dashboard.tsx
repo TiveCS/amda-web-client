@@ -28,14 +28,14 @@ function Dashboard() {
   const getListUserQuery = useQuery({
     enabled: isAllowShowUser,
     queryKey: ["list_user_dashboard"],
-    queryFn: async () => getListUser({}),
+    queryFn: async () => getListUser({ limit: 30 }),
   });
 
   // List Mitra
   const getListMitraQuery = useQuery({
     enabled: isAllowShowUser,
     queryKey: ["list_mitra_dashboard"],
-    queryFn: async () => getListMitra({}),
+    queryFn: async () => getListMitra({ limit: 20 }),
   });
 
   // List Tiket
@@ -43,8 +43,7 @@ function Dashboard() {
     enabled: isAllowShowTicket,
     queryKey: ["list_tiket_dashboard"],
     queryFn: async () => {
-      const result = await getListTickets({});
-
+      const result = await getListTickets({ take: 50 });
       return result;
     },
   });

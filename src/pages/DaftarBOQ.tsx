@@ -16,17 +16,49 @@ import {
   Skeleton,
   Table,
   Text,
+  createStyles,
+  rem,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconDownload, IconFilter } from "@tabler/icons-react";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useProfileStore } from "@zustand/profileStore";
 import { RoleType } from "../types";
 import { checkRoleAllowed } from "../utils";
 
+const useStyles = createStyles((theme) => ({
+  header: {
+    position: "sticky",
+    top: 0,
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+    transition: "box-shadow 150ms ease",
+
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderBottom: `${rem(1)} solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[3]
+          : theme.colors.gray[2]
+      }`,
+    },
+  },
+
+  scrolled: {
+    boxShadow: theme.shadows.sm,
+  },
+}));
+
 const DaftarBOQ: React.FC = () => {
+  const { classes, cx } = useStyles();
+  const [scrolled, setScrolled] = useState(false);
+
   const searchForm = useForm({
     initialValues: { search: "" },
   });
@@ -179,12 +211,18 @@ const DaftarBOQ: React.FC = () => {
         </Grid>
       </Container>
 
-      <ScrollArea.Autosize offsetScrollbars className="max-h-1/2 mx-4">
+      <ScrollArea.Autosize
+        offsetScrollbars
+        className="max-h-1/2 mx-4"
+        onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
+      >
         <Skeleton
           visible={isFetchingListTicketQuery || isLoadingListTicketQuery}
         >
           <Table striped withBorder withColumnBorders>
-            <thead>
+            <thead
+              className={cx(classes.header, { [classes.scrolled]: scrolled })}
+            >
               <tr>
                 <th className="w-32">ID Tiket</th>
                 <th className="w-36">Lokasi Tiket</th>
