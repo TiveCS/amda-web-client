@@ -1,4 +1,7 @@
-export const API_URL = "/api";
+const VITE_API_URL = import.meta.env.VITE_API_URL as string;
+export const API_URL = `${VITE_API_URL ? VITE_API_URL : ""}/api`;
+
+export const APP_PING_URL = `${API_URL}`;
 
 export const AUTH_LOGIN_URL = `${API_URL}/auth/login`;
 export const AUTH_REGISTER_URL = `${API_URL}/auth/register`;
@@ -20,7 +23,7 @@ export const DESIGNATOR_URL = `${API_URL}/designators`;
 export const LOPS_URL = `${API_URL}/lops`;
 export const LOPS_ACTIVITIES_URL = `${API_URL}/lops/activities`;
 
-export const AGENDAS_URL = `${API_URL}/agendas`
+export const AGENDAS_URL = `${API_URL}/agendas`;
 
 export const LOPS_TICKETS_URL = `${API_URL}/lops/tickets`;
 
