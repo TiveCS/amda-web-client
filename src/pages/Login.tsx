@@ -1,8 +1,11 @@
 import LoginForms from "@components/pages/Login/LoginForms";
 import { BackgroundImage, Flex } from "@mantine/core";
 import Bg from "/assets/img/background-merah.png";
+import usePing from "@hooks/usePing";
 
 export function LoginPage() {
+  usePing();
+
   return (
     <>
       <BackgroundImage src={Bg}>
