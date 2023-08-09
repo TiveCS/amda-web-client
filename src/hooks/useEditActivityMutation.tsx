@@ -1,7 +1,8 @@
 import { editActivity } from "@api/activities";
 import { LopActivity, LopActivityForm } from "@api/types/lops";
 import { UseFormReturnType } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
+import { notifications, showNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useEditActivityMutation(
@@ -14,6 +15,7 @@ export default function useEditActivityMutation(
   setEditActivity: React.Dispatch<React.SetStateAction<LopActivity | null>>,
   setSelectedActivities: React.Dispatch<React.SetStateAction<LopActivity[]>>
 ) {
+  const notificationId = "edit-kegiatan-notification";
   const queryClient = useQueryClient();
 
   const editKegiatanMutation = useMutation({
@@ -31,17 +33,23 @@ export default function useEditActivityMutation(
         ticketIdentifier: form.values.ticketIdentifier,
         ticketLocation: form.values.ticketLocation,
         workType: form.values.workType,
+        workDescription: form.values.workDescription,
         isForMitra: form.values.isForMitra,
         inputAt,
       });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(["lops"]);
-      showNotification({
+
+      notifications.update({
+        id: notificationId,
         title: "Success",
         message: "Kegiatan berhasil diubah!",
         color: "green",
+        autoClose: 3000,
+        icon: <IconCheck />,
       });
+
       form.reset();
       closeModal();
       setEditActivity(null);
@@ -49,10 +57,13 @@ export default function useEditActivityMutation(
     },
     onError: (error) => {
       if (error instanceof Error) {
-        showNotification({
+        notifications.update({
+          id: notificationId,
           title: "Error",
           message: error.message ?? "Gagal mengubah kegiatan!",
           color: "red",
+          autoClose: 3000,
+          icon: <IconX />,
         });
         throw error;
       }
@@ -60,13 +71,20 @@ export default function useEditActivityMutation(
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
+        autoClose: 3000,
+        icon: <IconX />,
       });
       throw error;
     },
     onMutate: () => {
-      showNotification({
+      notifications.show({
+        id: notificationId,
         title: "Loading",
+        color: "blue",
         message: "Kegiatan sedang diubah...",
+        loading: true,
+        autoClose: false,
+        withCloseButton: false,
       });
     },
   });

@@ -259,7 +259,8 @@ const DaftarKegiatan: React.FC = () => {
                 <th>Segment</th>
                 <th className="w-10">#</th>
                 <th>STO</th>
-                <th className="w-48">Jenis Pekerjaan</th>
+                <th className="w-24">Jenis Pekerjaan</th>
+                <th className="w-28">Uraian Pekerjaan</th>
                 <th>No Tiket</th>
                 <th>Lokasi Tiket</th>
                 <th>Mitra</th>

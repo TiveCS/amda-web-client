@@ -1,5 +1,5 @@
 import { Lop, LopActivity } from "@api/types/lops";
-import { Checkbox, Tooltip } from "@mantine/core";
+import { Box, Checkbox, HoverCard, Text, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 
 interface LopTableItemProps {
@@ -92,11 +92,12 @@ const LopTableEmptyContent: React.FC<{
           </Tooltip>
         )}
       </td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td className="text-gray-400">-</td>
+      <td className="text-gray-400">-</td>
+      <td className="text-gray-400">-</td>
+      <td className="text-gray-400">-</td>
+      <td className="text-gray-400">-</td>
+      <td className="text-gray-400">-</td>
     </>
   );
 };
@@ -129,6 +130,32 @@ const LopTableContent: React.FC<{
       </td>
       <td>{activity.sto.name}</td>
       <td>{activity.workType}</td>
+      <td>
+        {activity.workDescription ? (
+          <HoverCard
+            closeDelay={200}
+            shadow="md"
+            arrowPosition="side"
+            position="bottom"
+            styles={{
+              dropdown: { backgroundColor: "#010101", color: "#efefef" },
+            }}
+          >
+            <HoverCard.Target>
+              <Text truncate maw={240}>
+                {activity.workDescription}
+              </Text>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Box maw={300}>
+                <Text>{activity.workDescription}</Text>
+              </Box>
+            </HoverCard.Dropdown>
+          </HoverCard>
+        ) : (
+          <Text color="gray">Tidak ada uraian pekerjaan</Text>
+        )}
+      </td>
       <td>{activity.ticket.identifier}</td>
       <td>{activity.ticket.location}</td>
       <td>{activity.mitra.name}</td>

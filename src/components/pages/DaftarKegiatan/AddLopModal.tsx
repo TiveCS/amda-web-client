@@ -95,7 +95,13 @@ export default function AddLopModal({
   };
 
   return (
-    <Modal opened={openedAddLOP} onClose={closeAddLOP} title="Add Segment">
+    <Modal
+      opened={openedAddLOP}
+      onClose={closeAddLOP}
+      title="Add Segment"
+      centered
+      padding={"xl"}
+    >
       <Flex direction={"column"} gap={24}>
         <Flex direction={"column"} gap={8}>
           <TextInput
