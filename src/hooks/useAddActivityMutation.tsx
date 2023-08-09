@@ -1,8 +1,10 @@
 import { addActivity } from "@api/activities";
 import { LopActivityForm } from "@api/types/lops";
 import { UseFormReturnType } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
+import { notifications, showNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 export default function useAddActivityMutation(
   form: UseFormReturnType<
@@ -11,6 +13,8 @@ export default function useAddActivityMutation(
   >,
   closeModal: () => void
 ) {
+  const notificationId = useMemo(() => Math.random().toString(), []);
+
   const queryClient = useQueryClient();
   const addKegiatanMutation = useMutation({
     mutationFn: async () => {
@@ -31,33 +35,52 @@ export default function useAddActivityMutation(
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(["lops"]);
-      showNotification({
+
+      notifications.update({
+        id: notificationId,
         title: "Success",
         message: "Kegiatan berhasil ditambahkan!",
         color: "green",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconCheck />,
       });
+
       form.reset();
       closeModal();
     },
     onError: (error) => {
       if (error instanceof Error) {
-        showNotification({
+        notifications.update({
+          id: notificationId,
           title: "Error",
           message: error.message ?? "Gagal menambahkan kegiatan!",
           color: "red",
+          loading: false,
+          autoClose: 3000,
+          icon: <IconX />,
         });
         return;
       }
-      showNotification({
+      notifications.update({
+        id: notificationId,
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconX />,
       });
     },
     onMutate: () => {
-      showNotification({
+      notifications.show({
+        id: notificationId,
         title: "Loading",
-        message: "Kegiatan sedang ditambahkan...",
+        message: "Sedang menambahkan kegiatan...",
+        color: "blue",
+        loading: true,
+        withCloseButton: false,
+        autoClose: false,
       });
     },
   });
