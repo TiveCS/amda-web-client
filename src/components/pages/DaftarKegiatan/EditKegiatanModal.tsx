@@ -125,9 +125,9 @@ export default function EditKegiatanModal({
           id="select-lop"
           data={getListLopQuery.data ?? []}
           searchable
-          nothingFound="LOP tidak ditemukan"
-          label="LOP"
-          placeholder="Pilih LOP"
+          nothingFound="Segment tidak ditemukan"
+          label="Segment"
+          placeholder="Pilih Segment"
           withAsterisk
           onSearchChange={(query) => {
             setSearchLop(query);

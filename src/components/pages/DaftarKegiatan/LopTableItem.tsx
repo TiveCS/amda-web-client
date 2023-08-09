@@ -1,5 +1,5 @@
 import { Lop, LopActivity } from "@api/types/lops";
-import { Checkbox } from "@mantine/core";
+import { Checkbox, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 
 interface LopTableItemProps {
@@ -76,18 +76,20 @@ const LopTableEmptyContent: React.FC<{
     <>
       <td>
         {hasCRUDAccess && (
-          <button
-            onClick={() => {
-              setRemoveLop(lop);
-              openRemoveLop();
-            }}
-            className={`p-0 m-0 border-none bg-transparent flex items-start group ${
-              hasCRUDAccess ? "cursor-pointer" : "cursor-not-allowed"
-            }`}
-          >
-            <IconTrash size={20} color={hasCRUDAccess ? "black" : "gray"} />
-            {""}
-          </button>
+          <Tooltip label="Hapus Segment">
+            <button
+              onClick={() => {
+                setRemoveLop(lop);
+                openRemoveLop();
+              }}
+              className={`p-0 m-0 border-none bg-transparent flex items-start group ${
+                hasCRUDAccess ? "cursor-pointer" : "cursor-not-allowed"
+              }`}
+            >
+              <IconTrash size={20} color={hasCRUDAccess ? "black" : "gray"} />
+              {""}
+            </button>
+          </Tooltip>
         )}
       </td>
       <td>-</td>

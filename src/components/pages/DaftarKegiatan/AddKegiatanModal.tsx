@@ -105,9 +105,9 @@ export default function AddKegiatanModal({
           id="select-lop"
           data={getListLopQuery.data ?? []}
           searchable
-          nothingFound="LOP tidak ditemukan"
-          label="LOP"
-          placeholder="Pilih LOP"
+          nothingFound="Segment tidak ditemukan"
+          label="Segment"
+          placeholder="Pilih Segment"
           error={addKegiatanForm.errors.lopId}
           withAsterisk
           onChange={(value) => {

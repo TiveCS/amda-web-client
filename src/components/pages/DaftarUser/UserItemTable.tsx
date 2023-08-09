@@ -1,8 +1,8 @@
 import { getListMitra } from "@api/mitra";
 import { getListRole } from "@api/role";
 import { UserResponsePayload } from "@api/types/users";
+import useUserEditForm from "@hooks/useUserEditForm";
 import { Flex, Tooltip } from "@mantine/core";
-import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
@@ -15,18 +15,7 @@ interface UserItemTableProps {
   setEditUser: React.Dispatch<React.SetStateAction<UserResponsePayload | null>>;
   openRemoveUserModal: () => void;
   openEditUserModal: () => void;
-  editUserForm: UseFormReturnType<
-    {
-      name: string;
-      mitraId: number;
-      roleId: number;
-    },
-    (values: { name: string; mitraId: number; roleId: number }) => {
-      name: string;
-      mitraId: number;
-      roleId: number;
-    }
-  >;
+  editUserForm: ReturnType<typeof useUserEditForm>;
 }
 
 export default function UserItemTable({
@@ -90,6 +79,11 @@ export default function UserItemTable({
                   name: user.name,
                   mitraId: user.mitraId,
                   roleId: user.roleId,
+                });
+                editUserForm.setDirty({
+                  name: false,
+                  mitraId: false,
+                  roleId: false,
                 });
                 openEditUserModal();
               }}

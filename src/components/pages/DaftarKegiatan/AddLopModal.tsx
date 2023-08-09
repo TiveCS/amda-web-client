@@ -2,8 +2,10 @@ import { addLop } from "@api/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Flex, Modal, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 interface AddLopModalProps {
   openedAddLOP: boolean;
@@ -14,6 +16,8 @@ export default function AddLopModal({
   closeAddLOP,
   openedAddLOP,
 }: AddLopModalProps) {
+  const notificationId = useMemo(() => Math.random().toString(), []);
+
   const queryClient = useQueryClient();
   const addLopForm = useForm({
     initialValues: {
@@ -21,7 +25,7 @@ export default function AddLopModal({
     },
     validate: {
       name: (value) =>
-        value.trim().length > 0 ? null : "Nama LOP tidak boleh kosong",
+        value.trim().length > 0 ? null : "Nama Segment tidak boleh kosong",
     },
   });
 
@@ -33,36 +37,54 @@ export default function AddLopModal({
       });
     },
     onMutate: () => {
-      showNotification({
+      notifications.show({
+        id: notificationId,
         title: "Loading",
-        message: "Sedang menambahkan LOP...",
+        message: "Sedang menambahkan Segment...",
         color: "blue",
+        loading: true,
+        withCloseButton: false,
+        autoClose: false,
       });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(["lops"]);
-      showNotification({
+
+      notifications.update({
+        id: notificationId,
         title: "Success",
-        message: "Berhasil menambahkan LOP",
+        message: "Berhasil menambahkan Segment",
         color: "green",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconCheck />,
       });
+
       closeAddLOP();
       addLopForm.reset();
     },
     onError: (error) => {
       addLopForm.reset();
       if (error instanceof Error) {
-        showNotification({
+        notifications.update({
+          id: notificationId,
           title: "Error",
-          message: error.message ?? "Gagal menambahkan LOP",
+          message: error.message ?? "Gagal menambahkan Segment",
           color: "red",
+          loading: false,
+          autoClose: 3000,
+          icon: <IconX />,
         });
         return;
       }
-      showNotification({
+      notifications.update({
+        id: notificationId,
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconX />,
       });
     },
   });
@@ -73,14 +95,14 @@ export default function AddLopModal({
   };
 
   return (
-    <Modal opened={openedAddLOP} onClose={closeAddLOP} title="Add LOP">
+    <Modal opened={openedAddLOP} onClose={closeAddLOP} title="Add Segment">
       <Flex direction={"column"} gap={24}>
         <Flex direction={"column"} gap={8}>
           <TextInput
             withAsterisk
             name="name"
-            label="Nama LOP"
-            placeholder="Nama LOP"
+            label="Nama Segment"
+            placeholder="Nama Segment"
             onChange={(e) =>
               addLopForm.setFieldValue("name", e.currentTarget.value)
             }
