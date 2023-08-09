@@ -24,6 +24,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { useProfileStore } from "@zustand/profileStore";
 import { RoleType } from "../types";
+import useUserEditForm from "@hooks/useUserEditForm";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -85,16 +86,20 @@ const DaftarUser: React.FC = () => {
   );
 
   const [editUser, setEditUser] = useState<UserResponsePayload | null>(null);
-  const editUserForm = useForm({
-    initialValues: {
-      name: "",
-      mitraId: profile?.mitra.id ?? -1,
-      roleId: profile?.role.id ?? -1,
-      password: "",
-    },
-    validate: {
-      name: (value) => (value.trim().length > 0 ? null : "Nama wajib diisi"),
-    },
+  // const editUserForm = useForm({
+  //   initialValues: {
+  //     name: "",
+  //     mitraId: profile?.mitra.id ?? -1,
+  //     roleId: profile?.role.id ?? -1,
+  //     password: "",
+  //   },
+  //   validate: {
+  //     name: (value) => (value.trim().length > 0 ? null : "Nama wajib diisi"),
+  //   },
+  // });
+  const editUserForm = useUserEditForm({
+    mitraId: profile?.mitra.id,
+    roleId: profile?.role.id,
   });
 
   const { refetch: refetchListUsers, ...getListUserQuery } = useInfiniteQuery({
