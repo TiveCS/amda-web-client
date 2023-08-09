@@ -8,10 +8,12 @@ import ButtonAMDA from "@components/ButtonAMDA";
 import useUserEditForm from "@hooks/useUserEditForm";
 import {
   Flex,
+  List,
   LoadingOverlay,
   Modal,
   PasswordInput,
   Select,
+  Text,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -87,6 +89,7 @@ export default function EditUserModal({
         icon: <IconCheck />,
       });
 
+      editForm.reset();
       closeModal();
     },
     onError: (error) => {
@@ -127,7 +130,22 @@ export default function EditUserModal({
       return;
     }
 
-    if (editForm.validate().hasErrors) {
+    const validate = editForm.validate();
+
+    if (validate.hasErrors) {
+      showNotification({
+        title: "Invalid",
+        message: (
+          <List>
+            {Object.keys(validate.errors).map((key) => (
+              <List.Item key={key}>
+                <Text size={"sm"}>{validate.errors[key]}</Text>
+              </List.Item>
+            ))}
+          </List>
+        ),
+        color: "red",
+      });
       return;
     }
 
@@ -254,7 +272,7 @@ export default function EditUserModal({
           value={editForm.values.password}
           onChange={(event) => {
             if (event.currentTarget.value.trim() === "") {
-              editForm.setFieldValue("password", undefined);
+              editForm.setFieldValue("password", "");
               return;
             }
             editForm.setFieldValue("password", event.currentTarget.value);

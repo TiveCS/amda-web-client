@@ -30,7 +30,7 @@ export async function getListUser({
   limit?: number;
   cursor?: number;
   search?: string;
-  mitraId?: number;
+  mitraId: number | undefined;
 }) {
   const request = axiosAuthedApi.get<never>(MANAGEMENT_USERS_URL, {
     params: {
@@ -54,7 +54,7 @@ export async function editUser({
     roleId: number;
     name: string;
     mitraId: number;
-    newPassword?: string;
+    newPassword: string | null;
   };
 }) {
   const newPassword =
