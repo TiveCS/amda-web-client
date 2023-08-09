@@ -90,6 +90,7 @@ const DaftarUser: React.FC = () => {
       name: "",
       mitraId: profile?.mitra.id ?? -1,
       roleId: profile?.role.id ?? -1,
+      password: "",
     },
     validate: {
       name: (value) => (value.trim().length > 0 ? null : "Nama wajib diisi"),

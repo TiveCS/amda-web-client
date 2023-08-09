@@ -1,7 +1,7 @@
 import { editUser } from "@api/users";
 import { UserResponsePayload } from "@api/types/users";
 import ButtonAMDA from "@components/ButtonAMDA";
-import { Flex, Modal, Select, TextInput } from "@mantine/core";
+import { Flex, Modal, PasswordInput, Select, TextInput } from "@mantine/core";
 import { UseFormReturnType, useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -24,11 +24,18 @@ interface EditUserModalProps {
       name: string;
       mitraId: number;
       roleId: number;
+      password: string;
     },
-    (values: { name: string; mitraId: number; roleId: number }) => {
+    (values: {
       name: string;
       mitraId: number;
       roleId: number;
+      password: string;
+    }) => {
+      name: string;
+      mitraId: number;
+      roleId: number;
+      password: string;
     }
   >;
 }
@@ -216,6 +223,11 @@ export default function EditUserModal({
             }
           />
         )}
+
+        <PasswordInput
+          label="Password"
+          {...editForm.getInputProps("password")}
+        />
 
         <ButtonAMDA onClick={handleEditUser}>Simpan</ButtonAMDA>
       </Flex>

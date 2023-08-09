@@ -20,11 +20,13 @@ interface UserItemTableProps {
       name: string;
       mitraId: number;
       roleId: number;
+      password: string;
     },
     (values: { name: string; mitraId: number; roleId: number }) => {
       name: string;
       mitraId: number;
       roleId: number;
+      password: string;
     }
   >;
 }
