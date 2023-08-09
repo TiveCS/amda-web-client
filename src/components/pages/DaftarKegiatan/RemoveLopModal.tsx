@@ -2,7 +2,8 @@ import { removeLop } from "@api/lops";
 import { Lop } from "@api/types/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Flex, Modal, Text } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { notifications, showNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface RemoveLopModalProps {
@@ -13,13 +14,15 @@ interface RemoveLopModalProps {
 }
 
 export default function RemoveLopModal(props: RemoveLopModalProps) {
+  const notificationId = `remove-lops-notification-${props.removeLop?.id ?? 0}`;
+
   const queryClient = useQueryClient();
   const removeLopMutation = useMutation({
     mutationFn: async () => {
       if (!props.removeLop) {
         showNotification({
           title: "Error",
-          message: "Tidak ada LOP yang dipilih",
+          message: "Tidak ada Segment yang dipilih",
           color: "red",
         });
         return Promise.reject();
@@ -28,35 +31,53 @@ export default function RemoveLopModal(props: RemoveLopModalProps) {
       return removeLop({ lopId: props.removeLop.id });
     },
     onMutate: () => {
-      showNotification({
+      notifications.show({
+        id: notificationId,
         title: "Loading",
-        message: "Sedang menghapus LOP...",
+        message: "Sedang menghapus Segment...",
         color: "blue",
+        loading: true,
+        withCloseButton: false,
       });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(["lops"]);
-      showNotification({
+
+      notifications.update({
+        id: notificationId,
         title: "Success",
-        message: "Berhasil menghapus LOP",
+        message: "Berhasil menghapus Segment",
         color: "green",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconCheck />,
       });
+
       props.closeModal();
       props.setRemoveLop(null);
     },
     onError: (error) => {
       if (error instanceof Error) {
-        showNotification({
+        notifications.update({
+          id: notificationId,
           title: "Error",
-          message: error.message ?? "Gagal menghapus LOP",
+          message: error.message ?? "Gagal menghapus Segment",
           color: "red",
+          loading: false,
+          autoClose: 3000,
+          icon: <IconX />,
         });
         return;
       }
-      showNotification({
+
+      notifications.update({
+        id: notificationId,
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconX />,
       });
     },
   });
@@ -65,10 +86,10 @@ export default function RemoveLopModal(props: RemoveLopModalProps) {
     <Modal
       opened={props.isOpen}
       onClose={props.closeModal}
-      title="Hapus LOP?"
+      title="Hapus Segment?"
       centered
     >
-      <Text>Apakah anda ingin menghapus LOP</Text>
+      <Text>Apakah anda ingin menghapus Segment</Text>
       <Text>
         <span className="font-medium">"{props.removeLop?.name}"</span>
       </Text>

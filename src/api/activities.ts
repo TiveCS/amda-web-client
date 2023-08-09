@@ -18,6 +18,7 @@ export async function addActivity(payload: {
   inputAt: Date;
   isForMitra: boolean;
   workType: string;
+  workDescription?: string;
   mitraId: number;
 }) {
   const request = axiosAuthedApi.post<never>(`${LOPS_ACTIVITIES_URL}`, {
@@ -38,6 +39,7 @@ export async function editActivity(
     inputAt: Date;
     isForMitra: boolean;
     workType: string;
+    workDescription?: string;
     mitraId: number;
   }
 ) {

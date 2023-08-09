@@ -29,6 +29,7 @@ export default function useAddActivityMutation(
         ticketIdentifier: form.values.ticketIdentifier,
         ticketLocation: form.values.ticketLocation,
         workType: form.values.workType,
+        workDescription: form.values.workDescription,
         isForMitra: form.values.isForMitra,
         inputAt,
       });

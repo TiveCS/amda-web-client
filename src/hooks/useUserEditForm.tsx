@@ -13,29 +13,26 @@ export default function useUserEditForm({
     name: string;
     mitraId: number;
     roleId: number;
-    password: string | undefined;
+    password: string;
   }>({
     initialValues: {
       name: "",
       mitraId: mitraId ?? -1,
       roleId: roleId ?? -1,
-      password: undefined,
+      password: "",
     },
     validate: {
       name: (value) => (value.trim().length > 0 ? null : "Nama wajib diisi"),
-      password: (value) =>
-        value && value?.trim().length > 0
-          ? "Password wajib diisi jika ingin ganti password"
-          : null,
-    },
-    transformValues: (values) => {
-      return {
-        ...values,
-        password:
-          values.password && values.password?.trim().length > 0
-            ? values.password
-            : undefined,
-      };
+      password: (value) => {
+        if (value) {
+          const pass = value.trim();
+
+          if (pass.length === 0)
+            return "Password wajib diisi jika ingin ganti password";
+          if (pass.length < 8) return "Password baru minimal 8 karakter";
+        }
+        return null;
+      },
     },
   });
 }

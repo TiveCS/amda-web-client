@@ -4,7 +4,16 @@ import { getListSto } from "@api/sto";
 import { LopActivity, LopActivityForm } from "@api/types/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useEditActivityMutation from "@hooks/useEditActivityMutation";
-import { Checkbox, Flex, Grid, Modal, Select, TextInput } from "@mantine/core";
+import {
+  Checkbox,
+  Flex,
+  Grid,
+  Group,
+  Modal,
+  Select,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
 import { UseFormReturnType } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
@@ -140,24 +149,45 @@ export default function EditKegiatanModal({
           value={editKegiatanForm.values.lopId.toString()}
         />
 
-        <Select
-          id="select-sto"
-          data={getListStoQuery.data ?? []}
-          searchable
-          nothingFound="STO tidak ditemukan"
-          label="STO"
-          placeholder="Pilih STO"
-          withAsterisk
-          onSearchChange={(query) => {
-            setSearchSto(query);
-          }}
-          {...editKegiatanForm.getInputProps("stoId")}
-          onChange={(value) => {
-            const num = value !== null ? parseInt(value) : -1;
-            editKegiatanForm.setFieldValue("stoId", num);
-          }}
-          value={editKegiatanForm.values.stoId.toString()}
-        />
+        <Group grow>
+          <Select
+            id="select-sto"
+            data={getListStoQuery.data ?? []}
+            searchable
+            nothingFound="STO tidak ditemukan"
+            label="STO"
+            placeholder="Pilih STO"
+            withAsterisk
+            onSearchChange={(query) => {
+              setSearchSto(query);
+            }}
+            {...editKegiatanForm.getInputProps("stoId")}
+            onChange={(value) => {
+              const num = value !== null ? parseInt(value) : -1;
+              editKegiatanForm.setFieldValue("stoId", num);
+            }}
+            value={editKegiatanForm.values.stoId.toString()}
+          />
+
+          <Select
+            id="select-mitra"
+            data={getListMitraQuery.data ?? []}
+            searchable
+            nothingFound="Mitra tidak ditemukan"
+            label="Mitra"
+            placeholder="Pilih Mitra"
+            withAsterisk
+            onSearchChange={(query) => {
+              setSearchMitra(query);
+            }}
+            {...editKegiatanForm.getInputProps("mitraId")}
+            onChange={(value) => {
+              const num = value !== null ? parseInt(value) : -1;
+              editKegiatanForm.setFieldValue("mitraId", num);
+            }}
+            value={editKegiatanForm.values.mitraId.toString()}
+          />
+        </Group>
 
         <Select
           data={["Recovery", "Relokasi"]}
@@ -167,23 +197,10 @@ export default function EditKegiatanModal({
           {...editKegiatanForm.getInputProps("workType")}
         />
 
-        <Select
-          id="select-mitra"
-          data={getListMitraQuery.data ?? []}
-          searchable
-          nothingFound="Mitra tidak ditemukan"
-          label="Mitra"
-          placeholder="Pilih Mitra"
-          withAsterisk
-          onSearchChange={(query) => {
-            setSearchMitra(query);
-          }}
-          {...editKegiatanForm.getInputProps("mitraId")}
-          onChange={(value) => {
-            const num = value !== null ? parseInt(value) : -1;
-            editKegiatanForm.setFieldValue("mitraId", num);
-          }}
-          value={editKegiatanForm.values.mitraId.toString()}
+        <Textarea
+          label="Uraian Pekerjaan"
+          placeholder="Tuliskan uraian pekerjaan disini"
+          {...editKegiatanForm.getInputProps("workDescription")}
         />
 
         <Grid>
