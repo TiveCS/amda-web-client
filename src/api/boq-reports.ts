@@ -6,6 +6,7 @@ import { NestResponse } from "./types/common";
 export async function getBoqReport(payload: {
   stoId: number;
   lopId: number;
+  mitraId: number;
   ticketIdentifiers: string[];
 }) {
   const request = axiosAuthedApi.post<never>(`${BOQ_REPORTS_URL}`, payload);
