@@ -30,7 +30,7 @@ export async function getListUser({
   limit?: number;
   cursor?: number;
   search?: string;
-  mitraId: number | undefined;
+  mitraId?: number;
 }) {
   const request = axiosAuthedApi.get<never>(MANAGEMENT_USERS_URL, {
     params: {
