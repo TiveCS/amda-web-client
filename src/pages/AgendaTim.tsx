@@ -125,12 +125,6 @@ const AgendaTim: React.FC = () => {
     );
   }, [getListAgendaQuery.data?.data]);
 
-  const hasAgenda = (date: Date) => {
-    return agendaDates.some(
-      (agendaDate) => agendaDate.toDateString() === date.toDateString()
-    );
-  };
-
   return (
     <>
       {selected && (
@@ -173,7 +167,10 @@ const AgendaTim: React.FC = () => {
                 static
                 renderDay={(date) => {
                   const day = date.getDate();
-                  const isActive = hasAgenda(date);
+                  const isActive = agendaDates.some(
+                    (agendaDate) =>
+                      agendaDate.toDateString() === date.toDateString()
+                  );
                   return (
                     <Indicator
                       size={6}

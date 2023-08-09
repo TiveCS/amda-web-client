@@ -21,7 +21,7 @@ export default function AddLopModal({
     },
     validate: {
       name: (value) =>
-        value.trim().length > 0 ? null : "Nama LOP tidak boleh kosong",
+        value.trim().length > 0 ? null : "Nama Segment tidak boleh kosong",
     },
   });
 
@@ -35,7 +35,7 @@ export default function AddLopModal({
     onMutate: () => {
       showNotification({
         title: "Loading",
-        message: "Sedang menambahkan LOP...",
+        message: "Sedang menambahkan Segment...",
         color: "blue",
       });
     },
@@ -43,7 +43,7 @@ export default function AddLopModal({
       await queryClient.invalidateQueries(["lops"]);
       showNotification({
         title: "Success",
-        message: "Berhasil menambahkan LOP",
+        message: "Berhasil menambahkan Segment",
         color: "green",
       });
       closeAddLOP();
@@ -54,7 +54,7 @@ export default function AddLopModal({
       if (error instanceof Error) {
         showNotification({
           title: "Error",
-          message: error.message ?? "Gagal menambahkan LOP",
+          message: error.message ?? "Gagal menambahkan Segment",
           color: "red",
         });
         return;
@@ -73,14 +73,14 @@ export default function AddLopModal({
   };
 
   return (
-    <Modal opened={openedAddLOP} onClose={closeAddLOP} title="Add LOP">
+    <Modal opened={openedAddLOP} onClose={closeAddLOP} title="Add Segment">
       <Flex direction={"column"} gap={24}>
         <Flex direction={"column"} gap={8}>
           <TextInput
             withAsterisk
             name="name"
-            label="Nama LOP"
-            placeholder="Nama LOP"
+            label="Nama Segment"
+            placeholder="Nama Segment"
             onChange={(e) =>
               addLopForm.setFieldValue("name", e.currentTarget.value)
             }

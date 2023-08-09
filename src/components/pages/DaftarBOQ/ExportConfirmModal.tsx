@@ -200,9 +200,9 @@ export default function ExportConfirmModal({
           <Select
             withAsterisk
             searchable
-            nothingFound="Tidak ada LOP yang ditemukan"
-            label="LOP"
-            placeholder="Pilih LOP"
+            nothingFound="Tidak ada Segment yang ditemukan"
+            label="Segment"
+            placeholder="Pilih Segment"
             limit={20}
             data={getListLopQuery.data ?? []}
             onSearchChange={(value) => {

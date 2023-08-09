@@ -233,7 +233,7 @@ const DaftarKegiatan: React.FC = () => {
                     leftIcon={<IconCirclePlus />}
                     disabled={!isAllowCRUD}
                   >
-                    Add LOP
+                    Add Segment
                   </ButtonAMDA>
                   <ButtonAMDA
                     onClick={openAddKegiatan}
@@ -256,7 +256,7 @@ const DaftarKegiatan: React.FC = () => {
           <Table striped withBorder withColumnBorders>
             <thead>
               <tr>
-                <th>Nama LOP</th>
+                <th>Segment</th>
                 <th className="w-10">#</th>
                 <th>STO</th>
                 <th className="w-48">Jenis Pekerjaan</th>
