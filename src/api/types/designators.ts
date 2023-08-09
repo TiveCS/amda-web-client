@@ -10,6 +10,10 @@ export type Designator = {
 export type DesignatorForLop = {
   id: number;
   name: string;
+  isMaterial: boolean;
+  unit: string;
+  pricePerUnit: number;
+  workDescription: string;
 };
 
 export type DesignatorWithCount = Designator & {
