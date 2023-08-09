@@ -305,7 +305,7 @@ const DaftarKegiatan: React.FC = () => {
           </ButtonAMDA>
 
           <Text>
-            Menampilan <strong>{lopsTotal}</strong> LOP dan{" "}
+            Menampilan <strong>{lopsTotal}</strong> Segment dan{" "}
             <strong>{activityTotal}</strong> Kegiatan
           </Text>
         </Flex>

@@ -1,7 +1,7 @@
 import { addActivity } from "@api/activities";
 import { LopActivityForm } from "@api/types/lops";
 import { UseFormReturnType } from "@mantine/form";
-import { notifications, showNotification } from "@mantine/notifications";
+import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
