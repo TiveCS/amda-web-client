@@ -6,7 +6,6 @@ import {
   Flex,
   Skeleton,
   ScrollArea,
-  Indicator,
   createStyles,
   rem,
 } from "@mantine/core";
@@ -119,12 +118,6 @@ const AgendaTim: React.FC = () => {
     return getListAgendaQuery.data?.data.length;
   }, [getListAgendaQuery.data?.data]);
 
-  const agendaDates = useMemo(() => {
-    return (
-      getListAgendaQuery.data?.data.map((agenda) => new Date(agenda.time)) || []
-    );
-  }, [getListAgendaQuery.data?.data]);
-
   return (
     <>
       {selected && (
@@ -164,24 +157,6 @@ const AgendaTim: React.FC = () => {
                   selected: selected?.toDateString() === date.toDateString(),
                   onClick: () => handleSelect(date),
                 })}
-                static
-                renderDay={(date) => {
-                  const day = date.getDate();
-                  const isActive = agendaDates.some(
-                    (agendaDate) =>
-                      agendaDate.toDateString() === date.toDateString()
-                  );
-                  return (
-                    <Indicator
-                      size={6}
-                      color="red"
-                      offset={-2}
-                      disabled={!isActive}
-                    >
-                      <div>{day}</div>
-                    </Indicator>
-                  );
-                }}
               />
             </Card>
             <ButtonAMDA
