@@ -54,14 +54,21 @@ export async function editUser({
     roleId: number;
     name: string;
     mitraId: number;
+    newPassword?: string;
   };
 }) {
+  const newPassword =
+    payload.newPassword && payload.newPassword.trim().length > 0
+      ? payload.newPassword.trim()
+      : undefined;
+
   const request = axiosAuthedApi.put<never>(
     `${MANAGEMENT_USERS_URL}/${userId}`,
     {
       name: payload.name,
       roleId: payload.roleId,
       mitraId: payload.mitraId,
+      newPassword: newPassword,
     }
   );
 

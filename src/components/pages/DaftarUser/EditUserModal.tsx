@@ -1,17 +1,25 @@
-import { editUser } from "@api/users";
-import { UserResponsePayload } from "@api/types/users";
-import ButtonAMDA from "@components/ButtonAMDA";
-import { Flex, Modal, PasswordInput, Select, TextInput } from "@mantine/core";
-import { UseFormReturnType, useForm } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
-import { useDebouncedValue } from "@mantine/hooks";
-import { RoleSelectOption } from "@api/types/role";
-import { MitraSelectOption } from "@api/types/mitra";
 import { getListMitra } from "@api/mitra";
 import { getListRole } from "@api/role";
+import { MitraSelectOption } from "@api/types/mitra";
+import { RoleSelectOption } from "@api/types/role";
+import { UserResponsePayload } from "@api/types/users";
+import { editUser } from "@api/users";
+import ButtonAMDA from "@components/ButtonAMDA";
+import useUserEditForm from "@hooks/useUserEditForm";
+import {
+  Flex,
+  LoadingOverlay,
+  Modal,
+  PasswordInput,
+  Select,
+  TextInput,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useDebouncedValue } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
+import { useEffect, useMemo } from "react";
 import { RoleType } from "../../../types";
 
 interface EditUserModalProps {
@@ -19,25 +27,7 @@ interface EditUserModalProps {
   setUser: (user: UserResponsePayload | null) => void;
   isOpen: boolean;
   closeModal: () => void;
-  editForm: UseFormReturnType<
-    {
-      name: string;
-      mitraId: number;
-      roleId: number;
-      password: string;
-    },
-    (values: {
-      name: string;
-      mitraId: number;
-      roleId: number;
-      password: string;
-    }) => {
-      name: string;
-      mitraId: number;
-      roleId: number;
-      password: string;
-    }
-  >;
+  editForm: ReturnType<typeof useUserEditForm>;
 }
 
 export default function EditUserModal({
@@ -64,6 +54,7 @@ export default function EditUserModal({
           name: editForm.values.name,
           roleId: editForm.values.roleId,
           mitraId: editForm.values.mitraId,
+          newPassword: editForm.values.password,
         },
       });
     },
@@ -148,6 +139,15 @@ export default function EditUserModal({
       }),
   });
 
+  const isFormDirty = useMemo(() => {
+    return (
+      editForm.isDirty("mitraId") ||
+      editForm.isDirty("name") ||
+      editForm.isDirty("roleId") ||
+      editForm.isDirty("password")
+    );
+  }, [editForm]);
+
   useEffect(() => {
     void getListMitraQuery.refetch();
   }, [searchMitraDebounced, getListMitraQuery]);
@@ -183,6 +183,8 @@ export default function EditUserModal({
       title="Edit User"
       padding={"xl"}
     >
+      <LoadingOverlay visible={editUserMutation.isLoading} />
+
       <Flex direction={"column"} gap={"md"}>
         {!isAdminMitra && (
           <Select
@@ -226,10 +228,24 @@ export default function EditUserModal({
 
         <PasswordInput
           label="Password"
-          {...editForm.getInputProps("password")}
+          disabled={isAdminMitra && user?.mitraId !== profile?.mitra.id}
+          value={editForm.values.password}
+          onChange={(event) => {
+            if (event.currentTarget.value.trim() === "") {
+              editForm.setFieldValue("password", undefined);
+              return;
+            }
+            editForm.setFieldValue("password", event.currentTarget.value);
+          }}
         />
 
-        <ButtonAMDA onClick={handleEditUser}>Simpan</ButtonAMDA>
+        <ButtonAMDA
+          onClick={handleEditUser}
+          loading={editUserMutation.isLoading}
+          disabled={!isFormDirty}
+        >
+          Simpan
+        </ButtonAMDA>
       </Flex>
     </Modal>
   );
