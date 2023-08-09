@@ -16,11 +16,12 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
+import { notifications, showNotification } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
 import { useEffect, useMemo } from "react";
 import { RoleType } from "../../../types";
+import { IconCheck, IconX } from "@tabler/icons-react";
 
 interface EditUserModalProps {
   user: UserResponsePayload | null;
@@ -37,6 +38,8 @@ export default function EditUserModal({
   isOpen,
   closeModal,
 }: EditUserModalProps) {
+  const notificationId = useMemo(() => Math.random().toString(), []);
+
   const { profile } = useProfileStore();
   const role = profile?.role.slug as unknown as RoleType;
   const isAdminMitra = useMemo(() => {
@@ -59,38 +62,57 @@ export default function EditUserModal({
       });
     },
     onMutate: () => {
-      showNotification({
+      notifications.show({
+        id: notificationId,
         title: "Loading",
         message: "Sedang mengedit user...",
         color: "blue",
+        loading: true,
+        autoClose: false,
+        withCloseButton: false,
       });
     },
     onSuccess: async (data) => {
       if (data === undefined) return;
 
       await queryClient.invalidateQueries(["user"]);
-      showNotification({
+
+      notifications.update({
+        id: notificationId,
         title: "Success",
         message: "User berhasil diedit!",
         color: "green",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconCheck />,
       });
+
       closeModal();
     },
     onError: (error) => {
       if (error === undefined) return;
       if (!(error instanceof Error)) {
-        showNotification({
+        notifications.update({
+          id: notificationId,
           title: "Error",
-          message: "Terjadi kesalahan pada server!",
+          message: "Terjadi kesalahan internal!",
           color: "red",
+          loading: false,
+          autoClose: 3000,
+          icon: <IconX />,
         });
+
         return;
       }
 
-      showNotification({
+      notifications.update({
+        id: notificationId,
         title: "Error",
         message: error.message ?? "Gagal mengubah data user!",
         color: "red",
+        loading: false,
+        autoClose: 3000,
+        icon: <IconX />,
       });
     },
   });
