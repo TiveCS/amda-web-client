@@ -1,5 +1,6 @@
 import { LopActivity, LopActivityForm } from "@api/types/lops";
 import { isInRange, isNotEmpty, matches, useForm } from "@mantine/form";
+import { amdaDayJs, formatTimeInput } from "../utils";
 
 interface LopActivityFormProps {
   activity?: LopActivity | null | undefined;
@@ -10,7 +11,11 @@ export default function useActivityForm({
 }: LopActivityFormProps) {
   const isActivityEmpty = activity === null || activity === undefined;
 
-  const inputAt = isActivityEmpty ? new Date() : new Date(activity.inputAt);
+  const dayjs = amdaDayJs();
+
+  const inputAt = isActivityEmpty
+    ? dayjs().utc().toDate()
+    : dayjs(activity.inputAt).utc().toDate();
 
   const form = useForm<LopActivityForm>({
     initialValues: {
@@ -21,11 +26,9 @@ export default function useActivityForm({
       ticketLocation: isActivityEmpty ? "" : activity.ticket.location,
       workType: isActivityEmpty ? "" : activity.workType,
       workDescription: isActivityEmpty ? "" : activity.workDescription,
-      isForMitra: isActivityEmpty ? false : activity.isForMitra,
+      isForMitra: isActivityEmpty ? true : activity.isForMitra,
       inputDate: inputAt,
-      inputTime: isActivityEmpty
-        ? "00:00"
-        : `${inputAt.getHours()}:${inputAt.getMinutes()}}`,
+      inputTime: formatTimeInput(inputAt.getHours(), inputAt.getMinutes()),
     },
     validate: {
       lopId: isInRange({ min: 1 }, "LOP harus dipilih"),

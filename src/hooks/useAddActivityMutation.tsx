@@ -5,6 +5,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { amdaDayJs } from "../utils";
 
 export default function useAddActivityMutation(
   form: UseFormReturnType<
@@ -15,12 +16,17 @@ export default function useAddActivityMutation(
 ) {
   const notificationId = useMemo(() => Math.random().toString(), []);
 
+  const dayjs = amdaDayJs();
+
   const queryClient = useQueryClient();
   const addKegiatanMutation = useMutation({
     mutationFn: async () => {
-      const inputAt = form.values.inputDate;
-      inputAt.setHours(parseInt(form.values.inputTime.split(":")[0]));
-      inputAt.setMinutes(parseInt(form.values.inputTime.split(":")[1]));
+      const inputAt = dayjs(form.values.inputDate).utc();
+      const split = form.values.inputTime.split(":");
+      const hours = parseInt(split[0]);
+      const minutes = parseInt(split[1]);
+
+      inputAt.hour(hours).minute(minutes);
 
       return await addActivity({
         lopId: form.values.lopId,
@@ -31,7 +37,7 @@ export default function useAddActivityMutation(
         workType: form.values.workType,
         workDescription: form.values.workDescription,
         isForMitra: form.values.isForMitra,
-        inputAt,
+        inputAt: inputAt.toDate(),
       });
     },
     onSuccess: async () => {

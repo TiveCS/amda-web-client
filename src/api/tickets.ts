@@ -8,6 +8,7 @@ import {
   LopTicketEvidenceStatus,
 } from "./types/tickets";
 import { NestResponse } from "./types/common";
+import { AxiosRequestConfig } from "axios";
 
 export async function getListTickets({
   cursor,
@@ -30,7 +31,7 @@ export async function getListTickets({
   evidenceStatus?: LopTicketEvidenceStatus | null;
   mitraIds?: number[];
 }) {
-  const request = axiosAuthedApi.get<never>(`${LOPS_TICKETS_URL}`, {
+  const requestConfig: AxiosRequestConfig = {
     params: {
       take: take ? take : undefined,
       cursor: cursor ? cursor : undefined,
@@ -45,7 +46,12 @@ export async function getListTickets({
       mitraIds: mitraIds ? mitraIds : undefined,
       inputDate: inputDate ? inputDate : undefined,
     },
-  });
+  };
+
+  const request = axiosAuthedApi.get<never>(
+    `${LOPS_TICKETS_URL}`,
+    requestConfig
+  );
 
   const result = await apiRequest<NestResponse<GetAllTicketsResponse>>(request);
 

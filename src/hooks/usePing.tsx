@@ -1,28 +1,56 @@
 import { axiosGuestApi } from "@api/helpers";
 import { APP_PING_URL } from "@api/routes";
+import { showNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useEffect } from "react";
+import { useState } from "react";
 
 export default function usePing() {
-  useEffect(() => {
-    const ping = () => {
-      const req = axiosGuestApi.get(APP_PING_URL);
+  const [isPinged, setIsPinged] = useState(false);
 
-      req
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          if (err instanceof AxiosError) {
-            if (err.response?.status === 404) {
-              console.log("OK");
-              return;
-            }
-          }
-          throw err;
+  useQuery({
+    enabled: !isPinged,
+    refetchInterval: false,
+    queryKey: ["ping"],
+    queryFn: async () => {
+      return axiosGuestApi.get(APP_PING_URL);
+    },
+    onSuccess: (res) => {
+      setIsPinged(res.status === 200);
+      if (res.status === 200) {
+        showNotification({
+          title: "Success",
+          message: "Connected to the server",
+          color: "green",
+          icon: <IconCheck />,
         });
-    };
-
-    void ping();
-  }, []);
+      } else {
+        showNotification({
+          title: "Error",
+          message: "Failed to connect to the server",
+          color: "red",
+          icon: <IconX />,
+        });
+      }
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        showNotification({
+          title: "Error",
+          message: "Failed to connect to the server",
+          color: "red",
+          icon: <IconX />,
+        });
+        return;
+      }
+      showNotification({
+        title: "Error",
+        message: "Internal server error",
+        color: "red",
+        icon: <IconX />,
+      });
+      throw err;
+    },
+  });
 }
