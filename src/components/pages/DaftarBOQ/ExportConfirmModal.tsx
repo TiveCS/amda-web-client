@@ -16,7 +16,12 @@ import {
 import { isInRange, useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications, showNotification } from "@mantine/notifications";
-import { IconAlertTriangle, IconCheck, IconCross } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconCheck,
+  IconCross,
+  IconX,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -42,11 +47,10 @@ export default function ExportConfirmModal({
   const [lopDebounced] = useDebouncedValue(exportSearchForm.values.lop, 500);
 
   const exportReportForm = useForm({
-    initialValues: { stoId: -1, lopId: -1, mitraId: -1 },
+    initialValues: { stoId: -1, lopId: -1 },
     validate: {
       stoId: isInRange({ min: 1 }, "Silahkan pilih STO"),
       lopId: isInRange({ min: 1 }, "Silahkan pilih LOP"),
-      mitraId: isInRange({ min: 1 }, "Silahkan pilih Mitra"),
     },
   });
 
@@ -85,7 +89,6 @@ export default function ExportConfirmModal({
       const res = await getBoqReport({
         lopId: exportReportForm.values.lopId,
         stoId: exportReportForm.values.stoId,
-        mitraId: exportReportForm.values.mitraId,
         ticketIdentifiers: tickets,
       });
 
@@ -138,7 +141,7 @@ export default function ExportConfirmModal({
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
-        icon: <IconCross />,
+        icon: <IconX />,
       });
     },
   });
@@ -241,6 +244,7 @@ export default function ExportConfirmModal({
             <ButtonAMDA
               onClick={handleConfirmExport}
               disabled={tickets.length === 0}
+              loading={exportMutation.isLoading}
             >
               Konfirmasi Expor
             </ButtonAMDA>

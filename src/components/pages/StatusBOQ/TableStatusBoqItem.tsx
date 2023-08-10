@@ -6,11 +6,10 @@ import {
   IconCheck,
   IconEye,
   IconPhoto,
-  IconSTurnLeft,
   IconX,
 } from "@tabler/icons-react";
-import StatusAccTiket from "../DaftarBOQ/StatusAccTiket";
 import { useMemo } from "react";
+import StatusAccTiket from "../DaftarBOQ/StatusAccTiket";
 
 interface TableStatusBoqItemProps {
   ticket: LopTicket;
