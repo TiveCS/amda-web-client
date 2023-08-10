@@ -230,12 +230,13 @@ const DaftarBOQ: React.FC = () => {
             >
               <tr>
                 <th className="w-32">ID Tiket</th>
-                <th className="w-36">Lokasi Tiket</th>
+                <th className="w-32">Lokasi Tiket</th>
                 <th className="w-36">Status Volume</th>
                 <th className="w-8">Detail Volume</th>
                 <th className="w-36">Status Evidence</th>
                 <th className="w-20">Evidence</th>
-                <th>Catatan UT</th>
+                <th className="w-[8rem]">Catatan UT</th>
+                <th className="w-[8.5rem]">Mitra</th>
                 <th className="w-24">Status Acc</th>
               </tr>
             </thead>

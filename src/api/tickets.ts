@@ -15,6 +15,7 @@ export async function getListTickets({
   take,
   location,
   identifier,
+  inputDate,
   acceptStatus,
   evidenceStatus,
   mitraIds,
@@ -22,6 +23,7 @@ export async function getListTickets({
   take?: number;
   cursor?: number;
   search?: string;
+  inputDate?: Date | null;
   location?: string[];
   identifier?: string[];
   acceptStatus?: LopTicketAcceptanceStatus | null;
@@ -41,6 +43,7 @@ export async function getListTickets({
       evidenceStatus: evidenceStatus ? evidenceStatus : undefined,
 
       mitraIds: mitraIds ? mitraIds : undefined,
+      inputDate: inputDate ? inputDate : undefined,
     },
   });
 
@@ -157,6 +160,17 @@ export async function rejectTicket(
       force: false,
       note: note ? note : undefined,
       status: "REJECTED",
+    }
+  );
+
+  return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
+}
+
+export async function undoTicket(ticketIdentifier: string) {
+  const request = axiosAuthedApi.put<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
+    {
+      status: "PENDING",
     }
   );
 

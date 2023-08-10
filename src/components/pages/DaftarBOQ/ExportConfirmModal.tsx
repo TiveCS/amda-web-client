@@ -16,7 +16,12 @@ import {
 import { isInRange, useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications, showNotification } from "@mantine/notifications";
-import { IconAlertTriangle, IconCheck, IconCross } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconCheck,
+  IconCross,
+  IconX,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -136,7 +141,7 @@ export default function ExportConfirmModal({
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
-        icon: <IconCross />,
+        icon: <IconX />,
       });
     },
   });
@@ -239,6 +244,7 @@ export default function ExportConfirmModal({
             <ButtonAMDA
               onClick={handleConfirmExport}
               disabled={tickets.length === 0}
+              loading={exportMutation.isLoading}
             >
               Konfirmasi Expor
             </ButtonAMDA>

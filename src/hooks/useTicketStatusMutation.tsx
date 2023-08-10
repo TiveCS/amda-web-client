@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useTicketStatusUpdateForm from "./useTicketStatusUpdateForm";
-import { acceptTicket, rejectTicket } from "@api/tickets";
+import { acceptTicket, rejectTicket, undoTicket } from "@api/tickets";
 import { notifications } from "@mantine/notifications";
 import { useMemo } from "react";
 import { IconCheck, IconX } from "@tabler/icons-react";
@@ -37,6 +37,8 @@ export default function useTicketStatusMutation({
         return rejectTicket(identifier, {
           note: form.values.note,
         });
+      } else if (form.values.status === "PENDING") {
+        return undoTicket(identifier);
       }
     },
     onMutate: () => {

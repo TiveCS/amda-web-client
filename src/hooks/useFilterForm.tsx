@@ -5,6 +5,7 @@ import {
 import { useForm } from "@mantine/form";
 
 type FilterFormValues = {
+  inputDate: Date | null;
   location: string[];
   identifier: string[];
   volumeStatus: boolean | null;
@@ -15,6 +16,7 @@ type FilterFormValues = {
 
 interface FilterFormProps {
   values?: {
+    inputDate?: Date | null;
     location?: string[];
     identifier?: string[];
     volumeStatus?: boolean | null;
@@ -27,6 +29,7 @@ interface FilterFormProps {
 export default function useFilterForm({ values }: FilterFormProps) {
   const form = useForm<FilterFormValues>({
     initialValues: {
+      inputDate: values?.inputDate ?? null,
       location: values?.location ?? [],
       identifier: values?.identifier ?? [],
       volumeStatus: values?.volumeStatus ?? null,

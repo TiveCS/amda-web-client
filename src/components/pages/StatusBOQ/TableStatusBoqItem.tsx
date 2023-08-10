@@ -1,7 +1,14 @@
 import { LopTicket } from "@api/types/tickets";
 import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
-import { ActionIcon, Flex, Text, Tooltip } from "@mantine/core";
-import { IconCheck, IconEye, IconPhoto, IconX } from "@tabler/icons-react";
+import { ActionIcon, Flex, HoverCard, Text, Tooltip } from "@mantine/core";
+import {
+  IconArrowForward,
+  IconCheck,
+  IconEye,
+  IconPhoto,
+  IconX,
+} from "@tabler/icons-react";
+import { useMemo } from "react";
 import StatusAccTiket from "../DaftarBOQ/StatusAccTiket";
 
 interface TableStatusBoqItemProps {
@@ -31,6 +38,20 @@ export default function TableStatusBoqItem({
     openConfirmModal();
   };
 
+  const handleUndo = () => {
+    updateStatusForm.setFieldValue("status", "PENDING");
+    updateStatusForm.setFieldValue("note", ticket.note ?? null);
+    openConfirmModal();
+  };
+
+  const isRejected = useMemo(() => {
+    return ticket.acceptStatus === "REJECTED";
+  }, [ticket.acceptStatus]);
+
+  const isAccepted = useMemo(() => {
+    return ticket.acceptStatus === "ACCEPTED";
+  }, [ticket.acceptStatus]);
+
   return (
     <tr>
       <td>{ticket.identifier}</td>
@@ -57,15 +78,30 @@ export default function TableStatusBoqItem({
       </td>
       <td>
         {ticket.note ? (
-          <Text color="dark" truncate>
-            {ticket.note}
-          </Text>
+          <HoverCard
+            shadow="md"
+            arrowPosition="side"
+            position="bottom"
+            styles={{
+              dropdown: { backgroundColor: "#010101", color: "#efefef" },
+            }}
+          >
+            <HoverCard.Target>
+              <Text color="dark" truncate>
+                {ticket.note}
+              </Text>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Text>{ticket.note}</Text>
+            </HoverCard.Dropdown>
+          </HoverCard>
         ) : (
           <Text color="gray" truncate>
-            Tidak ada catatan.
+            Tidak ada catatan
           </Text>
         )}
       </td>
+      <td>{ticket.activity.mitra.name}</td>
       <td>
         <StatusAccTiket ticket={ticket} />
       </td>
@@ -76,27 +112,53 @@ export default function TableStatusBoqItem({
           align={"center"}
           gap={"lg"}
         >
-          <Tooltip label="Terima">
-            <ActionIcon
-              color="blue"
-              variant="light"
-              disabled={ticket.acceptStatus === "ACCEPTED"}
-              onClick={handleAccept}
-            >
-              <IconCheck size={"1.25rem"} />
-            </ActionIcon>
-          </Tooltip>
+          {isAccepted ? (
+            <Tooltip label="Undo" color="violet">
+              <ActionIcon
+                color="violet"
+                variant="light"
+                disabled={ticket.acceptStatus === "PENDING"}
+                onClick={handleUndo}
+              >
+                <IconArrowForward size={"1.25rem"} />
+              </ActionIcon>
+            </Tooltip>
+          ) : (
+            <Tooltip label="Terima">
+              <ActionIcon
+                color="blue"
+                variant="light"
+                disabled={ticket.acceptStatus === "ACCEPTED"}
+                onClick={handleAccept}
+              >
+                <IconCheck size={"1.25rem"} />
+              </ActionIcon>
+            </Tooltip>
+          )}
 
-          <Tooltip label="Tolak" color="pink">
-            <ActionIcon
-              color="pink"
-              variant="light"
-              disabled={ticket.acceptStatus === "REJECTED"}
-              onClick={handleReject}
-            >
-              <IconX size={"1.25rem"} />
-            </ActionIcon>
-          </Tooltip>
+          {isRejected ? (
+            <Tooltip label="Undo" color="violet">
+              <ActionIcon
+                color="violet"
+                variant="light"
+                disabled={ticket.acceptStatus === "PENDING"}
+                onClick={handleUndo}
+              >
+                <IconArrowForward size={"1.25rem"} />
+              </ActionIcon>
+            </Tooltip>
+          ) : (
+            <Tooltip label="Tolak" color="pink">
+              <ActionIcon
+                color="pink"
+                variant="light"
+                disabled={isRejected}
+                onClick={handleReject}
+              >
+                <IconX size={"1.25rem"} />
+              </ActionIcon>
+            </Tooltip>
+          )}
         </Flex>
       </td>
     </tr>
