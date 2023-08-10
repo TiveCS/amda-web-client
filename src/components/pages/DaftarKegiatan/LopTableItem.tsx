@@ -9,6 +9,7 @@ interface LopTableItemProps {
   setRemoveLop: React.Dispatch<React.SetStateAction<Lop | null>>;
   openRemoveLop: () => void;
   hasCRUDAccess: boolean;
+  isAllowEdit: boolean;
 }
 
 export default function LopTableItem({
@@ -18,6 +19,7 @@ export default function LopTableItem({
   setRemoveLop,
   openRemoveLop,
   hasCRUDAccess,
+  isAllowEdit,
 }: LopTableItemProps) {
   const { activities } = lop;
 
@@ -44,6 +46,7 @@ export default function LopTableItem({
             activity={activities[0]}
             isSelected={selectedActivities.includes(activities[0])}
             setSelectedActivities={setSelectedActivities}
+            isAllowedEdit={isAllowEdit}
           />
         )}
       </tr>
@@ -58,6 +61,7 @@ export default function LopTableItem({
                 activity={activity}
                 isSelected={selectedActivities.includes(activity)}
                 setSelectedActivities={setSelectedActivities}
+                isAllowedEdit={isAllowEdit}
               />
             </tr>
           );
@@ -106,7 +110,13 @@ const LopTableContent: React.FC<{
   activity: LopActivity;
   isSelected?: boolean;
   setSelectedActivities: React.Dispatch<React.SetStateAction<LopActivity[]>>;
-}> = ({ activity, setSelectedActivities, isSelected = false }) => {
+  isAllowedEdit: boolean;
+}> = ({
+  activity,
+  setSelectedActivities,
+  isSelected = false,
+  isAllowedEdit,
+}) => {
   return (
     <>
       <td>
@@ -115,6 +125,7 @@ const LopTableContent: React.FC<{
           name="activity-id"
           value={activity.id}
           checked={isSelected}
+          disabled={!isAllowedEdit}
           onChange={(e) => {
             if (e.currentTarget.checked) {
               setSelectedActivities((prev) => [...prev, activity]);
