@@ -35,7 +35,7 @@ export default function StoItemTable({
       {hasCRUDAccess && (
         <td>
           <Flex gap="xl" justify="center" align="center" direction="row">
-            <Tooltip label={"Edit Mitra"}>
+            <Tooltip label={"Edit STO"}>
               <IconEdit
                 onClick={() => {
                   setEditSto(sto);
