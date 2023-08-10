@@ -46,7 +46,7 @@ const DaftarKegiatan: React.FC = () => {
   const role = profile?.role.slug as unknown as RoleType;
   const isAllowCRUD = useMemo(() => {
     return checkRoleAllowed(role, {
-      whiteListedRoles: ["ta-maintenance"],
+      whiteListedRoles: ["ta-maintenance", "admin-mitra"],
     });
   }, [role]);
   const isAdminMitra = useMemo(() => {
