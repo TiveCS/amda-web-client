@@ -121,8 +121,11 @@ export default function FilterModal({
           multiple
           label="Jenis Pekerjaan"
           data={[
-            { value: "RECOVERY", label: "Recovery" },
-            { value: "RELOKASI", label: "Relokasi" },
+            { value: "RECOVERY", label: "RECOVERY" },
+            { value: "RELOKASI", label: "RELOKASI" },
+            { value: "ACCESS", label: "ACCESS" },
+            { value: "HEM", label: "HEM" },
+            { value: "EBIS", label: "EBIS" },
           ]}
           placeholder="Pilih jenis pekerjaan"
           value={filterForm.values?.workType ?? null}

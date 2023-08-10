@@ -176,7 +176,7 @@ export default function AddKegiatanModal({
         </Group>
 
         <Select
-          data={["Recovery", "Relokasi"]}
+          data={["RECOVERY", "RELOKASI", "ACCES", "HEM", "EBIS"]}
           label="Jenis Pekerjaan"
           placeholder="Pilih Jenis Pekerjaan"
           withAsterisk
