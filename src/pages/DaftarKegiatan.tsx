@@ -105,7 +105,7 @@ const DaftarKegiatan: React.FC = () => {
         const lops = await getLops({
           search: searchDebounced,
           cursor: pageParam as number,
-          take: 5,
+          take: 15,
           filter: {
             mitraIds,
             stoIds,
