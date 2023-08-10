@@ -80,7 +80,7 @@ export default function TicketStatusConfirmModal({
                   <IconX size={"1.25rem"} />
                 )}
               </ActionIcon>
-              <Text>Jumlah Volume lebih dari 1</Text>
+              <Text>Jumlah detail volume lebih dari 0</Text>
             </Group>
 
             <Group spacing={"md"}>
