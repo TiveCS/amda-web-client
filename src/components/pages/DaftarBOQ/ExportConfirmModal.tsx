@@ -1,6 +1,5 @@
 import { getBoqReport } from "@api/boq-reports";
 import { getLops } from "@api/lops";
-import { getListMitra } from "@api/mitra";
 import { getListSto } from "@api/sto";
 import ButtonAMDA from "@components/ButtonAMDA";
 import {
@@ -17,7 +16,12 @@ import {
 import { isInRange, useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications, showNotification } from "@mantine/notifications";
-import { IconAlertTriangle, IconCheck, IconCross } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconCheck,
+  IconCross,
+  IconX,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -36,23 +40,17 @@ export default function ExportConfirmModal({
     initialValues: {
       sto: "",
       lop: "",
-      mitra: "",
     },
   });
 
   const [stoDebounced] = useDebouncedValue(exportSearchForm.values.sto, 500);
   const [lopDebounced] = useDebouncedValue(exportSearchForm.values.lop, 500);
-  const [mitraDebounced] = useDebouncedValue(
-    exportSearchForm.values.mitra,
-    500
-  );
 
   const exportReportForm = useForm({
-    initialValues: { stoId: -1, lopId: -1, mitraId: -1 },
+    initialValues: { stoId: -1, lopId: -1 },
     validate: {
       stoId: isInRange({ min: 1 }, "Silahkan pilih STO"),
       lopId: isInRange({ min: 1 }, "Silahkan pilih LOP"),
-      mitraId: isInRange({ min: 1 }, "Silahkan pilih Mitra"),
     },
   });
 
@@ -67,21 +65,6 @@ export default function ExportConfirmModal({
       return res.data.map((sto) => ({
         value: sto.id.toString(),
         label: sto.name,
-      }));
-    },
-  });
-
-  const { refetch: refetchListMitra, ...getListMitraQuery } = useQuery({
-    queryKey: ["daftar_boq_mitra"],
-    queryFn: async () => {
-      const res = await getListMitra({
-        search: stoDebounced,
-        limit: 20,
-      });
-
-      return res.data.map((mitra) => ({
-        value: mitra.id.toString(),
-        label: mitra.name,
       }));
     },
   });
@@ -106,7 +89,6 @@ export default function ExportConfirmModal({
       const res = await getBoqReport({
         lopId: exportReportForm.values.lopId,
         stoId: exportReportForm.values.stoId,
-        mitraId: exportReportForm.values.mitraId,
         ticketIdentifiers: tickets,
       });
 
@@ -159,7 +141,7 @@ export default function ExportConfirmModal({
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
-        icon: <IconCross />,
+        icon: <IconX />,
       });
     },
   });
@@ -179,14 +161,6 @@ export default function ExportConfirmModal({
 
     void refetch();
   }, [refetchListSto, stoDebounced]);
-
-  useEffect(() => {
-    const refetch = async () => {
-      await refetchListMitra();
-    };
-
-    void refetch();
-  }, [refetchListMitra, mitraDebounced]);
 
   const handleConfirmExport = async () => {
     if (exportReportForm.validate().hasErrors) return;
@@ -266,29 +240,11 @@ export default function ExportConfirmModal({
             }}
           />
 
-          <Select
-            withAsterisk
-            searchable
-            nothingFound="Tidak ada Mitra yang ditemukan"
-            label="Mitra"
-            placeholder="Pilih Mitra"
-            limit={20}
-            data={getListMitraQuery.data ?? []}
-            onSearchChange={(value) => {
-              exportSearchForm.setFieldValue("mitra", value);
-            }}
-            error={exportReportForm.errors.stoId}
-            onChange={(value) => {
-              if (value === null) return;
-              const mitraId = parseInt(value);
-              exportReportForm.setFieldValue("mitraId", mitraId);
-            }}
-          />
-
           <Flex mt={"sm"} gap={"md"} direction={"row-reverse"}>
             <ButtonAMDA
               onClick={handleConfirmExport}
               disabled={tickets.length === 0}
+              loading={exportMutation.isLoading}
             >
               Konfirmasi Expor
             </ButtonAMDA>

@@ -1,5 +1,5 @@
 import { LopTicket } from "@api/types/tickets";
-import { Flex, Text, Tooltip } from "@mantine/core";
+import { Flex, HoverCard, Text, Tooltip } from "@mantine/core";
 import { IconEdit, IconEye } from "@tabler/icons-react";
 import StatusAccTiket from "./StatusAccTiket";
 import StatusEvidenceTiket from "./StatusEvidenceTiket";
@@ -96,15 +96,30 @@ export default function TicketTableItem({
       </td>
       <td>
         {ticket.note ? (
-          <Text color="dark" truncate>
-            {ticket.note}
-          </Text>
+          <HoverCard
+            shadow="md"
+            arrowPosition="side"
+            position="bottom"
+            styles={{
+              dropdown: { backgroundColor: "#010101", color: "#efefef" },
+            }}
+          >
+            <HoverCard.Target>
+              <Text color="dark" truncate>
+                {ticket.note}
+              </Text>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Text>{ticket.note}</Text>
+            </HoverCard.Dropdown>
+          </HoverCard>
         ) : (
           <Text color="gray" truncate>
-            Tidak ada catatan.
+            Tidak ada catatan
           </Text>
         )}
       </td>
+      <td>{ticket.activity.mitra.name}</td>
       <td>
         <StatusAccTiket ticket={ticket} />
       </td>

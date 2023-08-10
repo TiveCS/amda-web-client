@@ -18,6 +18,11 @@ export type LopTicket = {
 
 export type LopTicketActivity = {
   isForMitra: boolean;
+  inputAt: Date;
+  mitra: {
+    id: number;
+    name: string;
+  };
 };
 
 export type LopTicketEvidence = {
