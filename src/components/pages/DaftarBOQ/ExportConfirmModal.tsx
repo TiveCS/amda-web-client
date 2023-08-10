@@ -1,6 +1,5 @@
 import { getBoqReport } from "@api/boq-reports";
 import { getLops } from "@api/lops";
-import { getListMitra } from "@api/mitra";
 import { getListSto } from "@api/sto";
 import ButtonAMDA from "@components/ButtonAMDA";
 import {
@@ -36,16 +35,11 @@ export default function ExportConfirmModal({
     initialValues: {
       sto: "",
       lop: "",
-      mitra: "",
     },
   });
 
   const [stoDebounced] = useDebouncedValue(exportSearchForm.values.sto, 500);
   const [lopDebounced] = useDebouncedValue(exportSearchForm.values.lop, 500);
-  const [mitraDebounced] = useDebouncedValue(
-    exportSearchForm.values.mitra,
-    500
-  );
 
   const exportReportForm = useForm({
     initialValues: { stoId: -1, lopId: -1, mitraId: -1 },
@@ -67,21 +61,6 @@ export default function ExportConfirmModal({
       return res.data.map((sto) => ({
         value: sto.id.toString(),
         label: sto.name,
-      }));
-    },
-  });
-
-  const { refetch: refetchListMitra, ...getListMitraQuery } = useQuery({
-    queryKey: ["daftar_boq_mitra"],
-    queryFn: async () => {
-      const res = await getListMitra({
-        search: stoDebounced,
-        limit: 20,
-      });
-
-      return res.data.map((mitra) => ({
-        value: mitra.id.toString(),
-        label: mitra.name,
       }));
     },
   });
@@ -180,14 +159,6 @@ export default function ExportConfirmModal({
     void refetch();
   }, [refetchListSto, stoDebounced]);
 
-  useEffect(() => {
-    const refetch = async () => {
-      await refetchListMitra();
-    };
-
-    void refetch();
-  }, [refetchListMitra, mitraDebounced]);
-
   const handleConfirmExport = async () => {
     if (exportReportForm.validate().hasErrors) return;
 
@@ -263,25 +234,6 @@ export default function ExportConfirmModal({
               if (value === null) return;
               const stoId = parseInt(value);
               exportReportForm.setFieldValue("stoId", stoId);
-            }}
-          />
-
-          <Select
-            withAsterisk
-            searchable
-            nothingFound="Tidak ada Mitra yang ditemukan"
-            label="Mitra"
-            placeholder="Pilih Mitra"
-            limit={20}
-            data={getListMitraQuery.data ?? []}
-            onSearchChange={(value) => {
-              exportSearchForm.setFieldValue("mitra", value);
-            }}
-            error={exportReportForm.errors.stoId}
-            onChange={(value) => {
-              if (value === null) return;
-              const mitraId = parseInt(value);
-              exportReportForm.setFieldValue("mitraId", mitraId);
             }}
           />
 
