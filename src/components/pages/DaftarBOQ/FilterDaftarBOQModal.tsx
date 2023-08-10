@@ -1,3 +1,4 @@
+import { getListMitra } from "@api/mitra";
 import { getListTicketLocations, getListTickets } from "@api/tickets";
 import {
   LopTicketAcceptanceStatus,
@@ -14,14 +15,14 @@ import {
   Select,
   Stack,
 } from "@mantine/core";
+import { MonthPickerInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
 import { useEffect, useMemo } from "react";
 import { RoleType } from "../../../types";
-import { MonthPickerInput } from "@mantine/dates";
-import { getListMitra } from "@api/mitra";
+import { amdaDayJs } from "src/utils";
 
 interface PrepareExportBoqModalProps {
   isOpen: boolean;
@@ -43,6 +44,8 @@ export default function FilterDaftarBOQModal({
       mitra: "",
     },
   });
+
+  const dayjs = amdaDayJs();
 
   const { profile } = useProfileStore();
   const role = profile?.role.slug as unknown as RoleType;
@@ -151,7 +154,17 @@ export default function FilterDaftarBOQModal({
           label="Bulan Input Tiket"
           placeholder="Pilih bulan input tiket"
           clearable
-          {...filterForm.getInputProps("inputDate")}
+          value={filterForm.values.inputDate}
+          onChange={(value) => {
+            if (!value) {
+              filterForm.setFieldValue("inputDate", null);
+              return;
+            }
+
+            const date = dayjs(value).utc().toDate();
+
+            filterForm.setFieldValue("inputDate", date);
+          }}
         />
 
         {!isAdminMitra && (

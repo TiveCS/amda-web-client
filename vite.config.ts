@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), "");
 
-  const API_URL = env.API_URL || "http://127.0.0.1:3000";
+  const API_URL = env.VITE_API_URL || "http://127.0.0.1:3000";
 
   console.log("API_URL", API_URL);
 
