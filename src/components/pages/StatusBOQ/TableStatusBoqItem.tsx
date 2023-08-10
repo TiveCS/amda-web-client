@@ -1,6 +1,6 @@
 import { LopTicket } from "@api/types/tickets";
 import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
-import { ActionIcon, Flex, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Flex, HoverCard, Text, Tooltip } from "@mantine/core";
 import {
   IconArrowForward,
   IconCheck,
@@ -78,15 +78,30 @@ export default function TableStatusBoqItem({
       </td>
       <td>
         {ticket.note ? (
-          <Text color="dark" truncate>
-            {ticket.note}
-          </Text>
+          <HoverCard
+            shadow="md"
+            arrowPosition="side"
+            position="bottom"
+            styles={{
+              dropdown: { backgroundColor: "#010101", color: "#efefef" },
+            }}
+          >
+            <HoverCard.Target>
+              <Text color="dark" truncate>
+                {ticket.note}
+              </Text>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Text>{ticket.note}</Text>
+            </HoverCard.Dropdown>
+          </HoverCard>
         ) : (
           <Text color="gray" truncate>
-            Tidak ada catatan.
+            Tidak ada catatan
           </Text>
         )}
       </td>
+      <td>{ticket.activity.mitra.name}</td>
       <td>
         <StatusAccTiket ticket={ticket} />
       </td>

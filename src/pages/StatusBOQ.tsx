@@ -144,6 +144,7 @@ const StatusBOQ: React.FC = () => {
                 <th className="w-12">Detail Volume</th>
                 <th className="w-12">Evidence</th>
                 <th>Catatan Uji Terima</th>
+                <th className="w-[8.5rem]">Mitra</th>
                 <th className="w-28">Status</th>
                 <th className="w-28">Actions</th>
               </tr>
