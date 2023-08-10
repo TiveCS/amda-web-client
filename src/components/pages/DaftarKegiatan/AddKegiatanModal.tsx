@@ -4,7 +4,17 @@ import { getListSto } from "@api/sto";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useActivityForm from "@hooks/useActivityForm";
 import useAddActivityMutation from "@hooks/useAddActivityMutation";
-import { Checkbox, Flex, Grid, Modal, Select, TextInput } from "@mantine/core";
+import {
+  Checkbox,
+  Flex,
+  Grid,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Select,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
 import { useDebouncedValue } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -100,6 +110,8 @@ export default function AddKegiatanModal({
       size={"lg"}
       padding={"xl"}
     >
+      <LoadingOverlay visible={addKegiatanMutation.isLoading} />
+
       <Flex direction={"column"} gap={"sm"}>
         <Select
           id="select-lop"
@@ -121,25 +133,47 @@ export default function AddKegiatanModal({
           }}
         />
 
-        <Select
-          id="select-sto"
-          data={getListStoQuery.data ?? []}
-          searchable
-          nothingFound="STO tidak ditemukan"
-          label="STO"
-          placeholder="Pilih STO"
-          error={addKegiatanForm.errors.stoId}
-          withAsterisk
-          onChange={(value) => {
-            addKegiatanForm.setFieldValue(
-              "stoId",
-              value !== null ? parseInt(value) : -1
-            );
-          }}
-          onSearchChange={(query) => {
-            setSearchSto(query);
-          }}
-        />
+        <Group grow>
+          <Select
+            id="select-sto"
+            data={getListStoQuery.data ?? []}
+            searchable
+            nothingFound="STO tidak ditemukan"
+            label="STO"
+            placeholder="Pilih STO"
+            error={addKegiatanForm.errors.stoId}
+            withAsterisk
+            onChange={(value) => {
+              addKegiatanForm.setFieldValue(
+                "stoId",
+                value !== null ? parseInt(value) : -1
+              );
+            }}
+            onSearchChange={(query) => {
+              setSearchSto(query);
+            }}
+          />
+
+          <Select
+            id="select-mitra"
+            data={getListMitraQuery.data ?? []}
+            searchable
+            nothingFound="Mitra tidak ditemukan"
+            label="Mitra"
+            placeholder="Pilih Mitra"
+            error={addKegiatanForm.errors.mitraId}
+            withAsterisk
+            onChange={(value) => {
+              addKegiatanForm.setFieldValue(
+                "mitraId",
+                value !== null ? parseInt(value) : -1
+              );
+            }}
+            onSearchChange={(query) => {
+              setSearchMitra(query);
+            }}
+          />
+        </Group>
 
         <Select
           data={["Recovery", "Relokasi"]}
@@ -152,23 +186,20 @@ export default function AddKegiatanModal({
           }
         />
 
-        <Select
-          id="select-mitra"
-          data={getListMitraQuery.data ?? []}
-          searchable
-          nothingFound="Mitra tidak ditemukan"
-          label="Mitra"
-          placeholder="Pilih Mitra"
-          error={addKegiatanForm.errors.mitraId}
-          withAsterisk
-          onChange={(value) => {
-            addKegiatanForm.setFieldValue(
-              "mitraId",
-              value !== null ? parseInt(value) : -1
-            );
-          }}
-          onSearchChange={(query) => {
-            setSearchMitra(query);
+        <Textarea
+          label="Uraian Pekerjaan"
+          placeholder="Tuliskan uraian pekerjaan disini"
+          error={addKegiatanForm.errors.workDescription}
+          value={addKegiatanForm.values.workDescription}
+          onChange={(event) => {
+            const { value } = event.currentTarget;
+
+            if (!value || value.trim() === "") {
+              addKegiatanForm.setFieldValue("workDescription", undefined);
+              return;
+            }
+
+            addKegiatanForm.setFieldValue("workDescription", value);
           }}
         />
 
@@ -223,6 +254,7 @@ export default function AddKegiatanModal({
         </Flex>
         <Flex direction={"row-reverse"} gap={12}>
           <ButtonAMDA
+            loading={addKegiatanMutation.isLoading}
             onClick={() => {
               const validate = addKegiatanForm.validate();
 

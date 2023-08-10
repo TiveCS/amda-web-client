@@ -4,7 +4,16 @@ import { getListSto } from "@api/sto";
 import { LopActivity, LopActivityForm } from "@api/types/lops";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useEditActivityMutation from "@hooks/useEditActivityMutation";
-import { Checkbox, Flex, Grid, Modal, Select, TextInput } from "@mantine/core";
+import {
+  Checkbox,
+  Flex,
+  Grid,
+  Group,
+  Modal,
+  Select,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
 import { UseFormReturnType } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
@@ -23,12 +32,14 @@ interface EditKegiatanModalProps {
     (values: LopActivityForm) => LopActivityForm
   >;
   updateEditForm: (activity: LopActivity) => void;
+  isAdminMitra?: boolean;
 }
 
 export default function EditKegiatanModal({
   closeModal,
   isOpen,
   currentActivity,
+  isAdminMitra,
   setEditActivity,
   setSelectedActivities,
   editForm: editKegiatanForm,
@@ -129,6 +140,7 @@ export default function EditKegiatanModal({
           label="Segment"
           placeholder="Pilih Segment"
           withAsterisk
+          readOnly={isAdminMitra}
           onSearchChange={(query) => {
             setSearchLop(query);
           }}
@@ -140,50 +152,61 @@ export default function EditKegiatanModal({
           value={editKegiatanForm.values.lopId.toString()}
         />
 
-        <Select
-          id="select-sto"
-          data={getListStoQuery.data ?? []}
-          searchable
-          nothingFound="STO tidak ditemukan"
-          label="STO"
-          placeholder="Pilih STO"
-          withAsterisk
-          onSearchChange={(query) => {
-            setSearchSto(query);
-          }}
-          {...editKegiatanForm.getInputProps("stoId")}
-          onChange={(value) => {
-            const num = value !== null ? parseInt(value) : -1;
-            editKegiatanForm.setFieldValue("stoId", num);
-          }}
-          value={editKegiatanForm.values.stoId.toString()}
-        />
+        <Group grow>
+          <Select
+            id="select-sto"
+            data={getListStoQuery.data ?? []}
+            searchable
+            nothingFound="STO tidak ditemukan"
+            label="STO"
+            placeholder="Pilih STO"
+            withAsterisk
+            readOnly={isAdminMitra}
+            onSearchChange={(query) => {
+              setSearchSto(query);
+            }}
+            {...editKegiatanForm.getInputProps("stoId")}
+            onChange={(value) => {
+              const num = value !== null ? parseInt(value) : -1;
+              editKegiatanForm.setFieldValue("stoId", num);
+            }}
+            value={editKegiatanForm.values.stoId.toString()}
+          />
+
+          <Select
+            id="select-mitra"
+            data={getListMitraQuery.data ?? []}
+            searchable
+            nothingFound="Mitra tidak ditemukan"
+            label="Mitra"
+            placeholder="Pilih Mitra"
+            withAsterisk
+            readOnly={isAdminMitra}
+            onSearchChange={(query) => {
+              setSearchMitra(query);
+            }}
+            {...editKegiatanForm.getInputProps("mitraId")}
+            onChange={(value) => {
+              const num = value !== null ? parseInt(value) : -1;
+              editKegiatanForm.setFieldValue("mitraId", num);
+            }}
+            value={editKegiatanForm.values.mitraId.toString()}
+          />
+        </Group>
 
         <Select
           data={["Recovery", "Relokasi"]}
           label="Jenis Pekerjaan"
           placeholder="Pilih Jenis Pekerjaan"
+          readOnly={isAdminMitra}
           withAsterisk
           {...editKegiatanForm.getInputProps("workType")}
         />
 
-        <Select
-          id="select-mitra"
-          data={getListMitraQuery.data ?? []}
-          searchable
-          nothingFound="Mitra tidak ditemukan"
-          label="Mitra"
-          placeholder="Pilih Mitra"
-          withAsterisk
-          onSearchChange={(query) => {
-            setSearchMitra(query);
-          }}
-          {...editKegiatanForm.getInputProps("mitraId")}
-          onChange={(value) => {
-            const num = value !== null ? parseInt(value) : -1;
-            editKegiatanForm.setFieldValue("mitraId", num);
-          }}
-          value={editKegiatanForm.values.mitraId.toString()}
+        <Textarea
+          label="Uraian Pekerjaan"
+          placeholder="Tuliskan uraian pekerjaan disini"
+          {...editKegiatanForm.getInputProps("workDescription")}
         />
 
         <Grid>
@@ -192,6 +215,7 @@ export default function EditKegiatanModal({
               label="ID Tiket"
               placeholder="IN123456789"
               withAsterisk
+              readOnly={isAdminMitra}
               error={editKegiatanForm.errors.ticketIdentifier}
               {...editKegiatanForm.getInputProps("ticketIdentifier")}
             />
@@ -199,6 +223,7 @@ export default function EditKegiatanModal({
           <Grid.Col span={6}>
             <TextInput
               label="Lokasi Tiket"
+              readOnly={isAdminMitra}
               placeholder="Contoh: Sragen, dll"
               error={editKegiatanForm.errors.ticketLocation}
               {...editKegiatanForm.getInputProps("ticketLocation")}
@@ -209,6 +234,7 @@ export default function EditKegiatanModal({
         <Grid>
           <Grid.Col span={6}>
             <DateInput
+              readOnly={isAdminMitra}
               label="Tanggal Input"
               withAsterisk
               {...editKegiatanForm.getInputProps("inputDate")}
@@ -216,6 +242,7 @@ export default function EditKegiatanModal({
           </Grid.Col>
           <Grid.Col span={6}>
             <TimeInput
+              readOnly={isAdminMitra}
               label="Waktu Input"
               withAsterisk
               {...editKegiatanForm.getInputProps("inputTime")}
@@ -226,6 +253,7 @@ export default function EditKegiatanModal({
         <Checkbox
           mt={"md"}
           label="Ditunjukan untuk Admin Mitra"
+          disabled={isAdminMitra}
           checked={editKegiatanForm.values.isForMitra}
           onChange={(e) =>
             editKegiatanForm.setFieldValue(

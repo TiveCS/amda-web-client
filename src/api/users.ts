@@ -54,7 +54,7 @@ export async function editUser({
     roleId: number;
     name: string;
     mitraId: number;
-    newPassword?: string;
+    newPassword: string | null;
   };
 }) {
   const newPassword =

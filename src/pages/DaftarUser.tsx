@@ -1,10 +1,11 @@
-import { getListUser } from "@api/users";
 import { UserResponsePayload } from "@api/types/users";
+import { getListUser } from "@api/users";
 import ButtonAMDA from "@components/ButtonAMDA";
 import AddUserModal from "@components/pages/DaftarUser/AddUserModal";
 import EditUserModal from "@components/pages/DaftarUser/EditUserModal";
-import UserItemTable from "@components/pages/DaftarUser/UserItemTable";
 import RemoveUserModal from "@components/pages/DaftarUser/RemoveUserModal";
+import UserItemTable from "@components/pages/DaftarUser/UserItemTable";
+import useUserEditForm from "@hooks/useUserEditForm";
 import {
   Container,
   Flex,
@@ -20,11 +21,10 @@ import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconCirclePlus } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useProfileStore } from "@zustand/profileStore";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import { useProfileStore } from "@zustand/profileStore";
 import { RoleType } from "../types";
-import useUserEditForm from "@hooks/useUserEditForm";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -86,17 +86,6 @@ const DaftarUser: React.FC = () => {
   );
 
   const [editUser, setEditUser] = useState<UserResponsePayload | null>(null);
-  // const editUserForm = useForm({
-  //   initialValues: {
-  //     name: "",
-  //     mitraId: profile?.mitra.id ?? -1,
-  //     roleId: profile?.role.id ?? -1,
-  //     password: "",
-  //   },
-  //   validate: {
-  //     name: (value) => (value.trim().length > 0 ? null : "Nama wajib diisi"),
-  //   },
-  // });
   const editUserForm = useUserEditForm({
     mitraId: profile?.mitra.id,
     roleId: profile?.role.id,
@@ -105,14 +94,12 @@ const DaftarUser: React.FC = () => {
   const { refetch: refetchListUsers, ...getListUserQuery } = useInfiniteQuery({
     queryKey: ["user"],
     queryFn: async ({ pageParam = 0 }) => {
-      const payload = {
+      const result = await getListUser({
+        mitraId: isAdminMitra ? profile?.mitra.id : undefined,
         search: searchDebounced,
         cursor: pageParam as number,
         limit: 10,
-        mitraId: isAdminMitra ? profile?.mitra.id : undefined,
-      };
-
-      const result = await getListUser(payload);
+      });
 
       return result;
     },

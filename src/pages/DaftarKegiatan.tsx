@@ -49,6 +49,11 @@ const DaftarKegiatan: React.FC = () => {
       whiteListedRoles: ["ta-maintenance"],
     });
   }, [role]);
+  const isAllowEdit = useMemo(() => {
+    return checkRoleAllowed(role, {
+      whiteListedRoles: ["ta-maintenance", "admin-mitra"],
+    });
+  }, [role]);
   const isAdminMitra = useMemo(() => {
     return role === "admin-mitra";
   }, [role]);
@@ -166,6 +171,7 @@ const DaftarKegiatan: React.FC = () => {
 
       <EditKegiatanModal
         isOpen={openedEditActivity}
+        isAdminMitra={isAdminMitra}
         closeModal={closeEditActivity}
         currentActivity={editActivity}
         setEditActivity={setEditActivity}
@@ -206,20 +212,22 @@ const DaftarKegiatan: React.FC = () => {
               <ButtonAMDA variant="outline" onClick={openFilterModal}>
                 <IconFilter></IconFilter>
               </ButtonAMDA>{" "}
+              {isAllowEdit && (
+                <ButtonAMDA
+                  variant="outline"
+                  onClick={() => {
+                    if (selectedActivities.length !== 1) return;
+                    setEditActivity(selectedActivities[0]);
+                    updateEditForm(selectedActivities[0]);
+                    openEditActivity();
+                  }}
+                  disabled={selectedActivities.length !== 1 || !isAllowEdit}
+                >
+                  <IconEdit></IconEdit>
+                </ButtonAMDA>
+              )}
               {isAllowCRUD && (
                 <>
-                  <ButtonAMDA
-                    variant="outline"
-                    onClick={() => {
-                      if (selectedActivities.length !== 1) return;
-                      setEditActivity(selectedActivities[0]);
-                      updateEditForm(selectedActivities[0]);
-                      openEditActivity();
-                    }}
-                    disabled={selectedActivities.length !== 1 || !isAllowCRUD}
-                  >
-                    <IconEdit></IconEdit>
-                  </ButtonAMDA>
                   <ButtonAMDA
                     variant="outline"
                     onClick={openRemoveActivity}
@@ -259,7 +267,8 @@ const DaftarKegiatan: React.FC = () => {
                 <th>Segment</th>
                 <th className="w-10">#</th>
                 <th>STO</th>
-                <th className="w-48">Jenis Pekerjaan</th>
+                <th className="w-24">Jenis Pekerjaan</th>
+                <th className="w-48">Uraian Pekerjaan</th>
                 <th>No Tiket</th>
                 <th>Lokasi Tiket</th>
                 <th>Mitra</th>
@@ -285,6 +294,7 @@ const DaftarKegiatan: React.FC = () => {
                       setSelectedActivities={setSelectedActivities}
                       setRemoveLop={setRemoveLop}
                       hasCRUDAccess={isAllowCRUD}
+                      isAllowEdit={isAllowEdit}
                     />
                   ))}
                 </React.Fragment>

@@ -12,6 +12,7 @@ export type LopActivity = {
   lopId: number;
   isForMitra: boolean;
   workType: string;
+  workDescription?: string;
   inputAt: string; // DATE STRING
   ticket: {
     identifier: string;
@@ -34,6 +35,7 @@ export type LopActivityForm = {
   ticketLocation: string | null;
   ticketIdentifier: string;
   workType: string;
+  workDescription: string | undefined;
   isForMitra: boolean;
   inputDate: Date;
   inputTime: string;

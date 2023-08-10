@@ -18,10 +18,15 @@ export async function addActivity(payload: {
   inputAt: Date;
   isForMitra: boolean;
   workType: string;
+  workDescription?: string;
   mitraId: number;
 }) {
   const request = axiosAuthedApi.post<never>(`${LOPS_ACTIVITIES_URL}`, {
     ...payload,
+    workDescription:
+      payload.workDescription && payload.workDescription.trim().length > 0
+        ? payload.workDescription.trim()
+        : null,
     ticketLocation: payload.ticketLocation ? payload.ticketLocation : undefined,
   });
 
@@ -38,6 +43,7 @@ export async function editActivity(
     inputAt: Date;
     isForMitra: boolean;
     workType: string;
+    workDescription?: string;
     mitraId: number;
   }
 ) {
@@ -45,6 +51,10 @@ export async function editActivity(
     `${LOPS_ACTIVITIES_URL}/${activityId}`,
     {
       ...payload,
+      workDescription:
+        payload.workDescription && payload.workDescription.trim().length > 0
+          ? payload.workDescription.trim()
+          : null,
       ticketLocation:
         payload.ticketLocation || payload.ticketIdentifier.trim().length > 0
           ? payload.ticketLocation?.trim()

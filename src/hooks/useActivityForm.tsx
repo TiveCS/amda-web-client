@@ -20,6 +20,7 @@ export default function useActivityForm({
       ticketIdentifier: isActivityEmpty ? "" : activity.ticket.identifier,
       ticketLocation: isActivityEmpty ? "" : activity.ticket.location,
       workType: isActivityEmpty ? "" : activity.workType,
+      workDescription: isActivityEmpty ? "" : activity.workDescription,
       isForMitra: isActivityEmpty ? false : activity.isForMitra,
       inputDate: inputAt,
       inputTime: isActivityEmpty
@@ -53,6 +54,7 @@ export default function useActivityForm({
       ticketIdentifier: activity.ticket.identifier,
       ticketLocation: activity.ticket.location ?? "",
       workType: activity.workType ?? "",
+      workDescription: activity.workDescription,
       isForMitra: activity.isForMitra,
       inputDate: inputAt,
       inputTime: inputTime,
