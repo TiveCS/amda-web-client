@@ -24,6 +24,7 @@ export default function useGetListTicketsQuery({
         cursor: pageParam as number,
         take: 20,
         search: searchDebounced,
+        inputDate: filterForm.form.values.inputDate,
         identifier: filterForm.form.values.identifier,
         location: filterForm.form.values.location,
         acceptStatus: filterForm.form.values.acceptStatus,

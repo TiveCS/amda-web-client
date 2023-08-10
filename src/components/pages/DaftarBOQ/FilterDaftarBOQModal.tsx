@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
 import { useEffect, useMemo } from "react";
 import { RoleType } from "../../../types";
+import { MonthPickerInput } from "@mantine/dates";
 
 interface PrepareExportBoqModalProps {
   isOpen: boolean;
@@ -103,6 +104,13 @@ export default function FilterDaftarBOQModal({
       padding={"xl"}
     >
       <Stack spacing={"md"}>
+        <MonthPickerInput
+          label="Pilih Bulan"
+          placeholder="Pilih Bulan"
+          clearable
+          {...filterForm.getInputProps("inputDate")}
+        />
+
         <MultiSelect
           searchable
           clearable
