@@ -104,7 +104,7 @@ export default function Sidebar() {
             ]}
           />
           <Accordion
-            text="Kordinat"
+            text="Alat Produksi"
             items={[
               {
                 title: "ODC",

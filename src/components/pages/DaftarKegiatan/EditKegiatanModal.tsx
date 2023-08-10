@@ -32,12 +32,14 @@ interface EditKegiatanModalProps {
     (values: LopActivityForm) => LopActivityForm
   >;
   updateEditForm: (activity: LopActivity) => void;
+  isAdminMitra?: boolean;
 }
 
 export default function EditKegiatanModal({
   closeModal,
   isOpen,
   currentActivity,
+  isAdminMitra,
   setEditActivity,
   setSelectedActivities,
   editForm: editKegiatanForm,
@@ -138,6 +140,7 @@ export default function EditKegiatanModal({
           label="Segment"
           placeholder="Pilih Segment"
           withAsterisk
+          readOnly={isAdminMitra}
           onSearchChange={(query) => {
             setSearchLop(query);
           }}
@@ -158,6 +161,7 @@ export default function EditKegiatanModal({
             label="STO"
             placeholder="Pilih STO"
             withAsterisk
+            readOnly={isAdminMitra}
             onSearchChange={(query) => {
               setSearchSto(query);
             }}
@@ -177,6 +181,7 @@ export default function EditKegiatanModal({
             label="Mitra"
             placeholder="Pilih Mitra"
             withAsterisk
+            readOnly={isAdminMitra}
             onSearchChange={(query) => {
               setSearchMitra(query);
             }}
@@ -193,6 +198,7 @@ export default function EditKegiatanModal({
           data={["Recovery", "Relokasi"]}
           label="Jenis Pekerjaan"
           placeholder="Pilih Jenis Pekerjaan"
+          readOnly={isAdminMitra}
           withAsterisk
           {...editKegiatanForm.getInputProps("workType")}
         />
@@ -209,6 +215,7 @@ export default function EditKegiatanModal({
               label="ID Tiket"
               placeholder="IN123456789"
               withAsterisk
+              readOnly={isAdminMitra}
               error={editKegiatanForm.errors.ticketIdentifier}
               {...editKegiatanForm.getInputProps("ticketIdentifier")}
             />
@@ -216,6 +223,7 @@ export default function EditKegiatanModal({
           <Grid.Col span={6}>
             <TextInput
               label="Lokasi Tiket"
+              readOnly={isAdminMitra}
               placeholder="Contoh: Sragen, dll"
               error={editKegiatanForm.errors.ticketLocation}
               {...editKegiatanForm.getInputProps("ticketLocation")}
@@ -226,6 +234,7 @@ export default function EditKegiatanModal({
         <Grid>
           <Grid.Col span={6}>
             <DateInput
+              readOnly={isAdminMitra}
               label="Tanggal Input"
               withAsterisk
               {...editKegiatanForm.getInputProps("inputDate")}
@@ -233,6 +242,7 @@ export default function EditKegiatanModal({
           </Grid.Col>
           <Grid.Col span={6}>
             <TimeInput
+              readOnly={isAdminMitra}
               label="Waktu Input"
               withAsterisk
               {...editKegiatanForm.getInputProps("inputTime")}
@@ -243,6 +253,7 @@ export default function EditKegiatanModal({
         <Checkbox
           mt={"md"}
           label="Ditunjukan untuk Admin Mitra"
+          disabled={isAdminMitra}
           checked={editKegiatanForm.values.isForMitra}
           onChange={(e) =>
             editKegiatanForm.setFieldValue(
