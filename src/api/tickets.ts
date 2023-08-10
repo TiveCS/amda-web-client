@@ -43,7 +43,7 @@ export async function getListTickets({
       evidenceStatus: evidenceStatus ? evidenceStatus : undefined,
 
       mitraIds: mitraIds ? mitraIds : undefined,
-      inputDate: inputDate? inputDate : undefined,
+      inputDate: inputDate ? inputDate : undefined,
     },
   });
 
@@ -160,6 +160,17 @@ export async function rejectTicket(
       force: false,
       note: note ? note : undefined,
       status: "REJECTED",
+    }
+  );
+
+  return apiRequest<NestResponse<GetTicketEvidencesResponse>>(request);
+}
+
+export async function undoTicket(ticketIdentifier: string) {
+  const request = axiosAuthedApi.put<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}/status`,
+    {
+      status: "PENDING",
     }
   );
 

@@ -2,8 +2,18 @@ import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useTicketStatusMutation from "@hooks/useTicketStatusMutation";
 import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
-import { Alert, Flex, Modal, Stack, Text, Textarea } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import {
+  ActionIcon,
+  Alert,
+  Flex,
+  Group,
+  Modal,
+  Stack,
+  Text,
+  Textarea,
+} from "@mantine/core";
+import { IconAlertCircle, IconCheck, IconX } from "@tabler/icons-react";
+import { useMemo } from "react";
 
 interface TicketStatusConfirmModalProps {
   ticket: LopTicket | null;
@@ -20,6 +30,20 @@ export default function TicketStatusConfirmModal({
   form,
   ticketStatusMutation,
 }: TicketStatusConfirmModalProps) {
+  const isVolumeSizeAllowed = useMemo(() => {
+    if (!ticket) return false;
+    return ticket.volumes.length > 0;
+  }, [ticket]);
+
+  const isEvidenceAllowed = useMemo(() => {
+    if (!ticket) return false;
+    return (
+      ticket.evidence.afterKey &&
+      ticket.evidence.beforeKey &&
+      ticket.evidence.onProgressKey
+    );
+  }, [ticket]);
+
   return (
     <Modal
       opened={isOpen}
@@ -42,9 +66,44 @@ export default function TicketStatusConfirmModal({
           </Text>
         </Alert>
 
+        <Alert variant="outline" title="Kelengkapan Tiket" color="blue">
+          <Stack spacing={"md"}>
+            <Group spacing={"md"}>
+              <ActionIcon
+                variant="outline"
+                size={"sm"}
+                color={isVolumeSizeAllowed ? "green" : "red"}
+              >
+                {isVolumeSizeAllowed ? (
+                  <IconCheck size={"1.25rem"} />
+                ) : (
+                  <IconX size={"1.25rem"} />
+                )}
+              </ActionIcon>
+              <Text>Jumlah Volume lebih dari 1</Text>
+            </Group>
+
+            <Group spacing={"md"}>
+              <ActionIcon
+                variant="outline"
+                size={"sm"}
+                color={isEvidenceAllowed ? "green" : "red"}
+              >
+                {isEvidenceAllowed ? (
+                  <IconCheck size={"1.25rem"} />
+                ) : (
+                  <IconX size={"1.25rem"} />
+                )}
+              </ActionIcon>
+              <Text>Terdapat evidence before, on progress dan after</Text>
+            </Group>
+          </Stack>
+        </Alert>
+
         <Textarea
           label="Catatan Uji Terima"
           placeholder="Catatan uji terima"
+          disabled={form.values.status === "PENDING"}
           {...form.getInputProps("note")}
         />
 
