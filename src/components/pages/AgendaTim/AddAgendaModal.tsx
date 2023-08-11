@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getListUser } from "@api/users";
 import { useEffect, useState } from "react";
 import { UserSelectOption } from "@api/types/users";
+import { amdaDayJs } from "src/utils";
 
 interface AddAgendaModalProps {
   isOpen: boolean;
@@ -37,15 +38,19 @@ export default function AddAgendaModal({
   const queryClient = useQueryClient();
   const addAgendaMutation = useMutation({
     mutationFn: async () => {
-      selectedDate.setHours(parseInt(addAgendaForm.values.time.split(":")[0]));
-      selectedDate.setMinutes(
-        parseInt(addAgendaForm.values.time.split(":")[1])
-      );
+      const dayjs = amdaDayJs();
+
+      const time = dayjs(selectedDate);
+      const split = addAgendaForm.values.time.split(":");
+      const hours = parseInt(split[0]);
+      const minutes = parseInt(split[1]);
+
+      time.hour(hours).minute(minutes);
 
       return await addAgenda({
         title: addAgendaForm.values.title,
         basisOfAgenda: addAgendaForm.values.basisOfAgenda,
-        time: selectedDate,
+        time: time.utc().toDate(),
         note: addAgendaForm.values.note,
         picId: addAgendaForm.values.picId,
       });
