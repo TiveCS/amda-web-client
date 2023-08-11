@@ -4,7 +4,7 @@ import { Flex, Tooltip } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
+import { amdaDayJs } from "src/utils";
 
 interface AgendaItemTableProps {
   agenda: AgendaResponsePayload;
@@ -51,7 +51,8 @@ export default function UserItemTable({
   openRemoveAgendaModal: openRemoveAgendaModal,
   openEditAgendaModal: openEditAgendaModal,
 }: AgendaItemTableProps) {
-  const waktu = new Date(agenda.time);
+  const dayjs = amdaDayJs();
+  const waktu = dayjs(agenda.time).local();
 
   // TODO: Harusnya tabel ini di refetch setiap kali ada perubahan di tabel user
 
@@ -75,7 +76,7 @@ export default function UserItemTable({
 
   return (
     <tr>
-      <td>{dayjs(waktu).format("DD-MM-YYYY HH:mm A")}</td>
+      <td>{waktu.format("DD-MM-YYYY HH:mm A")}</td>
       <td>{agenda.title}</td>
       <td>{user !== undefined && user.length > 0 ? user[0].label : "??"}</td>
       <td className="w-40">
@@ -88,8 +89,8 @@ export default function UserItemTable({
                   title: agenda.title,
                   basisOfAgenda: agenda.basisOfAgenda,
                   currentDate: agenda.time,
-                  time: `${waktu.getHours().toString().padStart(2, "0")}:${waktu
-                    .getMinutes()
+                  time: `
+                  ${waktu.hour.toString().padStart(2, "0")}:${waktu.minute
                     .toString()
                     .padStart(2, "0")}`,
                   note: agenda.note,

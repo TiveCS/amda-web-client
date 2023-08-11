@@ -21,6 +21,7 @@ import AgendaItemTable from "@components/pages/AgendaTim/AgendaItemTable";
 import { AgendaResponsePayload } from "@api/types/agenda";
 import RemoveAgendaModal from "@components/pages/AgendaTim/RemoveAgendaModal";
 import EditAgendaModal from "@components/pages/AgendaTim/EditAgendaModal";
+import { amdaDayJs } from "src/utils";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -52,6 +53,7 @@ const useStyles = createStyles((theme) => ({
 const AgendaTim: React.FC = () => {
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);
+  const dayjs = amdaDayJs();
 
   const [isOpenAddAgendaModal, { open: openAddAgenda, close: closeAddAgenda }] =
     useDisclosure(false);
@@ -76,7 +78,7 @@ const AgendaTim: React.FC = () => {
     initialValues: {
       title: "",
       basisOfAgenda: "",
-      currentDate: new Date(),
+      currentDate: dayjs().utc().toDate(),
       time: "00:00",
       note: "",
       picId: -1,
@@ -94,16 +96,25 @@ const AgendaTim: React.FC = () => {
     queryKey: ["agenda"],
     queryFn: async () => {
       if (selected === null) throw new Error("selected kosong");
+
+      const selectedUtc = dayjs(selected).utc().toDate();
+
+      console.log("selectedUtc", {
+        selectedUtc,
+        iso: selectedUtc.toISOString(),
+      });
+
       const cek = await getListAgenda({
         limit: 5,
-        time: selected,
+        time: selectedUtc,
       });
       return cek;
     },
   });
 
   const handleSelect = (date: Date) => {
-    const isSelected = selected?.toDateString() === date.toDateString();
+    const isSelected = dayjs(selected).isSame(date, "day");
+
     if (!isSelected) {
       setSelected(date);
     }
