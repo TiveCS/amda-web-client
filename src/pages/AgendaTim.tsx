@@ -99,11 +99,6 @@ const AgendaTim: React.FC = () => {
 
       const selectedUtc = dayjs(selected).utc().toDate();
 
-      console.log("selectedUtc", {
-        selectedUtc,
-        iso: selectedUtc.toISOString(),
-      });
-
       const cek = await getListAgenda({
         limit: 5,
         time: selectedUtc,

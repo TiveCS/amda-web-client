@@ -40,17 +40,19 @@ export default function AddAgendaModal({
     mutationFn: async () => {
       const dayjs = amdaDayJs();
 
+      // console.log(selectedDate.toISOString());
+
       const time = dayjs(selectedDate);
       const split = addAgendaForm.values.time.split(":");
       const hours = parseInt(split[0]);
       const minutes = parseInt(split[1]);
 
-      time.hour(hours).minute(minutes);
+      // console.log("time", time.hour(hours).toISOString());
 
       return await addAgenda({
         title: addAgendaForm.values.title,
         basisOfAgenda: addAgendaForm.values.basisOfAgenda,
-        time: time.utc().toDate(),
+        time: time.hour(hours).minute(minutes).utc().toDate(),
         note: addAgendaForm.values.note,
         picId: addAgendaForm.values.picId,
       });
