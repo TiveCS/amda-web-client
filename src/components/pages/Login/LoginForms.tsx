@@ -13,7 +13,7 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useMutation } from "@tanstack/react-query";
 import { useProfileStore } from "@zustand/profileStore";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "/assets/img/amda-hitam.png";
 import { IconAlertCircle, IconInfoCircle } from "@tabler/icons-react";
 
@@ -111,7 +111,15 @@ export default function LoginForms() {
 
   return (
     <Card className="bg-gray-50 px-8 max-w-sm py-8 w-full" radius="md">
-      <Image maw={200} mx="auto" src={Logo} alt="logo amda" className="mb-8" />
+      <Link to={"https://linktr.ee/AMDATelkomSolo"}>
+        <Image
+          maw={200}
+          mx="auto"
+          src={Logo}
+          alt="logo amda"
+          className="mb-8"
+        />
+      </Link>
       <form onSubmit={form.onSubmit((values) => void handleLogin(values))}>
         <LoadingOverlay
           visible={profileMutation.isLoading || loginMutation.isLoading}
