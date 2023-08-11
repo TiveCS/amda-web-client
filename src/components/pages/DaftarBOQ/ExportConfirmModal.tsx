@@ -16,12 +16,7 @@ import {
 import { isInRange, useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
 import { notifications, showNotification } from "@mantine/notifications";
-import {
-  IconAlertTriangle,
-  IconCheck,
-  IconCross,
-  IconX,
-} from "@tabler/icons-react";
+import { IconAlertTriangle, IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -132,7 +127,7 @@ export default function ExportConfirmModal({
           message:
             err.message ?? "Terjadi kesalahan saat mengekspor laporan BOQ",
           color: "red",
-          icon: <IconCross />,
+          icon: <IconX />,
         });
         return;
       }
