@@ -10,6 +10,10 @@ export function amdaDayJs() {
   return dayjs;
 }
 
+export function numberWithSeparator(num: number): string {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 export function formatTimeInput(hours: number, minutes: number) {
   if (hours < 0 || hours > 23) {
     throw new Error("Hours must be between 0 and 23");

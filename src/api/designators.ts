@@ -15,16 +15,19 @@ export async function getListDesignator({
   cursor,
   search,
   take = 10,
+  takeForTicket,
 }: {
   take?: number;
   cursor?: number;
   search?: string;
+  takeForTicket?: string;
 }) {
   const request = axiosAuthedApi.get<never>(`${DESIGNATOR_URL}`, {
     params: {
       take: take ? take : undefined,
       cursor: cursor ? cursor : undefined,
       search: search && search.trim().length > 0 ? search.trim() : undefined,
+      takeForTicket: takeForTicket ? takeForTicket : undefined,
     },
   });
 

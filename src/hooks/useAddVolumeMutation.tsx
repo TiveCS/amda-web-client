@@ -1,25 +1,25 @@
 import { LopTicket } from "@api/types/tickets";
 import { addVolumeToTicket } from "@api/volumes";
-import { showNotification } from "@mantine/notifications";
+import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo } from "react";
 import useVolumeDetailsForm from "./useVolumeDetailsForm";
 
 interface TicketVolumeDetailsModalProps {
   ticket: LopTicket | null;
   volumeDetailsForm: ReturnType<typeof useVolumeDetailsForm>;
-  setSelectedDesignator: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export default function useAddVolumeMutation({
-  setSelectedDesignator,
   ticket,
   volumeDetailsForm,
 }: TicketVolumeDetailsModalProps) {
+  const notificationId = useMemo(
+    () => `add-volume-details-${Math.random()}`,
+    []
+  );
   const queryClient = useQueryClient();
-
-  const [isMutating, setIsMutating] = useState(false);
 
   const addVolumeMutation = useMutation({
     mutationFn: async (designatorId: number) => {
@@ -27,54 +27,57 @@ export default function useAddVolumeMutation({
       return addVolumeToTicket(ticket.identifier, { designatorId });
     },
     onMutate: () => {
-      setIsMutating(true);
-      showNotification({
+      notifications.show({
+        id: notificationId,
         title: "Loading",
         message: "Sedang menambahkan volume",
         color: "blue",
-        loading: isMutating,
+        loading: true,
       });
     },
     onSuccess: async (result) => {
-      setSelectedDesignator(null);
-
       await queryClient.invalidateQueries(["tickets"]);
       await queryClient.invalidateQueries([
-        "ticket_volume_details_modal_designators",
+        "volume_designator_browser_designators",
       ]);
 
-      const newVolume = result?.data;
-      if (ticket !== null && newVolume !== undefined) {
-        volumeDetailsForm.addVolume(newVolume);
-        ticket.volumes.push(newVolume);
+      if (result?.data) {
+        volumeDetailsForm.addVolume(result?.data);
+        volumeDetailsForm.form.setDirty({ volumes: false });
       }
 
-      setIsMutating(false);
-      volumeDetailsForm.form.setDirty({ volumes: false });
-      showNotification({
+      notifications.update({
+        id: notificationId,
         title: "Success",
         message: "Berhasil menambahkan volume",
         color: "green",
+        loading: false,
         icon: <IconCheck />,
+        autoClose: 3000,
       });
     },
     onError: (error) => {
-      setIsMutating(false);
       volumeDetailsForm.form.setDirty({ volumes: false });
       if (error instanceof Error) {
-        showNotification({
+        notifications.update({
+          id: notificationId,
           title: "Error",
           message: error.message ?? "Gagal menambahkan volume",
           color: "red",
+          loading: false,
           icon: <IconX />,
+          autoClose: 3000,
         });
         return;
       }
-      showNotification({
+      notifications.update({
+        id: notificationId,
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
+        loading: false,
         icon: <IconX />,
+        autoClose: 3000,
       });
     },
   });

@@ -4,11 +4,20 @@ import {
   GetAllTicketLocationsResponse,
   GetAllTicketsResponse,
   GetTicketEvidencesResponse,
+  LopTicket,
   LopTicketAcceptanceStatus,
   LopTicketEvidenceStatus,
 } from "./types/tickets";
 import { NestResponse } from "./types/common";
 import { AxiosRequestConfig } from "axios";
+
+export async function getTicketByIdentifier(ticketIdentifier: string) {
+  const request = axiosAuthedApi.get<never>(
+    `${LOPS_TICKETS_URL}/${ticketIdentifier}`
+  );
+
+  return await apiRequest<NestResponse<LopTicket>>(request);
+}
 
 export async function getListTickets({
   cursor,

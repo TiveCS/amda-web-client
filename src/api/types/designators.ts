@@ -16,10 +16,8 @@ export type DesignatorForLop = {
   workDescription: string;
 };
 
-export type DesignatorWithCount = Designator & {
-  _count: {
-    volumes: number;
-  };
+export type DesignatorWithTicketVolumes = Designator & {
+  volumes?: DesignatorTicketVolume[];
 };
 
 export type DesignatorFormData = {
@@ -30,6 +28,11 @@ export type DesignatorFormData = {
   unit: string;
 };
 
+export type DesignatorTicketVolume = {
+  id: number;
+  value: number;
+};
+
 export type DesignatorPreviewImportData = {
   designator: string;
   workDescription: string;
@@ -38,7 +41,7 @@ export type DesignatorPreviewImportData = {
   pricePerUnit: number;
 };
 
-export type GetListDesignatorResponse = DesignatorWithCount[];
+export type GetListDesignatorResponse = DesignatorWithTicketVolumes[];
 
 export type PostImportDesignatorPreviewResponse = DesignatorPreviewImportData[];
 

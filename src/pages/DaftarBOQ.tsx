@@ -104,10 +104,23 @@ const DaftarBOQ: React.FC = () => {
   useEffect(() => {
     const refetch = async () => {
       await refetchListTicketQuery();
+
+      if (selectedTicket) {
+        setSelectedTicket(
+          listTicketQueryData?.pages
+            .flatMap((page) => page.data)
+            .find((ticket) => ticket.id === selectedTicket.id) || null
+        );
+      }
     };
 
     void refetch();
-  }, [refetchListTicketQuery, searchDebounced]);
+  }, [
+    listTicketQueryData?.pages,
+    refetchListTicketQuery,
+    searchDebounced,
+    selectedTicket,
+  ]);
 
   const [
     isVolumeDetailsModalOpen,
