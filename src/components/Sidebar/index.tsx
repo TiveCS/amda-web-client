@@ -31,7 +31,7 @@ export default function Sidebar() {
       }}
     >
       <div className="flex justify-center items-center py-8 flex-col gap-y-4 row-span-1">
-        <Link to={"/"}>
+        <Link to={"https://linktr.ee/AMDATelkomSolo"}>
           <Image
             maw={150}
             mx="auto"
