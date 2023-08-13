@@ -24,6 +24,7 @@ import { useProfileStore } from "@zustand/profileStore";
 import { useEffect, useMemo } from "react";
 import { RoleType } from "../../../types";
 import { IconCheck, IconX } from "@tabler/icons-react";
+import { getProfile } from "@api/auth";
 
 interface EditUserModalProps {
   user: UserResponsePayload | null;
@@ -42,7 +43,7 @@ export default function EditUserModal({
 }: EditUserModalProps) {
   const notificationId = useMemo(() => Math.random().toString(), []);
 
-  const { profile } = useProfileStore();
+  const { profile, setProfile } = useProfileStore();
   const role = profile?.role.slug as unknown as RoleType;
   const isAdminMitra = useMemo(() => {
     return role === "admin-mitra";
@@ -53,7 +54,7 @@ export default function EditUserModal({
     mutationFn: async () => {
       if (user === null) return;
 
-      return await editUser({
+      const editResult = await editUser({
         userId: user.id,
         payload: {
           name: editForm.values.name,
@@ -62,6 +63,13 @@ export default function EditUserModal({
           newPassword: editForm.values.password,
         },
       });
+
+      if (profile?.id === user.id) {
+        const updatedProfile = await getProfile();
+        setProfile(updatedProfile.data);
+      }
+
+      return editResult;
     },
     onMutate: () => {
       notifications.show({

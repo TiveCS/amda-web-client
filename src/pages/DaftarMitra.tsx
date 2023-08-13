@@ -186,6 +186,8 @@ const DaftarMitra: React.FC = () => {
             >
               <tr>
                 <th className="max-w-lg">Nama Mitra</th>
+                <th className="max-w-sm">Jumlah Users</th>
+                <th className="max-w-sm">Jumlah Kegiatan</th>
                 {!isAdminMitra && <th className="w-36">Action</th>}
               </tr>
             </thead>
