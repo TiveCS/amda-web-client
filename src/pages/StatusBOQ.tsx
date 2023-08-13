@@ -1,20 +1,21 @@
 import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
-import EvidenceReadOnly from "@components/pages/StatusBOQ/EvidenceReadOnly";
 import FilterDaftarBOQModal from "@components/pages/DaftarBOQ/FilterDaftarBOQModal";
+import TicketVolumeDetailsModal from "@components/pages/DaftarBOQ/TicketVolumeDetailsModal";
+import EvidenceReadOnly from "@components/pages/StatusBOQ/EvidenceReadOnly";
 import TableStatusBoqItem from "@components/pages/StatusBOQ/TableStatusBoqItem";
-import TicketVolumeDetailsReadOnlyModal from "@components/pages/StatusBOQ/TicketVolumeDetailsReadOnlyModal";
+import TicketStatusConfirmModal from "@components/pages/StatusBOQ/TicketStatusConfirmModal";
 import useFilterForm from "@hooks/useFilterForm";
 import useGetListTicketsQuery from "@hooks/useGetListTicketsQuery";
+import useTicketStatusMutation from "@hooks/useTicketStatusMutation";
+import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
+import useVolumeDetailsForm from "@hooks/useVolumeDetailsForm";
 import { Flex, Group, ScrollArea, Skeleton, Table, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { IconFilter } from "@tabler/icons-react";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar/SearchBar";
-import TicketStatusConfirmModal from "@components/pages/StatusBOQ/TicketStatusConfirmModal";
-import useTicketStatusUpdateForm from "@hooks/useTicketStatusUpdateForm";
-import useTicketStatusMutation from "@hooks/useTicketStatusMutation";
 
 const StatusBOQ: React.FC = () => {
   const searchForm = useForm({
@@ -25,6 +26,8 @@ const StatusBOQ: React.FC = () => {
   const filterForm = useFilterForm({});
 
   const [selectedTicket, setSelectedTicket] = useState<LopTicket | null>(null);
+
+  const volumeDetailsForm = useVolumeDetailsForm();
 
   const {
     refetchListTicketQuery,
@@ -113,11 +116,22 @@ const StatusBOQ: React.FC = () => {
         ticket={selectedTicket}
       />
 
-      <TicketVolumeDetailsReadOnlyModal
+      {/* <TicketVolumeDetailsReadOnlyModal
         isOpen={isOpenVolumeDetailsModal}
         onClose={closeVolumeDetailsModal}
         setSelectedTicket={setSelectedTicket}
         ticket={selectedTicket}
+      /> */}
+
+      <TicketVolumeDetailsModal
+        isOpen={isOpenVolumeDetailsModal}
+        hasCRUDAccess={false}
+        onClose={closeVolumeDetailsModal}
+        setSelectedTicket={setSelectedTicket}
+        selectedTicket={selectedTicket}
+        isAdminMitra={false}
+        isAdminTA={false}
+        volumeDetailsForm={volumeDetailsForm}
       />
 
       <p className="font-semibold text-xl mt-8 mx-4 text-black">Status BOQ</p>
@@ -171,6 +185,13 @@ const StatusBOQ: React.FC = () => {
                       }}
                       openDetailModal={() => {
                         setSelectedTicket(ticket);
+
+                        volumeDetailsForm.setVolumes(ticket.volumes);
+
+                        volumeDetailsForm.form.setDirty({
+                          volumes: false,
+                        });
+
                         openVolumeDetailsModal();
                       }}
                       openEvidenceDrawer={() => {
