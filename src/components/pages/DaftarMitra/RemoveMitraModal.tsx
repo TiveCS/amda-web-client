@@ -93,7 +93,11 @@ export default function RemoveMitraModal({
       <Text span className="font-semibold">
         {mitra?._count.users}
       </Text>
-      <Text span> users?</Text>
+      <Text span> users dan </Text>
+      <Text span className="font-medium">
+        {mitra?._count.activities}
+      </Text>
+      <Text span> kegiatan?</Text>
 
       <Text my={"md"}>
         Anda tidak dapat mengembalikan data mitra yang telah dihapus
