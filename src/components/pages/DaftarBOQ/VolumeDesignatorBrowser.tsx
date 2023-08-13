@@ -57,6 +57,7 @@ export default function VolumeDesignatorBrowser({
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
+  // TODO: STILL NOT WORKING (probably wrong event type)
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     // check if scroll reach bottom
     const isBottom =

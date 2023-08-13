@@ -49,16 +49,20 @@ export default function VolumeDesignatorBrowseItem({
                 </Highlight>
 
                 <Group spacing={"sm"}>
-                  {designator.isMaterial ? (
-                    <Badge color="green">Material</Badge>
-                  ) : (
-                    <Badge color="blue">Jasa</Badge>
-                  )}
+                  <Tooltip label="Jenis Designator" color="cyan">
+                    {designator.isMaterial ? (
+                      <Badge color="green">Material</Badge>
+                    ) : (
+                      <Badge color="blue">Jasa</Badge>
+                    )}
+                  </Tooltip>
 
-                  <Badge variant="light" color="orange" className="w-fit">
-                    {numberWithSeparator(designator.pricePerUnit)} /{" "}
-                    {designator.unit}
-                  </Badge>
+                  <Tooltip label="Harga / Satuan" color="orange">
+                    <Badge variant="light" color="orange" className="w-fit">
+                      {numberWithSeparator(designator.pricePerUnit)} /{" "}
+                      {designator.unit}
+                    </Badge>
+                  </Tooltip>
                 </Group>
               </Group>
 

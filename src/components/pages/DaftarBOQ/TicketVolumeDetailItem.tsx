@@ -6,7 +6,6 @@ import { IconInfoCircle } from "@tabler/icons-react";
 
 interface TicketVolumeDetailItemProps {
   volume: LopVolume;
-  index: number;
   isAllowEdit?: boolean;
   volumeDetailsForm: ReturnType<typeof useVolumeDetailsForm>;
   searchForm: UseFormReturnType<{ search: string }>;
@@ -16,7 +15,6 @@ export default function TicketVolumeDetailItem({
   isAllowEdit,
   volume,
   volumeDetailsForm,
-  index,
   searchForm,
 }: TicketVolumeDetailItemProps) {
   return (
@@ -49,7 +47,7 @@ export default function TicketVolumeDetailItem({
 
       <NumberInput
         min={1}
-        value={volumeDetailsForm.form.values.volumes[index]?.value}
+        value={volumeDetailsForm.form.values.volumes[volume.id]?.value}
         readOnly={!isAllowEdit}
         onChange={(value) => {
           if (value === "") return;

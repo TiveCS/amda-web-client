@@ -87,6 +87,7 @@ export default function TicketVolumeDetailsModal({
   const handleClose = () => {
     onClose();
     setSelectedTicket(null);
+    volumeDetailsForm.form.reset();
   };
 
   return (
@@ -140,7 +141,6 @@ export default function TicketVolumeDetailsModal({
                 {ticket?.volumes.map((volume, index) => (
                   <TicketVolumeDetailItem
                     key={index}
-                    index={index}
                     isAllowEdit={isAllowEdit}
                     volumeDetailsForm={volumeDetailsForm}
                     volume={volume}
@@ -160,10 +160,10 @@ export default function TicketVolumeDetailsModal({
               loading={updateVolumeMutation.isLoading}
               onClick={() => {
                 if (!volumeDetailsForm.form.isDirty("volumes")) {
-                  onClose();
+                  handleClose();
                   return;
                 }
-                updateVolumeMutation.mutate();
+                void updateVolumeMutation.mutateAsync();
               }}
             >
               {volumeDetailsForm.form.isDirty("volumes")

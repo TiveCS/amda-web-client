@@ -277,10 +277,9 @@ const DaftarBOQ: React.FC = () => {
                       }}
                       openModal={(ticket: LopTicket) => {
                         setSelectedTicket(ticket);
-                        volumeDetailsForm.form.setFieldValue(
-                          "volumes",
-                          ticket.volumes
-                        );
+
+                        volumeDetailsForm.setVolumes(ticket.volumes);
+
                         volumeDetailsForm.form.setDirty({
                           volumes: false,
                         });
