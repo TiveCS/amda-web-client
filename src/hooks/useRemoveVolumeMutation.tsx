@@ -1,9 +1,9 @@
 import { LopTicket } from "@api/types/tickets";
 import { deleteVolume } from "@api/volumes";
-import { showNotification } from "@mantine/notifications";
+import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo } from "react";
 import useVolumeDetailsForm from "./useVolumeDetailsForm";
 
 interface RemoveVolumeMutationHooksProps {
@@ -15,9 +15,11 @@ export default function useRemoveVolumeMutation({
   ticket,
   volumeDetailsForm,
 }: RemoveVolumeMutationHooksProps) {
+  const notificationId = useMemo(
+    () => `remove-volume-details-${Math.random()}`,
+    []
+  );
   const queryClient = useQueryClient();
-
-  const [isMutating, setIsMutating] = useState(false);
 
   const mutation = useMutation({
     mutationFn: async (volumeId: number) => {
@@ -27,52 +29,58 @@ export default function useRemoveVolumeMutation({
       return result;
     },
     onMutate: () => {
-      setIsMutating(true);
-      showNotification({
+      notifications.show({
+        id: notificationId,
         title: "Loading",
         message: "Sedang menghapus volume",
         color: "blue",
-        loading: isMutating,
+        loading: true,
+        withCloseButton: false,
       });
     },
     onSuccess: async (result) => {
       await queryClient.invalidateQueries(["tickets"]);
       await queryClient.invalidateQueries([
-        "ticket_volume_details_modal_designators",
+        "volume_designator_browser_designators",
       ]);
 
       if (ticket !== null) {
         volumeDetailsForm.removeVolume(result.data.id);
-        ticket.volumes = ticket.volumes.filter(
-          (volume) => volume.id !== result.data.id
-        );
+        volumeDetailsForm.form.setDirty({ volumes: false });
       }
 
-      setIsMutating(false);
-      volumeDetailsForm.form.setDirty({ volumes: false });
-      showNotification({
+      notifications.update({
+        id: notificationId,
         title: "Success",
         message: "Berhasil menghapus volume",
         color: "green",
+        autoClose: 3000,
+        loading: false,
         icon: <IconCheck />,
       });
     },
     onError: (error) => {
-      setIsMutating(false);
       volumeDetailsForm.form.setDirty({ volumes: false });
       if (error instanceof Error) {
-        showNotification({
+        notifications.update({
+          id: notificationId,
           title: "Error",
           message: error.message ?? "Gagal menghapus volume",
           color: "red",
+          loading: false,
+          autoClose: 3000,
           icon: <IconX />,
         });
         return;
       }
-      showNotification({
+
+      notifications.update({
+        id: notificationId,
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
+        loading: false,
+        autoClose: 3000,
         icon: <IconX />,
       });
     },

@@ -5,6 +5,7 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import useVolumeDetailsForm from "./useVolumeDetailsForm";
+import { LopVolume } from "@api/types/volumes";
 
 interface UpdateVolumeMutationHooksProps {
   ticket: LopTicket | null;
@@ -23,8 +24,17 @@ export default function useUpdateVolumeMutation({
     mutationFn: async () => {
       if (!ticket) throw new Error("Ticket is null");
 
+      const volumesKeys = Object.keys(volumeDetailsForm.form.values.volumes);
+
+      const volumes: LopVolume[] = [];
+
+      volumesKeys.forEach((key) => {
+        const volume = volumeDetailsForm.form.values.volumes[Number(key)];
+        volumes.push(volume);
+      });
+
       return Promise.all(
-        volumeDetailsForm.form.values.volumes.map((volume) => {
+        volumes.map((volume) => {
           return updateVolume(ticket.identifier, volume.id, {
             value: volume.value,
           });

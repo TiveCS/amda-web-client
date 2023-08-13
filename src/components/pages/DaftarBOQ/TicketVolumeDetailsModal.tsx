@@ -1,4 +1,3 @@
-import { getListDesignator } from "@api/designators";
 import { LopTicket } from "@api/types/tickets";
 import ButtonAMDA from "@components/ButtonAMDA";
 import useAddVolumeMutation from "@hooks/useAddVolumeMutation";
@@ -6,23 +5,22 @@ import useRemoveVolumeMutation from "@hooks/useRemoveVolumeMutation";
 import useUpdateVolumeMutation from "@hooks/useUpdateVolumeMutation";
 import useVolumeDetailsForm from "@hooks/useVolumeDetailsForm";
 import {
-  ActionIcon,
   Alert,
-  Flex,
+  Card,
+  Grid,
+  Group,
   LoadingOverlay,
   Modal,
-  NumberInput,
   ScrollArea,
-  Select,
   Stack,
   Text,
-  TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDebouncedValue } from "@mantine/hooks";
-import { IconTrash } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import TicketVolumeDetailInput from "./TicketVolumeDetailInput";
+import TicketVolumeDetailItem from "./TicketVolumeDetailItem";
+import TicketVolumeDesignatorBrowser from "./VolumeDesignatorBrowser";
 
 interface TicketVolumeDetailsModalProps {
   selectedTicket: LopTicket | null;
@@ -71,40 +69,7 @@ export default function TicketVolumeDetailsModal({
     return isCanEdit;
   }, [isAdminMitra, isAdminTA, isCanEdit, isMitraCanEdit, isTACanEdit]);
 
-  const [selectedDesignator, setSelectedDesignator] = useState<string | null>(
-    null
-  );
-
-  const { refetch: refetchListDesignatorQuery, ...getListDesignatorsQuery } =
-    useQuery({
-      queryKey: ["ticket_volume_details_modal_designators"],
-      queryFn: async () => {
-        const result = await getListDesignator({
-          search: searchDebounced,
-        });
-
-        const isTicketNull = ticket === null;
-
-        const list = result.data.map((designator) => {
-          const isDesignatorExists =
-            !isTicketNull &&
-            volumeDetailsForm.form.values.volumes.some(
-              (volume) => volume.designator.id === designator.id
-            );
-
-          return {
-            value: designator.id.toString(),
-            label: designator.name,
-            disabled: isDesignatorExists,
-          };
-        });
-
-        return list;
-      },
-    });
-
   const addVolumeMutation = useAddVolumeMutation({
-    setSelectedDesignator,
     ticket,
     volumeDetailsForm,
   });
@@ -119,153 +84,95 @@ export default function TicketVolumeDetailsModal({
     volumeDetailsForm,
   });
 
-  useEffect(() => {
-    if (!isOpen) return;
-    void refetchListDesignatorQuery();
-  }, [isOpen, refetchListDesignatorQuery]);
-
-  useEffect(() => {
-    void refetchListDesignatorQuery();
-  }, [searchDebounced, refetchListDesignatorQuery]);
+  const handleClose = () => {
+    onClose();
+    setSelectedTicket(null);
+    volumeDetailsForm.form.reset();
+  };
 
   return (
     <Modal
       opened={isOpen}
-      onClose={() => {
-        onClose();
-        setSelectedTicket(null);
-      }}
+      onClose={handleClose}
       title={`Detail ${ticket?.identifier ?? "Tiket"}`}
-      scrollAreaComponent={ScrollArea.Autosize}
+      padding={"xl"}
+      size={"calc(100vw - 4rem)"}
       closeOnClickOutside={false}
-      size={"md"}
     >
-      <Stack spacing={"md"}>
-        <Flex direction={"column"} gap={"sm"}>
-          <TextInput
-            label="ID Tiket"
-            defaultValue={ticket?.identifier}
-            readOnly
-          />
-          <TextInput
-            label="Lokasi Tiket"
-            defaultValue={ticket?.location}
-            readOnly
-          />
-        </Flex>
+      <LoadingOverlay
+        visible={
+          updateVolumeMutation.isLoading ||
+          addVolumeMutation.isLoading ||
+          removeVolumeMutation.isLoading
+        }
+      />
 
-        {isAllowEdit && (
-          <Flex direction={"column"}>
-            <Select
-              label="Designator"
-              searchable
-              clearable
-              placeholder="Cari designator"
-              data={getListDesignatorsQuery.data ?? []}
-              maxDropdownHeight={192}
-              dropdownPosition="bottom"
-              value={selectedDesignator}
-              disabled={addVolumeMutation.isLoading}
-              nothingFound="Designator tidak ditemukan"
-              onSearchChange={(value) =>
-                searchForm.setFieldValue("search", value)
-              }
-              onChange={(value) => {
-                if (value === null) return;
-                const designatorId = parseInt(value);
-                setSelectedDesignator(value);
-                addVolumeMutation.mutate(designatorId);
+      <Grid columns={12} h={"calc(100vh - 12rem)"}>
+        <Grid.Col span={7} className="max-h-[80%]">
+          <TicketVolumeDesignatorBrowser
+            ticket={ticket}
+            isAllowEdit={isAllowEdit}
+            searchForm={searchForm}
+            searchDebounced={searchDebounced}
+            addVolumeMutation={addVolumeMutation}
+            removeVolumeMutation={removeVolumeMutation}
+          />
+        </Grid.Col>
+
+        <Grid.Col span={5}>
+          <TicketVolumeDetailInput ticket={ticket} />
+
+          <Text className="font-medium mt-4">Daftar Volume</Text>
+
+          <ScrollArea.Autosize
+            offsetScrollbars
+            className="max-h-64 mx-auto w-full"
+          >
+            <Card withBorder>
+              <Stack spacing={"md"}>
+                {ticket?.volumes.length === 0 && (
+                  <Alert color="pink" title="Volume Kosong" variant="outline">
+                    <Text>
+                      Belum ada volume yang ditambahkan pada tiket ini
+                    </Text>
+                  </Alert>
+                )}
+
+                {ticket?.volumes.map((volume, index) => (
+                  <TicketVolumeDetailItem
+                    key={index}
+                    isAllowEdit={isAllowEdit}
+                    volumeDetailsForm={volumeDetailsForm}
+                    volume={volume}
+                    searchForm={searchForm}
+                  />
+                ))}
+              </Stack>
+            </Card>
+          </ScrollArea.Autosize>
+
+          <Group grow spacing={"lg"} className="mt-8">
+            <ButtonAMDA variant="white" onClick={handleClose}>
+              Batal
+            </ButtonAMDA>
+
+            <ButtonAMDA
+              loading={updateVolumeMutation.isLoading}
+              onClick={() => {
+                if (!volumeDetailsForm.form.isDirty("volumes")) {
+                  handleClose();
+                  return;
+                }
+                void updateVolumeMutation.mutateAsync();
               }}
-            />
-          </Flex>
-        )}
-
-        <ScrollArea.Autosize
-          offsetScrollbars
-          className="max-h-96 mx-auto w-full px-1 mt-2"
-        >
-          <LoadingOverlay
-            visible={
-              updateVolumeMutation.isLoading ||
-              addVolumeMutation.isLoading ||
-              removeVolumeMutation.isLoading
-            }
-          />
-
-          <Stack spacing={"md"}>
-            {ticket?.volumes.length === 0 && (
-              <Alert color="pink" title="Volume Kosong" variant="outline">
-                <Text>Belum ada volume yang ditambahkan pada tiket ini</Text>
-              </Alert>
-            )}
-
-            {ticket?.volumes.map((volume, index) => (
-              <Flex
-                direction={"row"}
-                align={"center"}
-                justify={"space-between"}
-                key={index}
-              >
-                <Flex
-                  align={"center"}
-                  justify={"space-between"}
-                  gap={"lg"}
-                  direction={"row"}
-                >
-                  {isAllowEdit && (
-                    <ActionIcon
-                      color="red"
-                      onClick={() => removeVolumeMutation.mutate(volume.id)}
-                    >
-                      <IconTrash size={16} />
-                    </ActionIcon>
-                  )}
-
-                  <Text className="font-medium">{volume.designator.name}</Text>
-                </Flex>
-
-                <NumberInput
-                  min={1}
-                  value={volumeDetailsForm.form.values.volumes[index]?.value}
-                  readOnly={!isAllowEdit}
-                  onChange={(value) => {
-                    if (value === "") return;
-
-                    const newVolume = { ...volume, value };
-                    volumeDetailsForm.updateVolume(newVolume);
-                  }}
-                />
-              </Flex>
-            ))}
-          </Stack>
-        </ScrollArea.Autosize>
-
-        <Flex direction={"column"} gap={"xl"} className="mt-1">
-          <ButtonAMDA
-            loading={updateVolumeMutation.isLoading}
-            onClick={() => {
-              if (!volumeDetailsForm.form.isDirty("volumes")) {
-                onClose();
-                return;
-              }
-              updateVolumeMutation.mutate();
-            }}
-          >
-            {volumeDetailsForm.form.isDirty("volumes")
-              ? "Simpan Perubahan"
-              : "Tutup"}
-          </ButtonAMDA>
-          <ButtonAMDA
-            variant="white"
-            onClick={() => {
-              onClose();
-              setSelectedTicket(null);
-            }}
-          >
-            Batal
-          </ButtonAMDA>
-        </Flex>
-      </Stack>
+            >
+              {volumeDetailsForm.form.isDirty("volumes")
+                ? "Simpan Perubahan"
+                : "Tutup"}
+            </ButtonAMDA>
+          </Group>
+        </Grid.Col>
+      </Grid>
     </Modal>
   );
 }
