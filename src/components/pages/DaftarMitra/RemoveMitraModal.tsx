@@ -86,8 +86,21 @@ export default function RemoveMitraModal({
       centered
     >
       <Text>Apakah anda yakin ingin menghapus mitra</Text>
-      <Text mb={32} className="font-semibold">
-        "{mitra?.name}"
+      <Text span className="font-semibold">
+        "{mitra?.name}"{" "}
+      </Text>
+      <Text span> beserta data </Text>
+      <Text span className="font-semibold">
+        {mitra?._count.users}
+      </Text>
+      <Text span> users dan </Text>
+      <Text span className="font-medium">
+        {mitra?._count.activities}
+      </Text>
+      <Text span> kegiatan?</Text>
+
+      <Text my={"md"}>
+        Anda tidak dapat mengembalikan data mitra yang telah dihapus
       </Text>
 
       <Flex direction={"row-reverse"} gap={32}>

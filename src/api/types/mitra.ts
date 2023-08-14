@@ -2,6 +2,10 @@ export type MitraResponsePayload = {
   id: number;
   name: string;
   slug: string;
+  _count: {
+    users: number;
+    activities: number;
+  };
 };
 
 export type GetMitraResponse = MitraResponsePayload[];

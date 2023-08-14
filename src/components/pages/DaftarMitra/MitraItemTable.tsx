@@ -1,7 +1,8 @@
 import { MitraResponsePayload } from "@api/types/mitra";
-import { Flex, Tooltip } from "@mantine/core";
+import { ActionIcon, Flex, Tooltip } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { useProfileStore } from "@zustand/profileStore";
 
 interface MitraItemTableProps {
   mitra: MitraResponsePayload;
@@ -33,30 +34,40 @@ export default function MitraItemTable({
   openEditMitraModal,
   isAdminMitra,
 }: MitraItemTableProps) {
+  const { profile } = useProfileStore();
+
   return (
     <tr>
       <td>{mitra.name}</td>
+      <td>{mitra._count.users}</td>
+      <td>{mitra._count.activities}</td>
       {!isAdminMitra && (
         <td>
           <Flex gap="xl" justify="center" align="center" direction="row">
             <Tooltip label={"Edit Mitra"}>
-              <IconEdit
+              <ActionIcon
+                color="dark"
+                variant="transparent"
                 onClick={() => {
                   setEditMitra(mitra);
                   editMitraForm.setValues({ nama: mitra.name });
                   openEditMitraModal();
                 }}
-                className="w-5 h-5 group-hover:text-sky-800 hover:cursor-pointer"
-              />
+              >
+                <IconEdit className="w-5 h-5" />
+              </ActionIcon>
             </Tooltip>
-            <Tooltip label={"Remove Mitra"}>
-              <IconTrash
+            <Tooltip label={"Remove Mitra"} color="red">
+              <ActionIcon
+                color="red"
+                disabled={profile?.mitra.id === mitra.id}
                 onClick={() => {
                   setRemoveMitra(mitra);
                   openRemoveMitraModal();
                 }}
-                className="w-5 h-5 group-hover:text-sky-800 hover:cursor-pointer"
-              />
+              >
+                <IconTrash className="w-5 h-5" />
+              </ActionIcon>
             </Tooltip>
           </Flex>
         </td>

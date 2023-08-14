@@ -3,6 +3,7 @@ import { StoResponsePayload } from "@api/types/sto";
 import ButtonAMDA from "@components/ButtonAMDA";
 import { Flex, Modal, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface RemoveStoModalProps {
@@ -37,6 +38,7 @@ export default function RemoveStoModal({
           title: "Error",
           message: error.message ?? "Gagal menghapus STO",
           color: "red",
+          icon: <IconX />,
         });
         return;
       }
@@ -45,6 +47,7 @@ export default function RemoveStoModal({
         title: "Error",
         message: "Terjadi kesalahan internal",
         color: "red",
+        icon: <IconX />,
       });
     },
     onSuccess: async () => {
@@ -53,6 +56,7 @@ export default function RemoveStoModal({
         title: "Success",
         message: "STO berhasil dihapus",
         color: "green",
+        icon: <IconCheck />,
       });
       closeModal();
     },
@@ -85,7 +89,15 @@ export default function RemoveStoModal({
     >
       <Text>Apakah anda yakin ingin menghapus STO</Text>
       <Text mb={32} className="font-semibold">
-        "{sto?.name}"
+        "{sto?.name}"{" "}
+        <Text span className="font-normal">
+          {" "}
+          beserta{" "}
+          <Text span className="font-medium">
+            {sto?._count.activities}
+          </Text>{" "}
+          kegiatan?
+        </Text>
       </Text>
 
       <Flex direction={"row-reverse"} gap={32}>

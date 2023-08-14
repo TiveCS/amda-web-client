@@ -181,6 +181,7 @@ const DaftarSto: React.FC = () => {
             >
               <tr>
                 <th className="max-w-lg">Nama STO</th>
+                <th className="max-w-sm">Jumlah Kegiatan</th>
                 {isAllowCRUD && <th className="w-40">Action</th>}
               </tr>
             </thead>

@@ -32,6 +32,7 @@ export default function StoItemTable({
   return (
     <tr>
       <td>{sto.name}</td>
+      <td>{sto._count.activities}</td>
       {hasCRUDAccess && (
         <td>
           <Flex gap="xl" justify="center" align="center" direction="row">
