@@ -103,26 +103,6 @@ export default function Sidebar() {
               },
             ]}
           />
-          <Accordion
-            text="Alat Produksi"
-            items={[
-              {
-                title: "ODC",
-                to: "/kordinat/odc",
-                allow: ["admin-ta", "ta-maintenance"],
-              },
-              {
-                title: "ODP",
-                to: "/kordinat/odp",
-                allow: ["admin-ta", "ta-maintenance"],
-              },
-              {
-                title: "OCC",
-                to: "/kordinat/occ",
-                allow: ["admin-ta", "ta-maintenance"],
-              },
-            ]}
-          />
         </div>
       </div>
 
