@@ -22,12 +22,10 @@ export async function addUser(payload: AddUserPayload) {
 export async function getListUser({
   cursor,
   limit,
-  page,
   search,
   mitraId,
   countOnly,
 }: {
-  page?: number;
   limit?: number;
   cursor?: number;
   search?: string;
@@ -36,7 +34,6 @@ export async function getListUser({
 }) {
   const request = axiosAuthedApi.get<never>(MANAGEMENT_USERS_URL, {
     params: {
-      page: page ?? 1,
       limit: limit ?? undefined,
       cursor: cursor ?? undefined,
       search: search && search?.trim().length > 0 ? search?.trim() : undefined,
