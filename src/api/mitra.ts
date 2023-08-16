@@ -20,11 +20,13 @@ export async function getListMitra({
   limit,
   search,
   mitraId,
+  countOnly,
 }: {
   limit?: number;
   cursor?: number;
   search?: string;
   mitraId?: number;
+  countOnly?: boolean;
 }) {
   const request = axiosAuthedApi.get<never>(MANAGEMENT_MITRA_URL, {
     params: {
@@ -32,6 +34,7 @@ export async function getListMitra({
       cursor,
       search: search && search?.trim().length > 0 ? search?.trim() : undefined,
       mitraId: mitraId ?? undefined,
+      countOnly: countOnly ?? undefined,
     },
   });
 

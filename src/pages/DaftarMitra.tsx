@@ -200,8 +200,8 @@ const DaftarMitra: React.FC = () => {
                 </tr>
               )}
 
-              {getListMitraQuery.data?.pages.map((group, i) => (
-                <React.Fragment key={i}>
+              {getListMitraQuery.data?.pages.map((group) => (
+                <React.Fragment key={group.nextCursor ?? 0}>
                   {group.data.map((mitra) => (
                     <MitraItemTable
                       key={mitra.id}

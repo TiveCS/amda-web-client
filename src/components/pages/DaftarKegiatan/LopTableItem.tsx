@@ -1,6 +1,7 @@
 import { Lop, LopActivity } from "@api/types/lops";
 import { Box, Checkbox, HoverCard, Text, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
+import { amdaDayJs } from "src/utils";
 
 interface LopTableItemProps {
   lop: Lop;
@@ -51,21 +52,20 @@ export default function LopTableItem({
         )}
       </tr>
 
-      {activities &&
-        activities.map((activity, i) => {
-          if (i === 0) return null;
+      {activities?.map((activity, i) => {
+        if (i === 0) return null;
 
-          return (
-            <tr key={i}>
-              <LopTableContent
-                activity={activity}
-                isSelected={selectedActivities.includes(activity)}
-                setSelectedActivities={setSelectedActivities}
-                isAllowedEdit={isAllowEdit}
-              />
-            </tr>
-          );
-        })}
+        return (
+          <tr key={activity.id}>
+            <LopTableContent
+              activity={activity}
+              isSelected={selectedActivities.includes(activity)}
+              setSelectedActivities={setSelectedActivities}
+              isAllowedEdit={isAllowEdit}
+            />
+          </tr>
+        );
+      })}
     </>
   );
 }
@@ -102,6 +102,7 @@ const LopTableEmptyContent: React.FC<{
       <td className="text-gray-400">-</td>
       <td className="text-gray-400">-</td>
       <td className="text-gray-400">-</td>
+      <td className="text-gray-400">-</td>
     </>
   );
 };
@@ -117,6 +118,9 @@ const LopTableContent: React.FC<{
   isSelected = false,
   isAllowedEdit,
 }) => {
+  const dayjs = amdaDayJs();
+  const inputAt = dayjs(activity.inputAt).local();
+
   return (
     <>
       <td>
@@ -129,12 +133,10 @@ const LopTableContent: React.FC<{
           onChange={(e) => {
             if (e.currentTarget.checked) {
               setSelectedActivities((prev) => [...prev, activity]);
-              return;
             } else {
               setSelectedActivities((prev) =>
                 prev.filter((id) => id !== activity)
               );
-              return;
             }
           }}
         ></Checkbox>
@@ -168,6 +170,7 @@ const LopTableContent: React.FC<{
         )}
       </td>
       <td>{activity.ticket.identifier}</td>
+      <td>{inputAt.format("DD/MM/YYYY - HH:mm")}</td>
       <td>{activity.ticket.location}</td>
       <td>{activity.mitra.name}</td>
     </>

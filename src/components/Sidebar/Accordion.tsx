@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
-import SidebarNav from "./SidebarNav";
+import { useProfileStore } from "@zustand/profileStore";
+import { useMemo } from "react";
 import { RoleType } from "../../types";
 import { checkRoleAllowed } from "../../utils";
-import { useProfileStore } from "@zustand/profileStore";
+import SidebarNav from "./SidebarNav";
 
 export type AccordionItem = {
   title: string;
@@ -14,23 +14,20 @@ export type AccordionItem = {
 interface AccordionProps {
   items: AccordionItem[];
   text: string;
+  isOpen: boolean;
+  onOpen: () => void;
 }
 
 export default function Accordion(props: AccordionProps) {
-  const isMatch = props.items.some((item) => {
-    return window.location.pathname === item.to;
-  });
-  const [open, setOpen] = useState(isMatch);
-
   const { profile } = useProfileStore();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setOpen(!open);
+    props.onOpen();
   };
 
   const items = useMemo(() => {
-    return props.items.map((item, index) => {
+    return props.items.map((item) => {
       const isAllowed = checkRoleAllowed(
         profile?.role.slug as unknown as RoleType,
         {
@@ -42,7 +39,7 @@ export default function Accordion(props: AccordionProps) {
       if (!isAllowed) return null;
 
       return (
-        <SidebarNav key={index} to={item.to}>
+        <SidebarNav key={item.title} to={item.to}>
           {item.title}
         </SidebarNav>
       );
@@ -68,7 +65,7 @@ export default function Accordion(props: AccordionProps) {
         {props.text}
       </button>
 
-      {open && (
+      {props.isOpen && (
         <div
           id="accordion-content"
           className="relative ml-4 mt-4 w-full flex flex-col gap-y-2"

@@ -191,8 +191,8 @@ const DaftarUser: React.FC = () => {
                 </tr>
               )}
 
-              {getListUserQuery.data?.pages.map((group, i) => (
-                <React.Fragment key={i}>
+              {getListUserQuery.data?.pages.map((group) => (
+                <React.Fragment key={group.nextCursor ?? 0}>
                   {group.data.map((user) => (
                     <UserItemTable
                       key={user.id}

@@ -25,20 +25,23 @@ export async function getListUser({
   page,
   search,
   mitraId,
+  countOnly,
 }: {
   page?: number;
   limit?: number;
   cursor?: number;
   search?: string;
   mitraId?: number;
+  countOnly?: boolean;
 }) {
   const request = axiosAuthedApi.get<never>(MANAGEMENT_USERS_URL, {
     params: {
-      page: page || 1,
-      limit: limit ? limit : undefined,
-      cursor: cursor ? cursor : undefined,
+      page: page ?? 1,
+      limit: limit ?? undefined,
+      cursor: cursor ?? undefined,
       search: search && search?.trim().length > 0 ? search?.trim() : undefined,
-      mitraId: mitraId ? mitraId : undefined,
+      mitraId: mitraId ?? undefined,
+      countOnly: countOnly ?? undefined,
     },
   });
 

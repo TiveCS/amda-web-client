@@ -6,9 +6,16 @@ import Logo from "/assets/img/amda-putih.png";
 import { Image } from "@mantine/core";
 import { RoleType } from "../../types";
 import { checkRoleAllowed } from "../../utils";
+import { useState } from "react";
+
+type SidebarOpenSection = "management" | "boq";
 
 export default function Sidebar() {
   const { profile } = useProfileStore();
+
+  const [openSection, setOpenSection] = useState<
+    SidebarOpenSection | undefined
+  >();
 
   if (!profile) {
     return <p>Loading...</p>;
@@ -52,6 +59,8 @@ export default function Sidebar() {
           <SidebarNav to={"/"}>Dashboard</SidebarNav>
           <Accordion
             text="Management"
+            isOpen={openSection === "management"}
+            onOpen={() => setOpenSection("management")}
             items={[
               {
                 title: "Users",
@@ -77,6 +86,8 @@ export default function Sidebar() {
 
           <Accordion
             text="BOQ"
+            isOpen={openSection === "boq"}
+            onOpen={() => setOpenSection("boq")}
             items={[
               {
                 title: "Kegiatan Mitra",

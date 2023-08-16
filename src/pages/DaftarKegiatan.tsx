@@ -270,6 +270,7 @@ const DaftarKegiatan: React.FC = () => {
                 <th className="w-24">Jenis Pekerjaan</th>
                 <th className="w-48">Uraian Pekerjaan</th>
                 <th>No Tiket</th>
+                <th>Tanggal Input</th>
                 <th>Lokasi Tiket</th>
                 <th>Mitra</th>
               </tr>
@@ -283,8 +284,8 @@ const DaftarKegiatan: React.FC = () => {
                 </tr>
               )}
 
-              {getListLopQuery.data?.pages.map((group, i) => (
-                <React.Fragment key={i}>
+              {getListLopQuery.data?.pages.map((group) => (
+                <React.Fragment key={group.nextCursor ?? 0}>
                   {group.lops.map((lop) => (
                     <LopTableItem
                       key={lop.id}
