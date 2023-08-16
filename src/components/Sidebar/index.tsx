@@ -60,7 +60,10 @@ export default function Sidebar() {
           <Accordion
             text="Management"
             isOpen={openSection === "management"}
-            onOpen={() => setOpenSection("management")}
+            onOpen={() => {
+              if (openSection === "management") setOpenSection(undefined);
+              else setOpenSection("management");
+            }}
             items={[
               {
                 title: "Users",
@@ -87,7 +90,10 @@ export default function Sidebar() {
           <Accordion
             text="BOQ"
             isOpen={openSection === "boq"}
-            onOpen={() => setOpenSection("boq")}
+            onOpen={() => {
+              if (openSection === "boq") setOpenSection(undefined);
+              else setOpenSection("boq");
+            }}
             items={[
               {
                 title: "Kegiatan Mitra",
