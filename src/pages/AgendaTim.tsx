@@ -97,11 +97,15 @@ const AgendaTim: React.FC = () => {
     queryFn: async () => {
       if (selected === null) throw new Error("selected kosong");
 
-      const selectedUtc = dayjs(selected).utc().toDate();
+      const selectedUtc = dayjs()
+        .utc()
+        .date(selected.getDate())
+        .month(selected.getMonth())
+        .year(selected.getFullYear());
 
       const cek = await getListAgenda({
         limit: 5,
-        time: selectedUtc,
+        time: selectedUtc.toDate(),
       });
       return cek;
     },

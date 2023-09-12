@@ -4,6 +4,7 @@ import { NestResponse } from "./types/common";
 import {
   AddMitraPayload,
   AddMitraResponse,
+  GetMitraCountsResponse,
   GetMitraResponse,
 } from "./types/mitra";
 
@@ -13,6 +14,16 @@ export async function addMitra(payload: AddMitraPayload) {
   });
 
   return await apiRequest<NestResponse<AddMitraResponse>>(request);
+}
+
+export async function getMitraCounts() {
+  const request = axiosAuthedApi.get<never>(MANAGEMENT_MITRA_URL, {
+    params: {
+      countOnly: true,
+    },
+  });
+
+  return await apiRequest<NestResponse<GetMitraCountsResponse>>(request);
 }
 
 export async function getListMitra({

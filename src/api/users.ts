@@ -4,6 +4,7 @@ import { NestResponse } from "./types/common";
 import {
   AddUserPayload,
   AddUserResponse,
+  GetUserCountsResponse,
   GetUserResponse,
 } from "./types/users";
 
@@ -17,6 +18,17 @@ export async function addUser(payload: AddUserPayload) {
   });
 
   return await apiRequest<NestResponse<AddUserResponse>>(request);
+}
+
+export async function getUserCounts({ mitraId }: { mitraId?: number }) {
+  const request = axiosAuthedApi.get<never>(MANAGEMENT_USERS_URL, {
+    params: {
+      mitraId: mitraId ?? undefined,
+      countOnly: true,
+    },
+  });
+
+  return await apiRequest<NestResponse<GetUserCountsResponse>>(request);
 }
 
 export async function getListUser({

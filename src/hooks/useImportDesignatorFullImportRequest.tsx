@@ -30,8 +30,6 @@ export default function useImportDesignatorFullImportRequest({
 
         const res = await getDesignatorImportStatus(jobId);
 
-        console.log(res.data);
-
         if (res.data.failedReason) {
           throw new Error(res.data.failedReason);
         }
@@ -58,8 +56,6 @@ export default function useImportDesignatorFullImportRequest({
 
   useEffect(() => {
     if (!jobId) return;
-
-    console.log("job", jobId);
 
     void refetchRequestFullImportQuery();
   }, [jobId, refetchRequestFullImportQuery]);
