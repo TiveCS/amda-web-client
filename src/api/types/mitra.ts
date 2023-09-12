@@ -10,6 +10,8 @@ export type MitraResponsePayload = {
 
 export type GetMitraResponse = MitraResponsePayload[];
 
+export type GetMitraCountsResponse = { _count: number };
+
 export type AddMitraPayload = {
   name: string;
 };

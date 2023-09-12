@@ -1,10 +1,10 @@
-import { getListMitra } from "@api/mitra";
-import { getListUser } from "@api/users";
+import { getMitraCounts } from "@api/mitra";
+import { getTicketCounts } from "@api/tickets";
+import { getUserCounts } from "@api/users";
 import { Badge, Card, Flex, Group, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { getListTickets } from "@api/tickets";
-import { useMemo } from "react";
 import { useProfileStore } from "@zustand/profileStore";
+import { useMemo } from "react";
 import { RoleType } from "../types";
 import { checkRoleAllowed } from "../utils";
 
@@ -28,14 +28,14 @@ function Dashboard() {
   const getListUserQuery = useQuery({
     enabled: isAllowShowUser,
     queryKey: ["list_user_dashboard"],
-    queryFn: async () => getListUser({ limit: 30 }),
+    queryFn: async () => getUserCounts({}),
   });
 
   // List Mitra
   const getListMitraQuery = useQuery({
     enabled: isAllowShowUser,
     queryKey: ["list_mitra_dashboard"],
-    queryFn: async () => getListMitra({ limit: 20 }),
+    queryFn: async () => getMitraCounts(),
   });
 
   // List Tiket
@@ -43,28 +43,10 @@ function Dashboard() {
     enabled: isAllowShowTicket,
     queryKey: ["list_tiket_dashboard"],
     queryFn: async () => {
-      const result = await getListTickets({ take: 50 });
+      const result = await getTicketCounts();
       return result;
     },
   });
-
-  const ticketAccepted = useMemo(() => {
-    return getListTicketQuery.data?.data.filter(
-      (r) => r.acceptStatus === "ACCEPTED"
-    );
-  }, [getListTicketQuery.data]);
-
-  const ticketRejected = useMemo(() => {
-    return getListTicketQuery.data?.data.filter(
-      (r) => r.acceptStatus === "REJECTED"
-    );
-  }, [getListTicketQuery.data]);
-
-  const ticketPending = useMemo(() => {
-    return getListTicketQuery.data?.data.filter(
-      (r) => r.acceptStatus === "PENDING"
-    );
-  }, [getListTicketQuery.data]);
 
   return (
     <div>
@@ -88,7 +70,7 @@ function Dashboard() {
                   variant="light"
                   className="font-poppins text-base"
                 >
-                  {getListUserQuery.data?.data.length}
+                  {getListUserQuery.data?.data._count}
                 </Badge>
               </Group>
             </Card>
@@ -103,7 +85,7 @@ function Dashboard() {
                   variant="light"
                   className="font-poppins text-base"
                 >
-                  {getListMitraQuery.data?.data.length}
+                  {getListMitraQuery.data?.data._count}
                 </Badge>
               </Group>
             </Card>
@@ -121,7 +103,7 @@ function Dashboard() {
                 variant="light"
                 className="font-poppins text-base"
               >
-                {getListTicketQuery.data?.data.length}
+                {getListTicketQuery.data?.data.total}
               </Badge>
             </Group>
             <Group position="apart" mt="bs" mb="bs">
@@ -133,7 +115,7 @@ function Dashboard() {
                 variant="light"
                 className="font-poppins text-sm"
               >
-                {ticketAccepted !== undefined ? ticketAccepted.length : "??"}
+                {getListTicketQuery.data?.data.accepted}
               </Badge>
             </Group>
             <Group position="apart" mt="bs" mb="bs">
@@ -145,7 +127,7 @@ function Dashboard() {
                 variant="light"
                 className="font-poppins text-sm"
               >
-                {ticketRejected !== undefined ? ticketRejected.length : "??"}
+                {getListTicketQuery.data?.data.rejected}
               </Badge>
             </Group>
             <Group position="apart" mt="bs" mb="bs">
@@ -157,7 +139,7 @@ function Dashboard() {
                 variant="light"
                 className="font-poppins text-sm"
               >
-                {ticketPending !== undefined ? ticketPending.length : "??"}
+                {getListTicketQuery.data?.data.pending}
               </Badge>
             </Group>
           </Card>

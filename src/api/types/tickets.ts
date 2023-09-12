@@ -50,3 +50,10 @@ export type GetTicketEvidencesResponse = LopTicketEvidenceUrl;
 export type PostTicketEvidencesResponse = {
   id: number;
 } & LopTicketEvidenceUrl;
+
+export type GetTicketCountsResponse = {
+  total: number;
+  accepted: number;
+  pending: number;
+  rejected: number;
+};

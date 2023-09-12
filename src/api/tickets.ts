@@ -3,6 +3,7 @@ import { apiRequest, axiosAuthedApi } from "./helpers";
 import {
   GetAllTicketLocationsResponse,
   GetAllTicketsResponse,
+  GetTicketCountsResponse,
   GetTicketEvidencesResponse,
   LopTicket,
   LopTicketAcceptanceStatus,
@@ -17,6 +18,16 @@ export async function getTicketByIdentifier(ticketIdentifier: string) {
   );
 
   return await apiRequest<NestResponse<LopTicket>>(request);
+}
+
+export async function getTicketCounts() {
+  const request = axiosAuthedApi.get<never>(`${LOPS_TICKETS_URL}`, {
+    params: {
+      countOnly: true,
+    },
+  });
+
+  return await apiRequest<NestResponse<GetTicketCountsResponse>>(request);
 }
 
 export async function getListTickets({

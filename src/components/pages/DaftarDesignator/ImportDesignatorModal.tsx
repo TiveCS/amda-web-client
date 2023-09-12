@@ -271,6 +271,7 @@ export default function ImportDesignatorModal({
 
             <ButtonAMDA
               loading={fullImportMutation.isLoading}
+              disabled={fullImportMutation.isLoading}
               onClick={() => void fullImportMutation.mutateAsync()}
             >
               Konfirmasi Impor
